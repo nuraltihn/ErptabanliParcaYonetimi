@@ -1,0 +1,66 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject AppDbContext DbContext
+
+<PageTitle>Giriş Yap - ERP Sistemi</PageTitle>
+
+<div style="max-width: 400px; margin: 80px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #fff;">
+    <h3 class="text-center mb-4" style="color: #333;">ERP Sistem Girişi</h3>
+    
+    <div class="mb-3">
+        <label class="form-label">Kullanıcı Adı:</label>
+        <input class="form-control" @bind="kullaniciAdi" placeholder="Kullanıcı adınızı girin" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Şifre:</label>
+        <input type="password" class="form-control" @bind="sifre" placeholder="Şifrenizi girin" />
+    </div>
+    
+    <button class="btn btn-primary w-100 py-2" @onclick="GirisYap">Giriş Yap</button>
+    
+    @if (!string.IsNullOrEmpty(hataMesaji))
+    {
+        <div class="alert alert-danger mt-3 py-2 text-center" role="alert">
+            @hataMesaji
+        </div>
+    }
+</div>
+
+@code {
+    private string kullaniciAdi = "";
+    private string sifre = "";
+    private string hataMesaji = "";
+
+    private async Task GirisYap()
+    {
+        if (string.IsNullOrWhiteSpace(kullaniciAdi) || string.IsNullOrWhiteSpace(sifre))
+        {
+            hataMesaji = "Kullanıcı adı ve şifre boş olamaz!";
+            return;
+        }
+
+        try
+        {
+            
+            var user = System.Linq.Enumerable.FirstOrDefault(
+                DbContext.Users,
+                x => x.KulAd == kullaniciAdi && x.Sifre == sifre
+            );
+
+            if (user != null)
+            {
+               
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                hataMesaji = "Kullanıcı adı veya şifre hatalı!";
+            }
+        }
+        catch (Exception ex)
+        {
+            hataMesaji = "Bağlantı hatası: " + ex.Message;
+        }
+    }
+}
