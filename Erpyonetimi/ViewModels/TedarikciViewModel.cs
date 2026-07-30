@@ -1,6 +1,6 @@
 ﻿using Erpyonetimi.Commands;
 using Erpyonetimi.Context;
-using Erpyonetimi.Models;
+using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -4,7 +4,7 @@ using System.Text;
 using System.Linq;
 
 using Erpyonetimi.Context;
-using Erpyonetimi.Models;
+using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Helpers;
 namespace Erpyonetimi.Data
 {

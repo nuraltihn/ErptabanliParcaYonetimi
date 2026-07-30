@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
-namespace Erpyonetimi.Models
-{
+namespace Erpyonetimi.Domain.Entities;
     public class Tedarikci : Baseseyler
     {
         public string TedarikciKodu { get; set; } = string.Empty;
@@ -17,4 +15,3 @@ namespace Erpyonetimi.Models
 
         public ICollection<Parca> Parcalar { get; set; } = new List<Parca>();
     }
-}

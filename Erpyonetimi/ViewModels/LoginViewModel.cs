@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D.Converters;
+using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.ViewModels;
 
 namespace Erpyonetimi.ViewModels
 {
