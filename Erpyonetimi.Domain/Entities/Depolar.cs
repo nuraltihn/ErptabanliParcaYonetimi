@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Erpyonetimi.Models
+namespace Erpyonetimi.Domain.Entities
 {
     public class Depolar : Baseseyler
     {

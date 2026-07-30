@@ -7,21 +7,21 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Border Width="350" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="CadetBlue" >
+        <Border Width="350" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="RoyalBlue" CornerRadius="10" BorderThickness="1" >
             <StackPanel>
                 <TextBlock Text="Parça Yönetimi Giriş" FontSize="24" Margin="0 0 0 20" HorizontalAlignment="Center" FontWeight="DemiBold" />
 
                 <TextBlock Text="Kullanıcı Adı"/>
                 <TextBox Text="{Binding KullaniciAdi,UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0 5 0 10"/>
+                         Margin="0 5 0 10" BorderThickness="0"  />
 
                 <TextBlock Text="Şifre"/>
                 <PasswordBox x:Name="PasswordBox"
                              PasswordChanged="Passwordkutu_PasswordChanged"
-                             Margin=" 0 5 0 20"/>
+                             Margin=" 0 5 0 20" BorderThickness="0"/>
                 <Button Content="Giriş Yap"
-                        Command="{Binding LoginCommand}"
-                        Height="35"/>
+                        Command="{Binding GirisCommand}"
+                        Height="35" />
 
             </StackPanel>
         </Border>   

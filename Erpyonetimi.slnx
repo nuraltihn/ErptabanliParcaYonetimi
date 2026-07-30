@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="ERPweb/ERPweb.csproj" Id="8a4e5191-e48d-444a-9c7f-c9968a50e3e1" />
+  <Project Path="Erpyonetimi.Data/Erpyonetimi.Data.csproj" Id="1fc50a8c-8dfa-437e-934d-bb50d53c7d8d" />
+  <Project Path="Erpyonetimi.Domain/Erpyonetimi.Domain.csproj" Id="000e90ed-8800-41cf-b902-bbe30fbecdbf" />
   <Project Path="Erpyonetimi/Erpyonetimi.csproj" />
 </Solution>

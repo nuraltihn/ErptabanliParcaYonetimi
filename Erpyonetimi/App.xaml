@@ -1,9 +1,16 @@
-﻿<Application x:Class="Erpyonetimi.App"
+﻿<Application xmlns:vm="clr-namespace:Erpyonetimi.ViewModels"
+xmlns:views="clr-namespace:Erpyonetimi.Views"
+             x:Class="Erpyonetimi.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Erpyonetimi"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-    
+        <DataTemplate DataType="{x:Type vm:LoginViewModel}" >
+            <views:LoginView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TedarikciViewModel}">
+            <views:TedarikciView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>
