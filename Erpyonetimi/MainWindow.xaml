@@ -9,10 +9,10 @@
     <Grid >
         
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="{Binding Sidemenugenisligi}"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" Background="#1F2937"  >
+        <Border Grid.Column="0" Background="#1F2937" Visibility="{Binding Sidemenugorunme}"  >
             <Border.Effect>
                 <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="5" Opacity="0.4" Direction="315" />
             </Border.Effect>
@@ -31,7 +31,7 @@
                 <StackPanel DockPanel.Dock="Bottom" Margin="8,5">
                     <Separator Background="Gray" Margin="0 0 0 5"/>
                     <Button Content="Çıkış Yap" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40"
-                            HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" Command="{Binding Cikisyap}"/>
+                            HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
                 </StackPanel>
                 <StackPanel>
                     
