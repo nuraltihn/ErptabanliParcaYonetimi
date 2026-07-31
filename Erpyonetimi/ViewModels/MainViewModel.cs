@@ -18,23 +18,25 @@ namespace Erpyonetimi.ViewModels
             get => _currentView;
             set { _currentView= value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(Sidemenugorunme));
+                OnPropertyChanged(nameof(Sidemenugenisligi));
             }
         }
 
-        public Visibility sidemenugorunme
+        public Visibility Sidemenugorunme
         {
             get
             {
-                return CurrentView is LoginViewModel ? Visibility.Collapsed
+                return CurrentView is LoginViewModel? Visibility.Collapsed
                     : Visibility.Visible;
             }
         }
 
-        public GridLength sidemenugenisligi
+        public GridLength Sidemenugenisligi
         {
             get
             {
-                return CurrentView is LoginViewModel ? new GridLength(0)
+                return CurrentView is LoginViewModel? new GridLength(0)
                     : new GridLength(230);
             }
         }
@@ -49,6 +51,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand AdminPanelCommand { get; }
         public MainViewModel()
         {
+            
             CurrentView = new LoginViewModel(this);
             AdminPanelCommand = new RelayCommand(OpenAdminPanel);
         }
