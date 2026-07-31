@@ -9,12 +9,16 @@ using System.Windows.Input;
 using System.Windows.Media.Media3D.Converters;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.ViewModels;
+using Erpyonetimi.Services;
+using Erpyonetimi.Data.Helpers;
+
 
 namespace Erpyonetimi.ViewModels
 {
     public class LoginViewModel :BaseViewModel
     {
         private string _kullaniciAdi = "";
+        private readonly AuthService _authservice;
         public string KullaniciAdi
         {
             get => _kullaniciAdi;
@@ -38,25 +42,18 @@ namespace Erpyonetimi.ViewModels
         public ICommand GirisCommand { get; }
         private readonly MainViewModel _mainViewModel;
         public LoginViewModel(MainViewModel mainViewModel)
-        {
+        { _authservice = new AuthService();
             _mainViewModel = mainViewModel;
             GirisCommand = new RelayCommand(Login);
         }
 
         private void Login()
         {
+            var user = _authservice.Login(KullaniciAdi, Sifre);
             
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-            string hash = PasswordHelper.HashPassword(Sifre);
-
-            var user = db.Users.FirstOrDefault(x => x.KulAd == KullaniciAdi && x.Sifre == hash);
-
             if(user != null)
             {
-                MessageBox.Show("Giriş Başarılı.");
-
-                //dashboard geçme
+                _mainViewModel.Kullanicigirisyapti(user);
             }
             else
             {

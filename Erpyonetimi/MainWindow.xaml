@@ -7,6 +7,74 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid >
-        <ContentControl Content="{Binding CurrentView}"/>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Background="#1F2937"  >
+            <Border.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="5" Opacity="0.4" Direction="315" />
+            </Border.Effect>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="20 25 20 30" Orientation="Horizontal">
+                    <Border CornerRadius="5" Background="Gold" Width="36" Height="36" Margin="0 0 12 0">
+                    <TextBlock Text="P" FontWeight="bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="PARÇAMERP" Foreground="White" FontWeight="bold" FontSize="20"/>
+                        <TextBlock Text="Parça Yönetim Sistemi" Foreground="white" FontWeight="bold" FontSize="10"/>
+
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="8,5">
+                    <Separator Background="Gray" Margin="0 0 0 5"/>
+                    <Button Content="Çıkış Yap" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40"
+                            HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" Command="{Binding Cikisyap}"/>
+                </StackPanel>
+                <StackPanel>
+                    
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                                 GroupName="Sidemenu" IsChecked="true" >
+                        <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="h" Margin="0 0 12 0"/>
+                    <TextBlock Text="DashBoard"/>
+                </StackPanel>
+                </RadioButton>
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                        GroupName="Sidemenu">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Parçalar"/>
+                        </StackPanel>
+                    </RadioButton>
+
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                                        GroupName="Sidemenu"
+                                  Command="{Binding AdminPanelCommand}"
+                                 Visibility="{Binding AdminPanelVisibility}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Admin Paneli"/>
+                        </StackPanel>
+                    </RadioButton>
+ 
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                            GroupName="Sidemenu">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="DashBoard"/>
+                        </StackPanel>
+                    </RadioButton>
+                    
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+        
+        <ContentControl Grid.Column="1" Content="{Binding CurrentView}"/>
     </Grid>
 </Window>

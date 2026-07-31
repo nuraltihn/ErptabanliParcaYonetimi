@@ -1,4 +1,4 @@
-﻿namespace Erpyonetimi.Domain
+﻿namespace ErpDataAccess
 {
     public class Class1
     {

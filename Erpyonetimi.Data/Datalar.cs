@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -6,34 +7,42 @@ using System.Linq;
 using Erpyonetimi.Context;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Helpers;
+using Microsoft.EntityFrameworkCore;
 namespace Erpyonetimi.Data
 {
     public static class Datalar
     {
+      
         public static void Seed()
-        {
-            SeedRoller();
-            SeedKategoriler();
-            SeedDepolar();
-            SeedRaflar();
-            SeedUserlar();
-
-        }
-        private static void SeedUserlar()
         {
             var factory = new ErpDbContextFactory();
             using var db = factory.CreateDbContext(Array.Empty<string>());
+            db.Database.Migrate();
 
-            if (!db.Users.Any())
+
+            SeedRoller(db);
+            SeedKategoriler(db);
+            SeedDepolar(db);
+            SeedRaflar(db);
+            SeedUserlar(db);
+
+        }
+        private static void SeedUserlar(ErpDbContext db)
+        {
+            
+            
+
+            var seedUsers = new List<Users>
             {
-                db.Users.AddRange(
+
+
                     new Users
                     {
                         AdSoyad="İkbal Fırat",
                         KulAd="admin",
                         Sifre=PasswordHelper.HashPassword("12345"),
                         RolId=1
-                        
+
                     },
                     new Users
                     {
@@ -41,7 +50,7 @@ namespace Erpyonetimi.Data
                         KulAd="Satis",
                         Sifre=PasswordHelper.HashPassword("54321"),
                         RolId=3
-                        
+
                     },
                     new Users
                     {
@@ -49,14 +58,24 @@ namespace Erpyonetimi.Data
                         KulAd="Personel",
                         Sifre=PasswordHelper.HashPassword("12321"),
                         RolId=2
-                    } );
+                    }
+            }; 
+            foreach(var user in seedUsers)
+            {
+                bool zatenvarMi = db.Users.Any(u => u.KulAd == user.KulAd);
+                if (!zatenvarMi)
+                {
+                    db.Users.Add(user);
+                }
+            }
+
                 db.SaveChanges();
             }
-        }
-        private static void SeedRoller()
+        
+        private static void SeedRoller(ErpDbContext db)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
+          
+            
 
             if (!db.Roles.Any())
             {
@@ -82,11 +101,8 @@ namespace Erpyonetimi.Data
         }
 
 
-        private static void SeedKategoriler() { 
-            var factory = new ErpDbContextFactory();
-
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-
+        private static void SeedKategoriler(ErpDbContext db) { 
+           
             if (!db.Kategoriler.Any())
             {
                 db.Kategoriler.AddRange(
@@ -124,10 +140,9 @@ namespace Erpyonetimi.Data
                 db.SaveChanges();
         }    }
 
-        private static void SeedRaflar()
+        private static void SeedRaflar(ErpDbContext db)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
+            
 
             if (!db.Raflar.Any())
             {
@@ -159,10 +174,9 @@ namespace Erpyonetimi.Data
                 db.SaveChanges();
             }
         }
-        private static void SeedDepolar()
+        private static void SeedDepolar(ErpDbContext db)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
+           
             if (!db.Depolar.Any())
             {
                 db.Depolar.AddRange(

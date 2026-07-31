@@ -1,6 +1,12 @@
-﻿using System;
+﻿using Erpyonetimi.Commands;
+using Erpyonetimi.Data.Helpers;
+using Erpyonetimi.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -15,9 +21,66 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
+        public Visibility sidemenugorunme
+        {
+            get
+            {
+                return CurrentView is LoginViewModel ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
+        }
+
+        public GridLength sidemenugenisligi
+        {
+            get
+            {
+                return CurrentView is LoginViewModel ? new GridLength(0)
+                    : new GridLength(230);
+            }
+        }
+       public bool AdminPaneligor
+        {
+            get
+            {
+                return UserSession.IsAdmin;
+            }
+        }
+
+        public ICommand AdminPanelCommand { get; }
         public MainViewModel()
         {
-            CurrentView = new TedarikciViewModel();
+            CurrentView = new LoginViewModel(this);
+            AdminPanelCommand = new RelayCommand(OpenAdminPanel);
         }
+
+        public void Kullanicigirisyapti(Users users)
+        {
+            UserSession.CurrentUser = users;
+            CurrentView = UserSession.IsAdmin ? new AdminPanelViewModel()
+                 : new DashboardViewModel();
+
+            OnPropertyChanged(nameof(AdminPaneligor));
+            OnPropertyChanged(nameof(AdminPanelVisibility));
+        }
+        private void OpenAdminPanel()
+        {
+            if (!UserSession.IsAdmin)
+            {
+                MessageBox.Show("Erişim yetkiniz yok");
+                return;
+            }
+            CurrentView = new AdminPanelViewModel();
+        }
+        public Visibility AdminPanelVisibility
+        {
+            get
+            {
+                return UserSession.IsAdmin
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+        }
+
     }
 }
