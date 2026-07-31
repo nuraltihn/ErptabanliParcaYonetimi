@@ -1,0 +1,42 @@
+﻿@page "/admin-dashboard"
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+    <h2>Sistem Yöneticisi Paneli</h2>
+    <hr />
+    <p class="text-bg-danger muted">ERP Veri Yönetimi Ve Modüllerine Hoşgeldiniz</p>
+    
+    <div class="row mt-4">
+        <!-- Kullanıcılar Kartı -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Kullanıcı Yönetimi</h5>
+                    <p class="card-text">Sistemdeki kullanıcıları listele, yeni kullanıcı ekle.</p>
+                    <a href="/users-management" class="btn btn-dark btn-sm">Yönet</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diğer Tablolar İçin Yer Tutucular -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Roller</h5>
+                    <p class="card-text">Kullanıcı rollerini ve yetkilerini düzenle.</p>
+                    <button class="btn btn-secondary btn-sm" disabled>Yakında</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Depolar & Raflar</h5>
+                    <p class="card-text">Depo ve raf lokasyonlarını tanımla.</p>
+                    <button class="btn btn-secondary btn-sm" disabled>Yakında</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

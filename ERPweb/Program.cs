@@ -1,3 +1,5 @@
+
+using ERPWeb.Data;
 using ERPweb.Components;
 using ERPweb.Data; // 1. Burayı ekledik (DbContext'i tanısın diye)
 using Microsoft.EntityFrameworkCore; // 2. Entity Framework kütüphanesini ekledik

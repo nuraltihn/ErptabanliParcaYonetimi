@@ -1,59 +1,65 @@
 ﻿@page "/login"
+@using Erpyonetimi.Data
+@using ERPweb.Services
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-@inject AppDbContext DbContext
+@inject ErpyonetimiDbContext DbContext
+@inject UserSessionService SessionService
 
-<PageTitle>Giriş Yap - ERP Sistemi</PageTitle>
+<PageTitle>Giriş Yap - PARÇAM ERP</PageTitle>
 
-<div class="auth-shell">
+<div class="auth-container">
 
     <!-- SOL PANEL: GİRİŞ FORMU -->
     <div class="auth-left">
-        <div class="auth-form-wrap">
+        <div class="auth-card">
 
             <div class="brand">
-                <div class="brand-mark">PY</div>
-                <div class="brand-text">
-                    <span class="brand-name">PARÇAM<span class="brand-accent">ERP</span></span>
-                    <span class="brand-sub">Parça Yönetim Sistemi</span>
+                <div class="brand-logo">PY</div>
+                <div class="brand-info">
+                    <span class="brand-title">PARÇAM <span>ERP</span></span>
+                    <span class="brand-subtitle">Parça Yönetim Sistemi</span>
                 </div>
             </div>
 
-            <h1 class="auth-title">Hoş geldiniz...</h1>
-            <p class="auth-subtitle">Stok, depo ve parça kayıtlarınıza erişmek için oturum açın.</p>
+            <h2 class="form-title">Hoş Geldiniz</h2>
+            <p class="form-subtitle">Lütfen sistem hesabınızla oturum açın.</p>
 
-            <div class="field-group">
-                <label class="field-label" for="kulAd">Kullanıcı Adı</label>
-                <div class="field-control">
-                    <span class="field-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-                    </span>
-                    <input id="kulAd" class="field-input" @bind="kullaniciAdi" @bind:event="oninput" placeholder="ör. m.yilmaz" />
+            @if (!string.IsNullOrEmpty(hataMesaji))
+            {
+                <div class="alert alert-danger py-2 mb-3 small" role="alert">
+                    @hataMesaji
+                </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted">👤</span>
+                    <input type="text" class="form-control border-start-0" placeholder="ör. m.yilmaz" @bind="kullaniciAdi" />
                 </div>
             </div>
 
-            <div class="field-group">
-                <label class="field-label" for="sifre">Şifre</label>
-                <div class="field-control">
-                    <span class="field-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                    </span>
-                    <input id="sifre" type="password" class="field-input" @bind="sifre" @bind:event="oninput" placeholder="••••••••" @onkeydown="OnKeyDown" />
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Şifre</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted">🔒</span>
+                    <input type="password" class="form-control border-start-0" placeholder="••••••••" @bind="sifre" @onkeydown="OnKeyDown" />
                 </div>
             </div>
 
-            <div class="field-row">
-                <label class="check-label">
-                    <input type="checkbox" @bind="beniHatirla" />
-                    <span>Beni hatırla</span>
+            <div class="d-flex justify-content-between align-items-center mb-4 small">
+                <label class="text-muted cursor-pointer">
+                    <input type="checkbox" @bind="beniHatirla" /> Beni hatırla
                 </label>
-                <a href="#" class="link-muted">Şifremi unuttum</a>
+                <a href="javascript:void(0)" class="text-decoration-none text-muted">Şifremi unuttum</a>
             </div>
 
-            <button class="btn-primary" @onclick="GirisYap" disabled="@isLoading">
+            <button class="btn btn-dark w-100 py-2 font-weight-bold" @onclick="GirisYap" disabled="@isLoading">
                 @if (isLoading)
                 {
-                    <span class="spinner"></span>
-                    <span>Kontrol ediliyor...</span>
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span>Giriş Yapılıyor...</span>
                 }
                 else
                 {
@@ -61,303 +67,130 @@
                 }
             </button>
 
-            @if (!string.IsNullOrEmpty(hataMesaji))
-            {
-                <div class="alert-error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-                    <span>@hataMesaji</span>
-                </div>
-            }
+            <div class="text-center mt-4 text-muted small">
+                Hesabınız yok mu? <a href="javascript:void(0)" class="text-warning text-decoration-none fw-bold">Sistem yöneticinizle görüşün</a>
+            </div>
 
-            <p class="footnote">Hesabınız yok mu? <a href="#" class="link-accent">Sistem yöneticinizle iletişime geçin</a></p>
         </div>
     </div>
 
-    <!-- SAĞ PANEL: TEKNİK ÇİZİM / BLUEPRINT -->
+    <!-- SAĞ PANEL: SADE KURUMSAL ALAN -->
     <div class="auth-right">
-        <div class="grid-overlay"></div>
-
-        <div class="right-copy">
-            <span class="right-eyebrow">Envanter · Depo · Bakım</span>
-            <h2 class="right-title">Her parçanın yerini,<br/>her zaman bilin.</h2>
-            <p class="right-desc">Stok seviyelerini, tedarik durumunu ve parça geçmişini tek panelden takip edin.</p>
-        </div>
-
-        <div class="blueprint">
-            <svg viewBox="0 0 520 520" class="blueprint-svg">
-                <circle cx="260" cy="230" r="150" fill="none" stroke="var(--line-soft)" stroke-width="1" stroke-dasharray="2 6"/>
-                <circle cx="260" cy="230" r="105" fill="none" stroke="var(--line-mid)" stroke-width="1.25"/>
-                <circle cx="260" cy="230" r="46" fill="none" stroke="var(--line-mid)" stroke-width="1.25"/>
-                <circle cx="260" cy="230" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
-
-                @{
-                    int toothCount = 12;
-                }
-                @for (int i = 0; i < toothCount; i++)
-                {
-                    double angle = (360.0 / toothCount) * i;
-                    <g transform="rotate(@angle.ToString(System.Globalization.CultureInfo.InvariantCulture) 260 230)">
-                        <rect x="252" y="72" width="16" height="26" rx="2" fill="none" stroke="var(--line-mid)" stroke-width="1.25" />
-                    </g>
-                }
-
-                <line x1="260" y1="230" x2="260" y2="80" stroke="var(--line-soft)" stroke-width="1"/>
-                <line x1="260" y1="230" x2="382" y2="305" stroke="var(--line-soft)" stroke-width="1"/>
-
-                <!-- Ölçü çizgisi -->
-                <line x1="110" y1="230" x2="410" y2="230" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 4"/>
-                <text x="230" y="222" class="dim-label">Ø 300mm</text>
-
-                <!-- Parça etiketleri -->
-                <g class="tag" transform="translate(20,40)">
-                    <rect width="118" height="34" rx="6"/>
-                    <text x="12" y="22">PN-4471-B</text>
-                </g>
-                <g class="tag" transform="translate(370,60)">
-                    <rect width="128" height="34" rx="6"/>
-                    <text x="12" y="22">STOK: 342 ADET</text>
-                </g>
-                <g class="tag" transform="translate(30,410)">
-                    <rect width="150" height="34" rx="6"/>
-                    <text x="12" y="22">REV. C · ÇELİK</text>
-                </g>
-                <g class="tag" transform="translate(340,430)">
-                    <rect width="140" height="34" rx="6"/>
-                    <text x="12" y="22">SON BAKIM: 12g</text>
-                </g>
-            </svg>
-        </div>
-
-        <div class="right-footer">
-            <span>+17.000 parça kaydı</span>
-            <span class="dot">•</span>
-            <span>86 depo lokasyonu</span>
+        <div class="right-content">
+            <div class="badge bg-secondary mb-3">ENVANTER & DEPO YÖNETİMİ</div>
+            <h1>Her parçanın yerini,<br />her zaman bilin.</h1>
+            <p>Stok seviyelerini, tedarik durumunu ve parça geçmişini tek bir panelden kolayca takip edin.</p>
         </div>
     </div>
+
 </div>
 
 <style>
-    :root {
-        --bg-light: #F4F5F3;
-        --panel-dark: #171B21;
-        --panel-dark-2: #1D232B;
-        --accent: #E8871E;
-        --accent-soft: rgba(232,135,30,0.12);
-        --steel: #4A7C9E;
-        --text-dark: #1B2430;
-        --text-muted: #6B7280;
-        --border-soft: #DFE2E6;
-        --line-soft: rgba(255,255,255,0.10);
-        --line-mid: rgba(255,255,255,0.28);
-        --text-light: #EDEFF2;
-        --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
-        --font-body: 'Inter', 'Segoe UI', sans-serif;
-        --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
-    }
-
-    @@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
-
-    .auth-shell {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    .auth-container {
+        display: flex;
         min-height: 100vh;
-        font-family: var(--font-body);
-        background: var(--bg-light);
-        color: var(--text-dark);
+        width: 100vw;
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    /* ---------- SOL ---------- */
+    /* Sol Taraf */
     .auth-left {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px 32px;
+        padding: 40px 20px;
+        background: #ffffff;
     }
 
-    .auth-form-wrap { width: 100%; max-width: 380px; }
-
-    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
-    .brand-mark {
-        width: 40px; height: 40px; border-radius: 10px;
-        background: var(--text-dark);
-        color: #fff;
-        font-family: var(--font-mono);
-        font-weight: 500;
-        font-size: 13px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
+    .auth-card {
+        width: 100%;
+        max-width: 360px;
     }
-    .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-    .brand-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: 0.02em; }
-    .brand-accent { color: var(--accent); }
-    .brand-sub { font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.02em; }
 
-    .auth-title {
-        font-family: var(--font-display);
-        font-weight: 700;
-        font-size: 30px;
-        margin: 0 0 8px 0;
-        letter-spacing: -0.01em;
-    }
-    .auth-subtitle { color: var(--text-muted); font-size: 14.5px; margin: 0 0 32px 0; line-height: 1.5; }
-
-    .field-group { margin-bottom: 18px; }
-    .field-label {
-        display: block;
-        font-size: 12.5px;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 6px;
-        letter-spacing: 0.01em;
-    }
-    .field-control {
+    .brand {
         display: flex;
         align-items: center;
-        gap: 10px;
-        border: 1.5px solid var(--border-soft);
-        border-radius: 10px;
-        padding: 0 14px;
-        background: #fff;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        gap: 12px;
+        margin-bottom: 30px;
     }
-    .field-control:focus-within {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-    .field-icon { color: var(--text-muted); display: flex; }
-    .field-input {
-        border: none; outline: none; background: transparent;
-        padding: 12px 0; width: 100%; font-size: 14.5px; color: var(--text-dark);
-        font-family: var(--font-body);
-    }
-    .field-input::placeholder { color: #A6ABB2; }
 
-    .field-row { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 24px 0; font-size: 13px; }
-    .check-label { display: flex; align-items: center; gap: 7px; color: var(--text-muted); cursor: pointer; }
-    .check-label input { accent-color: var(--accent); }
-    .link-muted { color: var(--text-muted); text-decoration: none; }
-    .link-muted:hover { color: var(--text-dark); }
-    .link-accent { color: var(--accent); text-decoration: none; font-weight: 600; }
-
-    .btn-primary {
-        width: 100%;
-        background: var(--text-dark);
+    .brand-logo {
+        width: 40px;
+        height: 40px;
+        background: #1e293b;
         color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 13px 0;
-        font-family: var(--font-body);
-        font-weight: 600;
-        font-size: 14.5px;
-        cursor: pointer;
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        transition: background 0.15s ease, transform 0.05s ease;
-    }
-    .btn-primary:hover:not(:disabled) { background: var(--accent); }
-    .btn-primary:active:not(:disabled) { transform: translateY(1px); }
-    .btn-primary:disabled { opacity: 0.7; cursor: default; }
-
-    .spinner {
-        width: 14px; height: 14px;
-        border: 2px solid rgba(255,255,255,0.35);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-    }
-    @@keyframes spin { to { transform: rotate(360deg); } }
-
-    .alert-error {
-        margin-top: 16px;
-        display: flex; align-items: center; gap: 8px;
-        background: #FDECEC;
-        color: #B3261E;
-        border: 1px solid #F5C6C6;
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-size: 13px;
-    }
-
-    .footnote { margin-top: 28px; font-size: 13px; color: var(--text-muted); text-align: center; }
-
-    /* ---------- SAĞ ---------- */
-    .auth-right {
-        position: relative;
-        background: radial-gradient(ellipse at top right, var(--panel-dark-2), var(--panel-dark) 65%);
-        color: var(--text-light);
-        overflow: hidden;
-        padding: 56px 56px 40px 56px;
+        font-weight: 700;
+        border-radius: 8px;
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
     }
 
-    .grid-overlay {
-        position: absolute; inset: 0;
-        background-image:
-            linear-gradient(var(--line-soft) 1px, transparent 1px),
-            linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-        background-size: 42px 42px;
-        mask-image: radial-gradient(ellipse at 60% 45%, black 40%, transparent 78%);
-        pointer-events: none;
+    .brand-title {
+        font-weight: 700;
+        font-size: 16px;
+        color: #0f172a;
     }
 
-    .right-eyebrow {
-        font-family: var(--font-mono);
-        font-size: 11.5px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--steel);
-    }
-    .right-title {
-        font-family: var(--font-display);
-        font-weight: 600;
-        font-size: 30px;
-        line-height: 1.25;
-        margin: 12px 0 12px 0;
-        max-width: 380px;
-    }
-    .right-desc { font-size: 14px; color: #A7AEB8; max-width: 340px; line-height: 1.55; margin: 0; }
+        .brand-title span {
+            color: #d97706;
+        }
 
-    .blueprint {
-        position: absolute;
-        right: -30px;
-        bottom: -10px;
-        width: min(62%, 480px);
-        opacity: 0.95;
-    }
-    .blueprint-svg { width: 100%; height: auto; overflow: visible; }
-    .dim-label {
-        font-family: var(--font-mono);
+    .brand-subtitle {
+        display: block;
         font-size: 11px;
-        fill: var(--accent);
-        text-anchor: middle;
-    }
-    .tag rect {
-        fill: rgba(23,27,33,0.85);
-        stroke: var(--line-mid);
-        stroke-width: 1;
-    }
-    .tag text {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        fill: var(--text-light);
+        color: #64748b;
     }
 
-    .right-footer {
+    .form-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .form-subtitle {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 25px;
+    }
+
+    /* Sağ Taraf */
+    .auth-right {
+        flex: 1.2;
+        background: #0f172a;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px;
         position: relative;
-        z-index: 1;
-        display: flex; align-items: center; gap: 10px;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #8A919C;
     }
-    .right-footer .dot { color: var(--line-mid); }
 
-    /* ---------- RESPONSIVE ---------- */
-    @@media (max-width: 900px) {
-        .auth-shell { grid-template-columns: 1fr; }
-        .auth-right { display: none; }
-        .auth-left { padding: 32px 20px; }
+    .right-content {
+        max-width: 420px;
+    }
+
+        .right-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .right-content p {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+    @@media (max-width: 800px) {
+        .auth-right {
+            display: none;
+        }
     }
 </style>
 
@@ -382,7 +215,7 @@
 
         if (string.IsNullOrWhiteSpace(kullaniciAdi) || string.IsNullOrWhiteSpace(sifre))
         {
-            hataMesaji = "Kullanıcı adı ve şifre boş olamaz!";
+            hataMesaji = "Lütfen kullanıcı adı ve şifrenizi giriniz.";
             return;
         }
 
@@ -390,14 +223,24 @@
 
         try
         {
-            var user = System.Linq.Enumerable.FirstOrDefault(
-                DbContext.Users,
-                x => x.KulAd == kullaniciAdi && x.Sifre == sifre
-            );
+            // Veritabanından Kullanıcı Kontrolü
+            var user = await DbContext.Users
+                .FirstOrDefaultAsync(x => x.KulAd == kullaniciAdi && x.Sifre == sifre);
 
             if (user != null)
             {
-                Navigation.NavigateTo("/");
+                // Oturum Başlatma
+                SessionService.Login(user.Id, user.KulAd ?? "", user.RoleId);
+
+                // Rol Yönlendirmesi
+                if (user.RoleId == 1)
+                {
+                    Navigation.NavigateTo("/admin-dashboard");
+                }
+                else
+                {
+                    Navigation.NavigateTo("/satis-dashboard");
+                }
             }
             else
             {
@@ -406,7 +249,7 @@
         }
         catch (Exception ex)
         {
-            hataMesaji = "Bağlantı hatası: " + ex.Message;
+            hataMesaji = "Bağlantı hatası oluştu: " + ex.Message;
         }
         finally
         {

@@ -11,4 +11,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Erpyonetimi.Data\Erpyonetimi.Data.csproj" />
+    <ProjectReference Include="..\Erpyonetimi.Domain\Erpyonetimi.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
