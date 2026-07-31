@@ -7,6 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <StackPanel>
+            <TextBlock Text="{Binding KullaniciAdi}"
+                       FontSize="18"
+                       FontWeight="Bold"/>
+            <TextBlock Text="{Binding RolAdi}"
+                       FontSize="14"/>
+            <TextBlock Text="{Binding Tedarikcisayisi}"/>
+            <TextBlock Text="{Binding Parcasayisi}"/>
+            <TextBlock Text="{Binding Musterisayisi}"/>
+            <TextBlock Text="{Binding Siparissayisi}"/>
+        </StackPanel>
     </Grid>
 </UserControl>
