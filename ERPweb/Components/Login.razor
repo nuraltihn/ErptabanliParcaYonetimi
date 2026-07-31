@@ -1,246 +1,55 @@
 ﻿@page "/login"
 @using Erpyonetimi.Data
-@using ERPweb.Services
-@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-@inject ErpyonetimiDbContext DbContext
-@inject UserSessionService SessionService
-
-<PageTitle>Giriş Yap - PARÇAM ERP</PageTitle>
-
-<div class="auth-container">
-
-    <!-- SOL PANEL: GİRİŞ FORMU -->
-    <div class="auth-left">
-        <div class="auth-card">
-
-            <div class="brand">
-                <div class="brand-logo">PY</div>
-                <div class="brand-info">
-                    <span class="brand-title">PARÇAM <span>ERP</span></span>
-                    <span class="brand-subtitle">Parça Yönetim Sistemi</span>
-                </div>
-            </div>
-
-            <h2 class="form-title">Hoş Geldiniz</h2>
-            <p class="form-subtitle">Lütfen sistem hesabınızla oturum açın.</p>
-
-            @if (!string.IsNullOrEmpty(hataMesaji))
-            {
-                <div class="alert alert-danger py-2 mb-3 small" role="alert">
-                    @hataMesaji
-                </div>
-            }
-
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted">👤</span>
-                    <input type="text" class="form-control border-start-0" placeholder="ör. m.yilmaz" @bind="kullaniciAdi" />
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">Şifre</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted">🔒</span>
-                    <input type="password" class="form-control border-start-0" placeholder="••••••••" @bind="sifre" @onkeydown="OnKeyDown" />
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4 small">
-                <label class="text-muted cursor-pointer">
-                    <input type="checkbox" @bind="beniHatirla" /> Beni hatırla
-                </label>
-                <a href="javascript:void(0)" class="text-decoration-none text-muted">Şifremi unuttum</a>
-            </div>
-
-            <button class="btn btn-dark w-100 py-2 font-weight-bold" @onclick="GirisYap" disabled="@isLoading">
-                @if (isLoading)
-                {
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    <span>Giriş Yapılıyor...</span>
-                }
-                else
-                {
-                    <span>Giriş Yap</span>
-                }
-            </button>
-
-            <div class="text-center mt-4 text-muted small">
-                Hesabınız yok mu? <a href="javascript:void(0)" class="text-warning text-decoration-none fw-bold">Sistem yöneticinizle görüşün</a>
-            </div>
-
-        </div>
+@inject AppDbContext DbContext
+<div style="max-width: 400px; margin: 80px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #fff;">
+    <h3 class="text-center mb-4" style="color: #333;">ERP Sistem Girişi</h3>
+    
+    <div class="mb-3">
+        <label class="form-label">Kullanıcı Adı:</label>
+        <input class="form-control" @bind="kullaniciAdi" placeholder="Kullanıcı adınızı girin" />
     </div>
-
-    <!-- SAĞ PANEL: SADE KURUMSAL ALAN -->
-    <div class="auth-right">
-        <div class="right-content">
-            <div class="badge bg-secondary mb-3">ENVANTER & DEPO YÖNETİMİ</div>
-            <h1>Her parçanın yerini,<br />her zaman bilin.</h1>
-            <p>Stok seviyelerini, tedarik durumunu ve parça geçmişini tek bir panelden kolayca takip edin.</p>
-        </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Şifre:</label>
+        <input type="password" class="form-control" @bind="sifre" placeholder="Şifrenizi girin" />
     </div>
-
+    
+    <button class="btn btn-primary w-100 py-2" @onclick="GirisYap">Giriş Yap</button>
+    
+    @if (!string.IsNullOrEmpty(hataMesaji))
+    {
+        <div class="alert alert-danger mt-3 py-2 text-center" role="alert">
+            @hataMesaji
+        </div>
+    }
 </div>
-
-<style>
-    .auth-container {
-        display: flex;
-        min-height: 100vh;
-        width: 100vw;
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
-
-    /* Sol Taraf */
-    .auth-left {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-        background: #ffffff;
-    }
-
-    .auth-card {
-        width: 100%;
-        max-width: 360px;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 30px;
-    }
-
-    .brand-logo {
-        width: 40px;
-        height: 40px;
-        background: #1e293b;
-        color: #fff;
-        font-weight: 700;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-    }
-
-    .brand-title {
-        font-weight: 700;
-        font-size: 16px;
-        color: #0f172a;
-    }
-
-        .brand-title span {
-            color: #d97706;
-        }
-
-    .brand-subtitle {
-        display: block;
-        font-size: 11px;
-        color: #64748b;
-    }
-
-    .form-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 4px;
-    }
-
-    .form-subtitle {
-        font-size: 13px;
-        color: #64748b;
-        margin-bottom: 25px;
-    }
-
-    /* Sağ Taraf */
-    .auth-right {
-        flex: 1.2;
-        background: #0f172a;
-        color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 60px;
-        position: relative;
-    }
-
-    .right-content {
-        max-width: 420px;
-    }
-
-        .right-content h1 {
-            font-size: 32px;
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 15px;
-        }
-
-        .right-content p {
-            color: #94a3b8;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-    @@media (max-width: 800px) {
-        .auth-right {
-            display: none;
-        }
-    }
-</style>
 
 @code {
     private string kullaniciAdi = "";
     private string sifre = "";
     private string hataMesaji = "";
-    private bool beniHatirla = false;
-    private bool isLoading = false;
-
-    private async Task OnKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            await GirisYap();
-        }
-    }
 
     private async Task GirisYap()
     {
-        hataMesaji = "";
-
         if (string.IsNullOrWhiteSpace(kullaniciAdi) || string.IsNullOrWhiteSpace(sifre))
         {
-            hataMesaji = "Lütfen kullanıcı adı ve şifrenizi giriniz.";
+            hataMesaji = "Kullanıcı adı ve şifre boş olamaz!";
             return;
         }
 
-        isLoading = true;
-
         try
         {
-            // Veritabanından Kullanıcı Kontrolü
-            var user = await DbContext.Users
-                .FirstOrDefaultAsync(x => x.KulAd == kullaniciAdi && x.Sifre == sifre);
+            
+            var user = System.Linq.Enumerable.FirstOrDefault(
+                DbContext.Users,
+                x => x.KulAd == kullaniciAdi && x.Sifre == sifre
+            );
 
             if (user != null)
             {
-                // Oturum Başlatma
-                SessionService.Login(user.Id, user.KulAd ?? "", user.RoleId);
-
-                // Rol Yönlendirmesi
-                if (user.RoleId == 1)
-                {
-                    Navigation.NavigateTo("/admin-dashboard");
-                }
-                else
-                {
-                    Navigation.NavigateTo("/satis-dashboard");
-                }
+               
+                Navigation.NavigateTo("/");
             }
             else
             {
@@ -249,11 +58,7 @@
         }
         catch (Exception ex)
         {
-            hataMesaji = "Bağlantı hatası oluştu: " + ex.Message;
-        }
-        finally
-        {
-            isLoading = false;
+            hataMesaji = "Bağlantı hatası: " + ex.Message;
         }
     }
 }

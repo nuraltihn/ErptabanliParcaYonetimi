@@ -1,15 +1,15 @@
 
-using ERPWeb.Data;
+using Erpyonetimi.Domain;
 using ERPweb.Components;
-using ERPweb.Data; // 1. Burayı ekledik (DbContext'i tanısın diye)
-using Microsoft.EntityFrameworkCore; // 2. Entity Framework kütüphanesini ekledik
+using Erpyonetimi.Data; 
+using Microsoft.EntityFrameworkCore; 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
   
   .AddInteractiveServerComponents();
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<DbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
