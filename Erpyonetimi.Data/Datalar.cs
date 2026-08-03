@@ -19,13 +19,19 @@ namespace Erpyonetimi.Data
             using var db = factory.CreateDbContext(Array.Empty<string>());
             db.Database.Migrate();
 
+            try
+            {
 
-            SeedRoller(db);
-            SeedKategoriler(db);
-            SeedDepolar(db);
-            SeedRaflar(db);
-            SeedUserlar(db);
+                SeedRoller(db);
+                SeedKategoriler(db);
+                SeedDepolar(db);
+                SeedRaflar(db);
+                SeedUserlar(db);
+            }
+            catch (DbUpdateException)
+            {
 
+            }
         }
         private static void SeedUserlar(ErpDbContext db)
         {

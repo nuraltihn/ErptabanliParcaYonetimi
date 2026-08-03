@@ -34,41 +34,55 @@
                             HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
                 </StackPanel>
                 <StackPanel>
-                    
                     <RadioButton Style="{StaticResource Sidemenubutton}"
-                                 GroupName="Sidemenu" IsChecked="true" >
-                        <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="h" Margin="0 0 12 0"/>
-                    <TextBlock Text="DashBoard"/>
-                </StackPanel>
-                </RadioButton>
-
-                    <RadioButton Style="{StaticResource Sidemenubutton}"
-                        GroupName="Sidemenu">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Parçalar"/>
-                        </StackPanel>
-                    </RadioButton>
-
-
-                    <RadioButton Style="{StaticResource Sidemenubutton}"
-                                        GroupName="Sidemenu"
-                                  Command="{Binding AdminPanelCommand}"
-                                 Visibility="{Binding AdminPanelVisibility}">
+                      GroupName="Sidemenu" IsChecked="True"
+                Command="{Binding AdminPanelCommand}"
+               Visibility="{Binding AdminPanelVisibility}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
                             <TextBlock Text="Admin Paneli"/>
                         </StackPanel>
                     </RadioButton>
- 
+
+
                     <RadioButton Style="{StaticResource Sidemenubutton}"
-                            GroupName="Sidemenu">
+                                 GroupName="Sidemenu" 
+                                 Command="{Binding DashboardCommand}">
+                        <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="h" Margin="0 0 12 0"/>
+                    <TextBlock Text="Dashboard"/>
+                </StackPanel>
+                </RadioButton>
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                        GroupName="Sidemenu"
+                                 Command="{Binding ParcaCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="DashBoard"/>
+                            <TextBlock Text="Parça"/>
                         </StackPanel>
                     </RadioButton>
+
+
+                  
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+                            GroupName="Sidemenu"
+                                 Command="{Binding TedarikciCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Tedarikçi"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+         GroupName="Sidemenu">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Kategori"/>
+                        </StackPanel>
+                    </RadioButton>
+                    
                     
                 </StackPanel>
 
