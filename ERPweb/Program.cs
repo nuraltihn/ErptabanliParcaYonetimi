@@ -1,19 +1,19 @@
-
-using Erpyonetimi.Domain;
 using ERPweb.Components;
-using Erpyonetimi.Data; 
-using Microsoft.EntityFrameworkCore; 
+using Erpyonetimi.Context;
+using Erpyonetimi.Data;
+using Erpyonetimi.Domain;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
-  
-  .AddInteractiveServerComponents();
-builder.Services.AddDbContext<DbContext>(options =>
+    .AddInteractiveServerComponents();
+
+// Güncellenen Kısım: <DbContext> yerine <ErpDbContext> yazıldı.
+builder.Services.AddDbContext<ErpDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
-
 
 if (!app.Environment.IsDevelopment())
 {
@@ -22,11 +22,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
 
 app.MapRazorComponents<App>()

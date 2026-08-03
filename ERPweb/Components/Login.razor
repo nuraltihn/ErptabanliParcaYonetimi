@@ -1,7 +1,9 @@
 ﻿@page "/login"
-@using Erpyonetimi.Data
+@using Erpyonetimi.Context
 @inject NavigationManager Navigation
-@inject AppDbContext DbContext
+@inject ErpDbContext DbContext
+@rendermode InteractiveServer
+
 <div style="max-width: 400px; margin: 80px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #fff;">
     <h3 class="text-center mb-4" style="color: #333;">ERP Sistem Girişi</h3>
     
@@ -40,7 +42,6 @@
 
         try
         {
-            
             var user = System.Linq.Enumerable.FirstOrDefault(
                 DbContext.Users,
                 x => x.KulAd == kullaniciAdi && x.Sifre == sifre
@@ -48,7 +49,6 @@
 
             if (user != null)
             {
-               
                 Navigation.NavigateTo("/");
             }
             else
