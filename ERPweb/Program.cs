@@ -1,5 +1,6 @@
 using ERPweb.Components;
 using Erpyonetimi.Application.Services;
+using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Context;
 using Erpyonetimi.Data;
 using Erpyonetimi.Data.Interfaces;
@@ -18,12 +19,17 @@ builder.Services.AddDbContext<ErpDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 2. Servis Kayıtları
-builder.Services.AddScoped<UsersService>();
-builder.Services.AddScoped<KategoriService>();
-builder.Services.AddScoped<DashboardService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<TedarikciService>();
+builder.Services.AddScoped<IUsersService,UsersService>();
+builder.Services.AddScoped<IKategoriService,KategoriService>();
+builder.Services.AddScoped<IDashboardService,DashboardService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<ITedarikciService,TedarikciService>();
 
+// Repository kayıtları - uygulama servislerinin ihtiyaç duyduğu repository implementasyonları
+// eksik olduğu için DI doğrulaması başarısız oluyordu. Scoped, DbContext ile uyumlu.
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IKategoriRepository, KategoriRepository>();
+builder.Services.AddScoped<ITedarikciRepository, TedarikciRepository>();
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {

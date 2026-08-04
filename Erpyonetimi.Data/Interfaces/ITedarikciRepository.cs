@@ -9,7 +9,7 @@ namespace Erpyonetimi.Data.Interfaces
     {
         List<Tedarikci> TedarikciGetAll();
         Tedarikci? IdAl(int id);
-        Tedarikci? Kodal(string tedarikciKodu);
+        Tedarikci? KodAl(string tedarikciKodu);
         void Add(Tedarikci tedarikci);
         void Update(Tedarikci tedarikci);
         void Delete(Tedarikci tedarikci);
