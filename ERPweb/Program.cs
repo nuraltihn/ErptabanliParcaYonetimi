@@ -24,6 +24,7 @@ builder.Services.AddScoped<IKategoriService,KategoriService>();
 builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<ITedarikciService,TedarikciService>();
+//nisa değişiklik
 
 // Repository kayıtları - uygulama servislerinin ihtiyaç duyduğu repository implementasyonları
 // eksik olduğu için DI doğrulaması başarısız oluyordu. Scoped, DbContext ile uyumlu.
