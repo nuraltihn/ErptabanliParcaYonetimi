@@ -4,7 +4,7 @@ using System.Text;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Services.Interfaces;
-namespace Erpyonetimi.Services
+namespace Erpyonetimi.Application.Services
 {
     public class UsersService : IUsersService
     {

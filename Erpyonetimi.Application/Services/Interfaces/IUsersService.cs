@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
-namespace Erpyonetimi.Services.Interfaces
+namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IUsersService
     {

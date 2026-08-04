@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Erpyonetimi.Services
+namespace Erpyonetimi.Application.Services
 {
     public class KategoriService : IKategoriService
     {

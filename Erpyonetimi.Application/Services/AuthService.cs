@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Data.Interfaces;
-namespace Erpyonetimi.Services
+namespace Erpyonetimi.Application.Services
 {
     public class AuthService:IAuthService
     {

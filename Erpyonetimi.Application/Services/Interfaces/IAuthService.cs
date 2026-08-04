@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Erpyonetimi.Services.Interfaces
+namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IAuthService
     {

@@ -103,6 +103,8 @@ namespace Erpyonetimi.ViewModels
         }
         private void UsersGuncelleme()
         {
+            if (SelectedUser != null)
+                _usersService.UpdateUser(SelectedUser);
 
         }
         private void UsersSilme()
