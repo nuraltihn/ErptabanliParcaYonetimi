@@ -5,7 +5,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject UsersService UserService          
 @inject KategoriService KategoriService   
-@inject PartService PartService
+@inject DashboardService DashboardService
  
 
 <div class="container mt-4">
@@ -61,21 +61,18 @@
 
     protected override void OnInitialized()
     {
-        var parcalar = PartService.GetAllParts();
-        if(parcalar !=null)
-        {
-            toplamParcaSayisi = parcalar.Count();
+        toplamParcaSayisi = DashboardService.GetToplamParca();
 
-        }
         var kategoriler = KategoriService.GetAllKategori();
-        if (kategoriler !=null)
+        if (kategoriler != null)
         {
             toplamKategoriSayisi = kategoriler.Count();
         }
+
         var kullanicilar = UserService.GetAllUsers();
-        if (kullanicilar !=null)
+        if (kullanicilar != null)
         {
             toplamKullaniciSayisi = kullanicilar.Count();
         }
     }
-}
+ }
