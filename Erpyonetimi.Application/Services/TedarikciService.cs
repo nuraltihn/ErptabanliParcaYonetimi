@@ -19,7 +19,6 @@ namespace Erpyonetimi.Application.Services
         {
             return _tedarikciRepository.TedarikciGetAll();
         }
-
         public void AddTedarikci(Tedarikci tedarikci)
         {
             _tedarikciRepository.Add(tedarikci);

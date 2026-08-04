@@ -44,7 +44,5 @@ namespace Erpyonetimi.Data.Repositories
             _context.Remove(tedarikci);
             _context.SaveChanges();
         }
-       
-        
     }
 }
