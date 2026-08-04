@@ -15,19 +15,23 @@ namespace Erpyonetimi.ViewModels
     {
         private readonly IDashboardService _dashboardService;
 
-        public int ToplamKullanici { get; set; }
-        public int ToplamParca { get; set; }
-        public int ToplamKategori{ get; set; }
-        public int ToplamTedarikci { get; set; }
-        public int KrittikStokSayisi { get; set; }
+        private int _toplamKullanici;
+        private int _toplamParca;
+        private int _toplamKategori;
+        private int _toplamTedarikci;
+        private int _kritikStokSayisi;
+        public int ToplamKullanici { get => _toplamKullanici; set { _toplamKullanici = value; OnPropertyChanged(); } }
+        public int ToplamParca { get => _toplamParca; set { _toplamParca = value; OnPropertyChanged(); } }
+        public int ToplamKategori{ get => _toplamKategori; set { _toplamKategori = value; OnPropertyChanged(); } }
+        public int ToplamTedarikci { get => _toplamTedarikci; set { _toplamTedarikci = value; OnPropertyChanged(); } }
+        public int KrittikStokSayisi { get => _kritikStokSayisi; set { _kritikStokSayisi = value; OnPropertyChanged(); } }
         public ObservableCollection<Users> SonKullanicilar { get; set; }
         public ObservableCollection<Parca> SonParcalar { get; set; }
         public ObservableCollection<Siparis> SonSiparisler { get; set; }
         
-        public DashboardViewModel()
+        public DashboardViewModel( IDashboardService dashboardService)
         {
-            var context = new ErpDbContextFactory().CreateDbContext(Array.Empty<string>());
-            _dashboardService = new DashboardService(context);
+            _dashboardService = dashboardService;
 
             SonKullanicilar = new ObservableCollection<Users>();
             SonParcalar = new ObservableCollection<Parca>();
@@ -36,29 +40,31 @@ namespace Erpyonetimi.ViewModels
             VeriYukle();
         }
 
-        private void VeriYukle()
+        private async Task VeriYukle()
         {
-            ToplamKullanici = _dashboardService.GetToplamKullanici();
-            ToplamParca = _dashboardService.GetToplamParca();
-            ToplamKategori = _dashboardService.GetToplamKategori();
-            ToplamTedarikci = _dashboardService.GetToplamTedarikci();
-            KrittikStokSayisi = _dashboardService.GetKritikStokSayisi();
+            ToplamKullanici = await Task.Run(()=> _dashboardService.GetToplamKullanici());
+            ToplamParca = await Task.Run(()=> _dashboardService.GetToplamParca());
+            ToplamKategori = await Task.Run(()=> _dashboardService.GetToplamKategori());
+            ToplamTedarikci = await Task.Run(()=> _dashboardService.GetToplamTedarikci());
+            KrittikStokSayisi = await Task.Run(()=> _dashboardService.GetKritikStokSayisi());
 
+            var kullanicilar = await Task.Run(() => _dashboardService.GetSonKullanicilar(10));
             SonKullanicilar.Clear();
-            foreach(var item in _dashboardService.GetSonKullanicilar(10))
+            foreach(var item in kullanicilar)
             {
                 SonKullanicilar.Add(item);
             }
 
-
+            var parcalar = await Task.Run(() => _dashboardService.GetSonParcalar(10));
             SonParcalar.Clear();
-            foreach(var item in _dashboardService.GetSonParcalar(10))
+            foreach(var item in parcalar)
             {
                 SonParcalar.Add(item);
             }
 
+            var siparisler = await Task.Run(()=>_dashboardService.GetSonSiparisler(10));
             SonSiparisler.Clear();
-            foreach(var item in _dashboardService.GetSonSiparisler(10))
+            foreach(var item in siparisler)
             {
                 SonSiparisler.Add(item);
             }
