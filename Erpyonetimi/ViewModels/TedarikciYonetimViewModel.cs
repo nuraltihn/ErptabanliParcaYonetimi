@@ -6,5 +6,6 @@ namespace Erpyonetimi.ViewModels
 {
     public class TedarikciYonetimViewmodel
     {
+
     }
 }

@@ -7,9 +7,9 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ITedarikciService
     {
-        List<ITedarikciService> TedarikciGetAll();
-        Tedarikci? IdAl(int id);
-        Tedarikci? KodAl(string tedarikciKodu);
+        List<Tedarikci> GetAllTedarikci();
+        Tedarikci? GetById(int id);
+        Tedarikci? GetByKod(string tedarikciKodu);
         void AddTedarikci(Tedarikci tedarikci);
         void RemoveTedarikci(Tedarikci tedarikci);
         void UpdateTedarikci(Tedarikci tedarikci);

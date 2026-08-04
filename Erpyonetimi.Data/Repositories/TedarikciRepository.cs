@@ -42,8 +42,12 @@ namespace Erpyonetimi.Data.Repositories
         public void Delete(Tedarikci tedarikci)
         {
             _context.Remove(tedarikci);
+            _context.SaveChanges();
         }
-       
-        
+
+        public Tedarikci? KodAl(string tedarikciKodu)
+        {
+            return _context.Tedarikciler.FirstOrDefault(x => x.TedarikciKodu == tedarikciKodu);
+        }
     }
 }
