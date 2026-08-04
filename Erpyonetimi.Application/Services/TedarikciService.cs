@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Erpyonetimi.Application.Services
 {
-    public class TedarikciService: ITedarikciService
+    public class TedarikciService : ITedarikciService
     {
         private readonly ITedarikciRepository _tedarikciRepository;
         public TedarikciService(ITedarikciRepository tedarikciRepository)
@@ -28,17 +28,14 @@ namespace Erpyonetimi.Application.Services
         {
             _tedarikciRepository.Update(tedarikci);
         }
-
         public Tedarikci? GetById(int id)
         {
             return _tedarikciRepository.IdAl(id);
         }
-
         public Tedarikci? GetByKod(string tedarikciKodu)
         {
-            return _tedarikciRepository.KodAl(tedarikciKodu);
+            return _tedarikciRepository.KodAl(tedarikciKodu);   
         }
-
         public void RemoveTedarikci(Tedarikci tedarikci)
         {
             _tedarikciRepository.Delete(tedarikci);

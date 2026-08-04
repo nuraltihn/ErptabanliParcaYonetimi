@@ -15,7 +15,7 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public Tedarikci? Kodal(string tedarikciKodu)
+        public Tedarikci? KodAl(string tedarikciKodu)
         {
             return _context.Tedarikciler.FirstOrDefault(x => x.TedarikciKodu == tedarikciKodu);
 
@@ -43,11 +43,6 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context.Remove(tedarikci);
             _context.SaveChanges();
-        }
-
-        public Tedarikci? KodAl(string tedarikciKodu)
-        {
-            return _context.Tedarikciler.FirstOrDefault(x => x.TedarikciKodu == tedarikciKodu);
         }
     }
 }
