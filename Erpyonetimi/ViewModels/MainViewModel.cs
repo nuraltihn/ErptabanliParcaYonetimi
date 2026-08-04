@@ -7,7 +7,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
-
+using Erpyonetimi.Application.Services;
+using Erpyonetimi.Application.Services.Interfaces;
 namespace Erpyonetimi.ViewModels
 {
     public class MainViewModel : BaseViewModel
@@ -22,6 +23,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged(nameof(Sidemenugenisligi));
             }
         }
+        private readonly DashboardViewModel _dashboardViewModel;
+        private readonly TedarikciViewModel _tedarikciViewModel;
 
         public Visibility Sidemenugorunme
         {
@@ -53,9 +56,10 @@ namespace Erpyonetimi.ViewModels
         public ICommand TedarikciCommand { get; }
         public ICommand ParcaCommand { get; }
       
-        public MainViewModel()
+        public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel)
         {
-            
+            _dashboardViewModel= dashboardViewModel;
+            _tedarikciViewModel= tedarikciViewModel;
             CurrentView = new LoginViewModel(this);
             AdminPanelCommand = new RelayCommand(OpenAdminPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
@@ -68,7 +72,7 @@ namespace Erpyonetimi.ViewModels
         {
             UserSession.CurrentUser = users;
             CurrentView = UserSession.IsAdmin ? new AdminPanelViewModel()
-                 : new DashboardViewModel();
+                 :  _dashboardViewModel;
 
             OnPropertyChanged(nameof(AdminPaneligor));
             OnPropertyChanged(nameof(AdminPanelVisibility));
@@ -80,11 +84,11 @@ namespace Erpyonetimi.ViewModels
         }
         private void OpenTedarikci()
         {
-            CurrentView = new TedarikciViewModel();
+            CurrentView = _tedarikciViewModel;
         }
         private void OpenDashboard()
         {
-            CurrentView = new DashboardViewModel();
+            CurrentView = _dashboardViewModel;
         }
         private void OpenAdminPanel()
         {

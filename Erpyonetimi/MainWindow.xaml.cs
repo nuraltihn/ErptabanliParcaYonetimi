@@ -17,7 +17,7 @@ namespace Erpyonetimi
         public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            DataContext = viewModel;
         }
 
         
