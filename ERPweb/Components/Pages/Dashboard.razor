@@ -1,5 +1,5 @@
 ﻿@page "/dashboard"
-@using ERPyonetimi.Services
+@using Erpyonetimi.Application.Services
 @inject UsersService UserService
 @inject KategoriService KategoriService
 
@@ -172,11 +172,12 @@
 </div>
 
 @code {
-    private int toplamKullaniciSayisi = 0;
+	private int toplamKullaniciSayisi = 0;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var kullanicilar = await UserService.GetAllUsersAsync();
+	protected override void OnInitialized()
+
+			{
+        var kullanicilar =  UserService.GetAllUsers();
         if (kullanicilar != null)
         {
             toplamKullaniciSayisi = kullanicilar.Count;

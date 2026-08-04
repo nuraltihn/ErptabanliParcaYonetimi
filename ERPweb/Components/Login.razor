@@ -1,7 +1,8 @@
 ﻿@page "/login"
-@using Erpyonetimi.Context
+@using Erpyonetimi.Application.Services
+@using Erpyonetimi.Data.Helpers
 @inject NavigationManager Navigation
-@inject ErpDbContext DbContext
+@inject AuthService AuthService
 @rendermode InteractiveServer
 
 <div style="max-width: 400px; margin: 80px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #fff;">
@@ -32,7 +33,7 @@
     private string sifre = "";
     private string hataMesaji = "";
 
-    private async Task GirisYap()
+    private void GirisYap()
     {
         if (string.IsNullOrWhiteSpace(kullaniciAdi) || string.IsNullOrWhiteSpace(sifre))
         {
@@ -42,14 +43,15 @@
 
         try
         {
-            var user = System.Linq.Enumerable.FirstOrDefault(
-                DbContext.Users,
-                x => x.KulAd == kullaniciAdi && x.Sifre == sifre
-            );
+           
+            var user = AuthService.Login(kullaniciAdi, sifre);
 
             if (user != null)
             {
-                Navigation.NavigateTo("/");
+                UserSession.CurrentUser = user;
+
+               
+                Navigation.NavigateTo("/dashboard");
             }
             else
             {
