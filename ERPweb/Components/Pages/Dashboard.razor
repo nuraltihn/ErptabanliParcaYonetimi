@@ -1,186 +1,78 @@
 ﻿@page "/dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
 @using Erpyonetimi.Application.Services
-@inject UsersService UserService
-@inject KategoriService KategoriService
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UsersService UserService          
+@inject KategoriService KategoriService   
+@inject DashboardService DashboardService
+ 
 
 <div class="container mt-4">
-    @* 1. Sistem Yöneticisi Paneli *@
-    <h2>Sistem Yöneticisi Paneli</h2>
+    <h2>ERP Yönetim Paneli</h2>
     <hr />
-    <p class="text-bg-dark p-2 rounded">Hoş Geldiniz | ERP Veri Yönetimi Ve Modüllerine Hoşgeldiniz</p>
-    
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-bg-primary shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-uppercase mb-1">Toplam Parça</h6>
-                    <h3 class="mb-0">1250</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-bg-warning shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-uppercase mb-1">Toplam Müşteri</h6>
-                    <h3 class="mb-0">42</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-bg-info shadow-sm h-100">
-                <div class="card-body text-center">
-                    <h6 class="text-uppercase mb-1">Toplam Sipariş</h6>
-                    <h3 class="mb-0">128</h3>
-                </div>
-            </div>
-        </div>
+
+    <div class="alert alert-primary mb-4">
+        Hoş Geldiniz <strong>@kullaniciAdi</strong> | Rol: @rolAdi
     </div>
 
-    <!-- Bilgilendirici Alan -->
+    <h4 class="mb-3">Genel Durum</h4>
     <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <div class="card border-warning shadow-sm h-100">
-                <div class="card-header bg-warning text-dark fw-bold">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Kritik Stok Uyarıları
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Cıvata M8x25 <span class="badge bg-danger rounded-pill">3 Adet Kaldı</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Rulman 6205 <span class="badge bg-danger rounded-pill">1 Adet Kaldı</span>
-                        </li>
-                    </ul>
-                </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light text-center p-3">
+                <h5>Toplam Parça</h5>
+                <h2>@toplamParcaSayisi</h2>
             </div>
         </div>
-        <div class="col-md-6 mb-3">
-            <div class="card border-info shadow-sm h-100">
-                <div class="card-header bg-info text-dark fw-bold">
-                    <i class="bi bi-clock-history me-1"></i> Son Stok Hareketleri Öngörüsü
-                </div>
-                <div class="card-body">
-                    <p class="text-muted small mb-1">Depo giriş/çıkış hareketleri veritabanından anlık çekilmektedir.</p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Ahmet Y. - 10 adet Çelik Somun Girişi (Depo A)</li>
-                        <li class="list-group-item">Mehmet K. - 2 adet Redüktör Çıkışı (Sevk)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+     </div>
+</div>
+<div class="col-md-4 mb-3">
+    <div class="card bg-light text-center p-3">
+        <h5>Toplam Kategori</h5>
+        <h2>@toplamKategoriSayisi</h2>
     </div>
-
-    <!-- Sistem Yöneticisi Modülleri -->
-    <div class="row mt-4">
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Kullanıcı Yönetimi</h5>
-                    <p class="card-text">Sistemdeki kullanıcıları listele, yeni kullanıcı ekle.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/users-management" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Rol Yönetimi</h5>
-                    <p class="card-text">Kullanıcı rollerini ve yetkilerini düzenle.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/roles" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Müşteri Yönetimi</h5>
-                    <p class="card-text">Müşteri ve şirket bilgilerini incele.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/customers" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Tedarikçi Yönetimi</h5>
-                    <p class="card-text">Tedarikçi firma ve yetkili iletişim bilgileri.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/suppliers" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Depo Yönetimi</h5>
-                    <p class="card-text">Fiziksel depo alanları ve konum tanımları.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/warehouses" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Raf Yönetimi</h5>
-                    <p class="card-text">Depo içi raf kodları ve lokasyon yönetimi.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/shelves" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Sipariş Yönetimi</h5>
-                    <p class="card-text">Müşteri siparişleri ve sipariş detay takibi.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/orders" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Stok Hareketleri</h5>
-                    <p class="card-text">Depo giriş/çıkış kayıtları ve stok geçmişi.</p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pb-3">
-                    <NavLink href="/stock-movements" class="btn btn-dark btn-sm w-100">Yönet</NavLink>
-                </div>
-            </div>
-        </div>
+</div>
+<div class="col-md-4 mb-3">
+    <div class="card bg-light text-center p-3">
+        <h5>Toplam Kullanıcı</h5>
+        <h2>@toplamKullaniciSayisi</h2>
     </div>
 </div>
 
+<h4 class="mb-3">Hızlı Erişim</h4>
+<div class="row">
+    <div class="col-md-4 mb-2">
+        <NavLink href="/parts" class="btn btn-outline-primary w-100">Parça Yönetimi</NavLink>
+    </div>
+    <div class="col-md-4 mb-2">
+        <NavLink href="/categories" class="btn btn-outline-primary w-100">Kategori Yönetimi</NavLink>
+    </div>
+    <div class="col-md-4 mb-2">
+        <NavLink href="/users" class="btn btn-outline-primary w-100">Kullanıcı Yönetimi</NavLink>
+    </div>
+</div>
 @code {
-	private int toplamKullaniciSayisi = 0;
+    private string kullaniciAdi = "Admin";
+    private string rolAdi = "Yönetici";
 
-	protected override void OnInitialized()
+    private int toplamParcaSayisi = 0;
+    private int toplamKategoriSayisi =0;
+    private int toplamKullaniciSayisi = 0;
 
-			{
-        var kullanicilar =  UserService.GetAllUsers();
+    protected override void OnInitialized()
+    {
+        toplamParcaSayisi = DashboardService.GetToplamParca();
+
+        var kategoriler = KategoriService.GetAllKategori();
+        if (kategoriler != null)
+        {
+            toplamKategoriSayisi = kategoriler.Count();
+        }
+
+        var kullanicilar = UserService.GetAllUsers();
         if (kullanicilar != null)
         {
-            toplamKullaniciSayisi = kullanicilar.Count;
+            toplamKullaniciSayisi = kullanicilar.Count();
         }
     }
-}
+ }
