@@ -2,8 +2,8 @@
 using Erpyonetimi.Context;
 using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.Domain.Entities;
-using Erpyonetimi.Services;
-using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Application.Services;
+using Erpyonetimi.Application.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

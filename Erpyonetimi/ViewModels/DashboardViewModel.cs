@@ -1,10 +1,10 @@
-﻿using Erpyonetimi.Services;
+﻿using Erpyonetimi.Application.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Helpers;
 using Erpyonetimi.Data.Helpers;
-using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Application.Services.Interfaces;
 using System.Collections.ObjectModel;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Context;

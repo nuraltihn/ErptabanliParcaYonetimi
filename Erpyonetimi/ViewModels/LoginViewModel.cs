@@ -9,9 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media.Media3D.Converters;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.ViewModels;
-using Erpyonetimi.Services;
+using Erpyonetimi.Application.Services;
 using Erpyonetimi.Data.Helpers;
-using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Data.Repositories;
 

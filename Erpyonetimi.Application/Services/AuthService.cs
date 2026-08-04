@@ -2,7 +2,7 @@
 using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Helpers;
-using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Application.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

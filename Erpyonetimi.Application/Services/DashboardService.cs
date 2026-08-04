@@ -1,6 +1,6 @@
 ﻿using Erpyonetimi.Context;
 using Erpyonetimi.Domain.Entities;
-using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Application.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Erpyonetimi.Application.Services;
 
 namespace Erpyonetimi.Application.Services.Interfaces
 {
-    internal interface IDashboardService
+    public interface IDashboardService
     {
         int GetToplamKullanici();
         int GetToplamParca();
