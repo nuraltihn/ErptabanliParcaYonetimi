@@ -1,11 +1,11 @@
 ﻿@page "/dashboard"
 @using Microsoft.AspNetCore.Components.Authorization
-@using Erpyonetimi.Application.Services
+@using Erpyonetimi.Application.Services.Interfaces
 
 @inject AuthenticationStateProvider AuthStateProvider
-@inject UsersService UserService          
-@inject KategoriService KategoriService   
-@inject DashboardService DashboardService
+@inject IUsersService UserService          
+@inject IKategoriService KategoriService   
+@inject IDashboardService DashboardService
  
 
 <div class="container mt-4">
