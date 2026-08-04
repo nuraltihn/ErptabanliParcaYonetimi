@@ -15,11 +15,7 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public Tedarikci? Kodal(string tedarikciKodu)
-        {
-            return _context.Tedarikciler.FirstOrDefault(x => x.TedarikciKodu == tedarikciKodu);
-
-        }
+      
         public List<Tedarikci> TedarikciGetAll()
         {
            return _context.Tedarikciler.ToList();
