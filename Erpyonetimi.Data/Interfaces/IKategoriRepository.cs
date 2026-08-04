@@ -5,9 +5,8 @@ using Erpyonetimi.Domain.Entities;
 namespace Erpyonetimi.Data.Interfaces
 {
     public interface IKategoriRepository
-    {
-        Kategori? Isimal (string name);
-        List<Kategori> GetAll ();
+    {List<Kategori> GetAll ();
+        Kategori? GetById(int id);
         void Add (Kategori kategori);
         void Update (Kategori kategori);
         void Delete (Kategori kategori);

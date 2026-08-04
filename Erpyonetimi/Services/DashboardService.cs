@@ -1,39 +1,58 @@
 ﻿using Erpyonetimi.Context;
+using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Erpyonetimi.Services
 {
-     public class DashboardService
+     public class DashboardService : IDashboardService
     {
-        public int Tedarikcisayial()
+        private readonly ErpDbContext _context;
+        public DashboardService(ErpDbContext context)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-
-            return db.Tedarikciler.Count();
+            _context = context;
+        }
+        public int GetToplamKullanici()
+        {
+            return _context.Users.Count();
+        }
+        public int GetToplamParca()
+        {
+            return _context.Parcalar.Count();
+        }
+        public int GetToplamKategori()
+        {
+            return _context.Kategoriler.Count();
+        }
+        public int GetToplamTedarikci()
+        {
+            return _context.Tedarikciler.Count();
+        }
+        public int GetKritikStokSayisi()
+        {
+            return _context.Parcalar.Count(u => u.MevcutStok < u.MinimumStok);
+        }
+        public List<Users> GetSonKullanicilar(int adet)
+        {
+            return _context.Users.OrderByDescending(u => u.OlusturmaTarih)
+                .Take(adet)
+                .ToList();
+        }
+        public List<Parca> GetSonParcalar(int adet)
+        {
+            return _context.Parcalar.OrderByDescending(u => u.OlusturmaTarih)
+                .Take(adet)
+                .ToList();
+        }
+        public List<Siparis> GetSonSiparisler(int adet)
+        {
+            return _context.Siparisler
+                .OrderByDescending(u => u.OlusturmaTarih)
+                .Take(adet)
+                .ToList();
         }
 
-        public int Parcasayisial()
-        {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-            return db.Parcalar.Count();
-        }
-
-        public int Musterisayial()
-        {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-            return db.Musteriler.Count();
-        }
-
-        public int Siparissayiisial()
-        {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-            return db.Siparisler.Count();
-        }
     }
 }

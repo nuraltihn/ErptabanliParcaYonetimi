@@ -8,11 +8,11 @@ namespace Erpyonetimi.Data.Interfaces
     public interface IUsersRepository
     {
         Users? Logindenal(string kulAd, string sifre);
-        
+         List<Users> GetAll();
             void Add(Users user);
             void Update(Users user);
-            void Delete(Users user);
-            List<Users> GetAll();
+            void Delete(int id);
+                                                              
         
     }
 }

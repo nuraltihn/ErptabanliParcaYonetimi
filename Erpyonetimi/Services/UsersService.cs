@@ -6,9 +6,29 @@ using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Services.Interfaces;
 namespace Erpyonetimi.Services
 {
-    public class UsersService 
+    public class UsersService : IUsersService
     {
-        
+        private readonly IUsersRepository _usersRepository;
+        public UsersService(IUsersRepository usersRepository)
+        {
+            _usersRepository = usersRepository;
+        }
+        public List<Users> GetAllUsers()
+        {
+            return _usersRepository.GetAll();
+        }
 
+        public void AddUser(Users user)
+        {
+            _usersRepository.Add(user);
+        }
+        public void UpdateUser(Users user)
+        {
+            _usersRepository.Update(user);
+        }
+        public void DeleteUser(int id)
+        {
+            _usersRepository.Delete(id);
+        }
     }
 }

@@ -8,15 +8,38 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <StackPanel>
-            <TextBlock Text="{Binding KullaniciAdi}"
-                       FontSize="18"
-                       FontWeight="Bold"/>
-            <TextBlock Text="{Binding RolAdi}"
-                       FontSize="14"/>
-            <TextBlock Text="{Binding Tedarikcisayisi}"/>
-            <TextBlock Text="{Binding Parcasayisi}"/>
-            <TextBlock Text="{Binding Musterisayisi}"/>
-            <TextBlock Text="{Binding Siparissayisi}"/>
+            <TextBlock Text="{Binding ToplamKullanici}" />
+            <TextBlock Text="{Binding ToplamParca}" />
+            <TextBlock Text="{Binding ToplamKategori}" />
+            <TextBlock Text="{Binding ToplamTedarikci}" />
+            <TextBlock Text="{Binding KritikStokSayisi}" />
+            <DataGrid ItemsSource="{Binding SonKullanicilar}"
+          AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ad Soyad"
+                            Binding="{Binding AdSoyad}" />
+                    <DataGridTextColumn Header="Kullanıcı Adı"
+                            Binding="{Binding KulAd}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid ItemsSource="{Binding SonParcalar}"
+          AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Parça Kodu"
+                            Binding="{Binding ParcaKodu}" />
+                    <DataGridTextColumn Header="Parça Adı"
+                            Binding="{Binding ParcAdi}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid ItemsSource="{Binding SonParcalar}"
+          AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Parça Kodu"
+                            Binding="{Binding ParcaKodu}" />
+                    <DataGridTextColumn Header="Parça Adı"
+                            Binding="{Binding ParcAdi}" />
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
     </Grid>
 </UserControl>

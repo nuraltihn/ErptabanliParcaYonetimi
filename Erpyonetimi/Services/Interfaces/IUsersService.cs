@@ -6,7 +6,7 @@ namespace Erpyonetimi.Services.Interfaces
 {
     public interface IUsersService
     {
-        List<Users> GetAll();
+        List<Users> GetAllUsers();
         void AddUser(Users user);
         void UpdateUser(Users user);
         void DeleteUser(int id);

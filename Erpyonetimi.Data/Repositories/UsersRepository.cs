@@ -35,15 +35,19 @@ namespace Erpyonetimi.Data.Repositories
             _context.Update(user);
             _context.SaveChanges();
         }
-        public void Delete(Users user)
+        public void Delete(int id)
         {
-            _context.Remove(user);
-            _context.SaveChanges();
+            var user= _context.Users.FirstOrDefault(x => x.Id == id);
+            if (user != null)
+            {
+                _context.Remove(user);
+                _context.SaveChanges();
+            }
         }
         
         public List<Users> GetAll()
         {
-            return _context.Users.Include(_x => _x.Rol).ToList();
+            return _context.Users.ToList();
         }
     }
 }
