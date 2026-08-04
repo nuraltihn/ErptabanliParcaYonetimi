@@ -11,14 +11,16 @@ using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.ViewModels;
 using Erpyonetimi.Services;
 using Erpyonetimi.Data.Helpers;
-
+using Erpyonetimi.Services.Interfaces;
+using Erpyonetimi.Data.Interfaces;
+using Erpyonetimi.Data.Repositories;
 
 namespace Erpyonetimi.ViewModels
 {
     public class LoginViewModel :BaseViewModel
     {
         private string _kullaniciAdi = "";
-        private readonly AuthService _authservice;
+        private readonly IAuthService _authservice;
         public string KullaniciAdi
         {
             get => _kullaniciAdi;
@@ -42,7 +44,11 @@ namespace Erpyonetimi.ViewModels
         public ICommand GirisCommand { get; }
         private readonly MainViewModel _mainViewModel;
         public LoginViewModel(MainViewModel mainViewModel)
-        { _authservice = new AuthService();
+        {
+            var factory = new ErpDbContextFactory();
+            var context = factory.CreateDbContext(Array.Empty<string>());
+            IUsersRepository repo = new UsersRepository(context);
+            _authservice = new AuthService(repo);
             _mainViewModel = mainViewModel;
             GirisCommand = new RelayCommand(Login);
         }

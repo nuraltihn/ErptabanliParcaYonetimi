@@ -10,12 +10,22 @@ xmlns:views="clr-namespace:Erpyonetimi.Views"
         <DataTemplate DataType="{x:Type vm:LoginViewModel}" >
             <views:LoginView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView/>
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type vm:AdminPanelViewModel}" >
             <views:AdminPanel/>
      </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type vm:TedarikciViewModel}">
+            <views:TedarikciView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ParcaViewModel}">
+            <views:ParcaView/>
+        </DataTemplate>
+    
         <Style x:Key="Sidemenubutton" TargetType="RadioButton">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#9CA3AF"/>

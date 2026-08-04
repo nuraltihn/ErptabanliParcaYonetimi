@@ -1,26 +1,26 @@
 ﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Helpers;
+using Erpyonetimi.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Erpyonetimi.Data.Interfaces;
 namespace Erpyonetimi.Services
 {
-    public class AuthService
+    public class AuthService:IAuthService
     {
+        private readonly IUsersRepository _usersRepository;
+        public AuthService(IUsersRepository usersRepository)
+        {
+            _usersRepository = usersRepository;
+        }
         public Users? Login(string kulAd, string sifre)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
             string hash = PasswordHelper.HashPassword(sifre);
-
-            return db.Users
-                .Include(x => x.Rol)
-                .FirstOrDefault(x =>
-                x.KulAd == kulAd &&
-                x.Sifre == hash);
+            return _usersRepository.Logindenal(kulAd, hash);
         }
     }
 }

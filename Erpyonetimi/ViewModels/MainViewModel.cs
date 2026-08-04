@@ -49,11 +49,19 @@ namespace Erpyonetimi.ViewModels
         }
 
         public ICommand AdminPanelCommand { get; }
+        public ICommand DashboardCommand { get; }
+        public ICommand TedarikciCommand { get; }
+        public ICommand ParcaCommand { get; }
+      
         public MainViewModel()
         {
             
             CurrentView = new LoginViewModel(this);
             AdminPanelCommand = new RelayCommand(OpenAdminPanel);
+            DashboardCommand = new RelayCommand(OpenDashboard);
+            TedarikciCommand = new RelayCommand(OpenTedarikci);
+            ParcaCommand = new RelayCommand(OpenParca);
+          
         }
 
         public void Kullanicigirisyapti(Users users)
@@ -64,6 +72,19 @@ namespace Erpyonetimi.ViewModels
 
             OnPropertyChanged(nameof(AdminPaneligor));
             OnPropertyChanged(nameof(AdminPanelVisibility));
+        }
+      
+        private void OpenParca()
+        {
+            CurrentView = new ParcaViewModel();
+        }
+        private void OpenTedarikci()
+        {
+            CurrentView = new TedarikciViewModel();
+        }
+        private void OpenDashboard()
+        {
+            CurrentView = new DashboardViewModel();
         }
         private void OpenAdminPanel()
         {
