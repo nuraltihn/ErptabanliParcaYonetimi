@@ -13,7 +13,7 @@ namespace Erpyonetimi.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private object _currentView;
+        private object _currentView=null;
         public object CurrentView
         {
             get => _currentView;
@@ -56,16 +56,16 @@ namespace Erpyonetimi.ViewModels
         public ICommand TedarikciCommand { get; }
         public ICommand ParcaCommand { get; }
       
-        public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel)
+        public MainViewModel()
         {
-            _dashboardViewModel= dashboardViewModel;
-            _tedarikciViewModel= tedarikciViewModel;
+            //_dashboardViewModel = dashboardViewModel;
+            //_tedarikciViewModel= tedarikciViewModel;
             CurrentView = new LoginViewModel(this);
             AdminPanelCommand = new RelayCommand(OpenAdminPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
             TedarikciCommand = new RelayCommand(OpenTedarikci);
             ParcaCommand = new RelayCommand(OpenParca);
-          
+
         }
 
         public void Kullanicigirisyapti(Users users)

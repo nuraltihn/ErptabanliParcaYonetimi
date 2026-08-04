@@ -49,5 +49,6 @@ namespace Erpyonetimi.Data.Repositories
         {
             return _context.Users.ToList();
         }
+        
     }
 }

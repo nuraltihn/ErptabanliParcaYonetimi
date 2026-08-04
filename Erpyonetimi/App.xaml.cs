@@ -1,8 +1,13 @@
 ﻿using Erpyonetimi.Application.Services;
 using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Context;
 using Erpyonetimi.Data;
 using Erpyonetimi.ViewModels;
+using Erpyonetimi.Views;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -14,29 +19,62 @@ namespace Erpyonetimi
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        public static IServiceProvider ServiceProvider { get; private set; }
+        //public static IServiceProvider ServiceProvider { get; private set; }
+
+        private   IHost _host;
         public App()
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
-            ServiceProvider = services.BuildServiceProvider();
+
+            _host = Host.CreateDefaultBuilder().ConfigureAppConfiguration((context,config)=> {
+            }).
+            ConfigureServices((context, services) =>
+            {
+                ConfigureServices(services,context.Configuration);
+            }).Build();
+
+            //var services = new ServiceCollection();
+            //ConfigureServices(services);
+            //ServiceProvider = services.BuildServiceProvider();
         }
-        private void ConfigureServices(IServiceCollection services)
+        private void ConfigureServices(IServiceCollection services,IConfiguration configuration)
         {
+
+            services.AddSingleton<MainWindow>();
+            services.AddTransient<DashboardView>();
+            services.AddTransient<TedarikciView>();
+            services.AddTransient<LoginView>();
+            services.AddTransient<ParcaView>();
+            services.AddTransient<AdminPanel>();
+            services.AddTransient<UsersYonetimView>();
+
+
+            services.AddDbContext<ErpDbContext>(options=> options.UseSqlServer("Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"));
             services.AddSingleton<IDashboardService, DashboardService>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<DashboardViewModel>();
-
-            services.AddTransient<MainWindow>();
+            services.AddTransient<TedarikciViewModel>();
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<KategoriViewModel>();
+            services.AddTransient<KategoriYonetimViewModel>();
+            services.AddTransient<ParcaViewModel>();
+            services.AddTransient<ParcaYonetimViewModel>();
+            services.AddTransient<TedarikciViewModel>();
+            services.AddTransient<TedarikciYonetimViewmodel>();
+ 
         }
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
+            await _host.StartAsync();
+
+
+            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+
             base.OnStartup(e);
             
 
-            Datalar.Seed();
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            //Datalar.Seed();
+         
         }
     }
 

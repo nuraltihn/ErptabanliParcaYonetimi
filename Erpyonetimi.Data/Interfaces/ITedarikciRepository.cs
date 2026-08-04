@@ -7,7 +7,7 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface ITedarikciRepository
     {
-        List<Tedarikci> GetAll();
+        List<Tedarikci> TedarikciGetAll();
         Tedarikci? IdAl(int id);
         Tedarikci? Kodal(string tedarikciKodu);
         void Add(Tedarikci tedarikci);

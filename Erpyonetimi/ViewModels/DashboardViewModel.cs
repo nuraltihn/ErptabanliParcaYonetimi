@@ -37,47 +37,56 @@ namespace Erpyonetimi.ViewModels
             SonParcalar = new ObservableCollection<Parca>();
             SonSiparisler = new ObservableCollection<Siparis>();
 
-            VeriYukle();
+            //VeriYukle();
         }
 
         private async Task VeriYukle()
         {
-            ToplamKullanici = await Task.Run(()=> _dashboardService.GetToplamKullanici());
-            ToplamParca = await Task.Run(()=> _dashboardService.GetToplamParca());
-            ToplamKategori = await Task.Run(()=> _dashboardService.GetToplamKategori());
-            ToplamTedarikci = await Task.Run(()=> _dashboardService.GetToplamTedarikci());
-            KrittikStokSayisi = await Task.Run(()=> _dashboardService.GetKritikStokSayisi());
-
-            var kullanicilar = await Task.Run(() => _dashboardService.GetSonKullanicilar(10));
-            SonKullanicilar.Clear();
-            foreach(var item in kullanicilar)
+            try
             {
-                SonKullanicilar.Add(item);
-            }
+                ToplamKullanici = await Task.Run(() => _dashboardService.GetToplamKullanici());
+                ToplamParca = await Task.Run(() => _dashboardService.GetToplamParca());
+                ToplamKategori = await Task.Run(() => _dashboardService.GetToplamKategori());
+                ToplamTedarikci = await Task.Run(() => _dashboardService.GetToplamTedarikci());
+                KrittikStokSayisi = await Task.Run(() => _dashboardService.GetKritikStokSayisi());
 
-            var parcalar = await Task.Run(() => _dashboardService.GetSonParcalar(10));
-            SonParcalar.Clear();
-            foreach(var item in parcalar)
+                var kullanicilar = await Task.Run(() => _dashboardService.GetSonKullanicilar(10));
+                SonKullanicilar.Clear();
+                foreach (var item in kullanicilar)
+                {
+                    SonKullanicilar.Add(item);
+                }
+
+                var parcalar = await Task.Run(() => _dashboardService.GetSonParcalar(10));
+                SonParcalar.Clear();
+                foreach (var item in parcalar)
+                {
+                    SonParcalar.Add(item);
+                }
+
+                var siparisler = await Task.Run(() => _dashboardService.GetSonSiparisler(10));
+                SonSiparisler.Clear();
+                foreach (var item in siparisler)
+                {
+                    SonSiparisler.Add(item);
+                }
+
+
+                OnPropertyChanged(nameof(ToplamKullanici));
+                OnPropertyChanged(nameof(ToplamParca));
+                OnPropertyChanged(nameof(ToplamKategori));
+                OnPropertyChanged(nameof(ToplamTedarikci));
+                OnPropertyChanged(nameof(KrittikStokSayisi));
+                OnPropertyChanged(nameof(SonKullanicilar));
+                OnPropertyChanged(nameof(SonParcalar));
+                OnPropertyChanged(nameof(SonSiparisler));
+
+            }
+            catch (Exception ex)
             {
-                SonParcalar.Add(item);
+                Console.WriteLine(ex.Message);
             }
-
-            var siparisler = await Task.Run(()=>_dashboardService.GetSonSiparisler(10));
-            SonSiparisler.Clear();
-            foreach(var item in siparisler)
-            {
-                SonSiparisler.Add(item);
-            }
-
-
-            OnPropertyChanged(nameof(ToplamKullanici));
-            OnPropertyChanged(nameof(ToplamParca));
-            OnPropertyChanged(nameof(ToplamKategori));
-            OnPropertyChanged(nameof(ToplamTedarikci));
-            OnPropertyChanged(nameof(KrittikStokSayisi));
-            OnPropertyChanged(nameof(SonKullanicilar));
-            OnPropertyChanged(nameof(SonParcalar));
-            OnPropertyChanged(nameof(SonSiparisler));
+       
         }
     }
 }
