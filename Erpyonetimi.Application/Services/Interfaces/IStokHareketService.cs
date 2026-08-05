@@ -7,7 +7,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IStokHareketService
     {
-        List<StokHareket> GetAllStokHareket();
+        List<StokHareket> GetAll ();
         StokHareket? GetById(int id);
 
         void AddStokHareket(StokHareket stokHareket);

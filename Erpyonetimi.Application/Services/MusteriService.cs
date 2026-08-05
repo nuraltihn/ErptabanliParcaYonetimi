@@ -23,7 +23,7 @@ namespace Erpyonetimi.Application.Services
             _musteriRepository.Delete(musteri);
         }
 
-        public List<Musteri> GetAllMusteri()
+        public List<Musteri> GetAll ()
         {
             return _musteriRepository.GetAll();
         }

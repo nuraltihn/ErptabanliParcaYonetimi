@@ -15,16 +15,16 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public Tedarikci? KodAl(string tedarikciKodu)
+        public Tedarikci? GetByKod(string tedarikciKodu)
         {
             return _context.Tedarikciler.FirstOrDefault(x => x.TedarikciKodu == tedarikciKodu);
 
         }
-        public List<Tedarikci> TedarikciGetAll()
+        public List<Tedarikci> GetAll ()
         {
            return _context.Tedarikciler.ToList();
         }
-        public Tedarikci? IdAl(int id)
+        public Tedarikci? GetById(int id)
         {
             return _context.Tedarikciler.FirstOrDefault(x => x.Id == id);
         }
@@ -41,7 +41,7 @@ namespace Erpyonetimi.Data.Repositories
         }
         public void Delete(Tedarikci tedarikci)
         {
-            _context.Remove(tedarikci);
+            _context.Tedarikciler.Remove(tedarikci);
             _context.SaveChanges();
         }
     }

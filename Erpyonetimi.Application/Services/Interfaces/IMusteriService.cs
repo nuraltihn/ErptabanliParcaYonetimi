@@ -6,7 +6,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IMusteriService
     {
-        List<Musteri> GetAllMusteri();
+        List<Musteri> GetAll();
         Musteri? GetById(int id);
         Musteri? GetByKod(string musteriKodu);
         void AddMusteri(Musteri musteri);

@@ -15,9 +15,9 @@ namespace Erpyonetimi.Application.Services
             _tedarikciRepository = tedarikciRepository;
         }
 
-        public List<Tedarikci> GetAllTedarikci()
+        public List<Tedarikci> GetAll()
         {
-            return _tedarikciRepository.TedarikciGetAll();
+            return _tedarikciRepository.GetAll();
         }
         public void AddTedarikci(Tedarikci tedarikci)
         {
@@ -30,11 +30,11 @@ namespace Erpyonetimi.Application.Services
         }
         public Tedarikci? GetById(int id)
         {
-            return _tedarikciRepository.IdAl(id);
+            return _tedarikciRepository.GetById(id);
         }
         public Tedarikci? GetByKod(string tedarikciKodu)
         {
-            return _tedarikciRepository.KodAl(tedarikciKodu);   
+            return _tedarikciRepository.GetByKod(tedarikciKodu);   
         }
         public void RemoveTedarikci(Tedarikci tedarikci)
         {

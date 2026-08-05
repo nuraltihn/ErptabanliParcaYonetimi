@@ -6,7 +6,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IRafService
     {
-        List<Raflar> GetAllRaf();
+        List<Raflar> GetAll ();
         Raflar? GetById(int id);
         Raflar? GetByKod(string rafkodu);
         void AddRaf(Raflar raf);
