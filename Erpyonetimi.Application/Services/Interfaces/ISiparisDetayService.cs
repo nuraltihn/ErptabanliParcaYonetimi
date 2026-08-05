@@ -6,7 +6,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ISiparisDetayService
     {
-        List<SiparisDetaylari> GetAllDetay();
+        List<SiparisDetaylari> GetAll ();
         SiparisDetaylari? GetById(int id);
 
         void AddDetay(SiparisDetaylari detay);

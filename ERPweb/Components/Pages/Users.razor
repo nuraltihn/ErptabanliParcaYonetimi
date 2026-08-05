@@ -1,0 +1,29 @@
+﻿@page "/users"
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
+
+@inject IUsersService UserService
+
+<h3>Kullanıcı Yönetimi</h3>
+
+<hr />
+
+<button class="btn btn-primary"
+@onclick="YeniKullanici">
+
+	+ Yeni Kullanıcı
+</button>
+
+@code 
+{
+	private bool showModal = false;
+	private void YeniKullanici()
+	{
+		showModal = true;
+	}
+	private void ModalKapat()
+	{
+		showModal = false;
+	}
+}
+	

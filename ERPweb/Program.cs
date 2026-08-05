@@ -24,13 +24,29 @@ builder.Services.AddScoped<IKategoriService,KategoriService>();
 builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<ITedarikciService,TedarikciService>();
-//nisa değişiklik
+builder.Services.AddScoped<IParcaService,ParcaService>();
+builder.Services.AddScoped<IStokHareketService,StokHareketService>();
+builder.Services.AddScoped<IMusteriService,MusteriService>();
+builder.Services.AddScoped<IDepoService, DepoService>();
+builder.Services.AddScoped<IRafService,RafService>();
+builder.Services.AddScoped<IStokHareketService,StokHareketService>();
+builder.Services.AddScoped<ISiparisService,SiparisService>();
+builder.Services.AddScoped<ISiparisDetayService,SiparisDetayService>();
+
 
 // Repository kayıtları - uygulama servislerinin ihtiyaç duyduğu repository implementasyonları
 // eksik olduğu için DI doğrulaması başarısız oluyordu. Scoped, DbContext ile uyumlu.
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IKategoriRepository, KategoriRepository>();
 builder.Services.AddScoped<ITedarikciRepository, TedarikciRepository>();
+builder.Services.AddScoped<IParcaRepository, ParcaRepository>();
+builder.Services.AddScoped<IMusteriRepository,MusteriRepository>();
+builder.Services.AddScoped<IDepoRepository, DepoRepository>();  
+builder.Services.AddScoped<IRafRepository, RafRepository>();
+builder.Services.AddScoped<IStokHareketRepository, StokHareketRepository>();
+builder.Services.AddScoped<ISiparisRepository, SiparisRepository>();
+builder.Services.AddScoped<ISiparisDetayRepository, SiparisDetayRepository>();  
+
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {

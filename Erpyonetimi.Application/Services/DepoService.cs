@@ -24,7 +24,7 @@ namespace Erpyonetimi.Application.Services
             _depoRepository.Delete(depo);
         }
 
-        public List<Depolar> GetAllDepo()
+        public List<Depolar> GetAll ()
         {
            return  _depoRepository.GetAll();
         }

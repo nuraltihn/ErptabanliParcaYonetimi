@@ -6,7 +6,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ISiparisService
     {
-        List<Siparis> GetAllSiparis();
+        List<Siparis> GetAll ();
         Siparis? GetById(int id);
         Siparis? GetByNo(string siparisNo);
 

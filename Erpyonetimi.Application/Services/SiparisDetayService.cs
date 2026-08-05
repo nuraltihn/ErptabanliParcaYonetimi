@@ -23,7 +23,7 @@ namespace Erpyonetimi.Application.Services
             _siparisDetayRepository.Delete(detay);
         }
 
-        public List<SiparisDetaylari> GetAllDetay()
+        public List<SiparisDetaylari> GetAll ()
         {
             return _siparisDetayRepository.GetAll();
         }

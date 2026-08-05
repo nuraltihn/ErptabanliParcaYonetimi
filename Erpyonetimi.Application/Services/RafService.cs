@@ -18,7 +18,7 @@ namespace Erpyonetimi.Application.Services
             _rafRepository.Add(raf);
         }
 
-        public List<Raflar> GetAllRaf()
+        public List<Raflar> GetAll ()
         {
             return _rafRepository.GetAll();
         }

@@ -19,7 +19,7 @@ namespace Erpyonetimi.Application.Services
             _siparisRepository.Add(siparis);
         }
 
-        public List<Siparis> GetAllSiparis()
+        public List<Siparis> GetAll ()
         {
             return _siparisRepository.GetAll();
         }

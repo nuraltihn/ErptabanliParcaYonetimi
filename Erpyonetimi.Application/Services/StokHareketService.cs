@@ -19,7 +19,7 @@ namespace Erpyonetimi.Application.Services
             _stokHareketRepository.Add(stokHareket);
         }
 
-        public List<StokHareket> GetAllStokHareket()
+        public List<StokHareket> GetAll ()
         {
            return _stokHareketRepository.GetAll();
         }
