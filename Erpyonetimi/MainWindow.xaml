@@ -38,11 +38,11 @@
                 <StackPanel>
                     <RadioButton Style="{StaticResource Sidemenubutton}"
                       GroupName="Sidemenu" IsChecked="True"
-                Command="{Binding AdminPanelCommand}"
-               Visibility="{Binding AdminPanelVisibility}">
+                Command="{Binding UserYonCommand}"
+               Visibility="{Binding UserPanelVisibility}" >
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Admin Paneli"/>
+                            <TextBlock Text="Kullanıcı Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
 

@@ -41,7 +41,7 @@ namespace Erpyonetimi
         private void ConfigureServices(IServiceCollection services,IConfiguration configuration)
         {
 
-            services.AddSingleton<MainWindow>();
+            services.AddTransient<MainWindow>();
             services.AddTransient<DashboardView>();
             services.AddTransient<TedarikciView>();
             services.AddTransient<LoginView>();
@@ -51,20 +51,24 @@ namespace Erpyonetimi
 
 
             services.AddDbContext<ErpDbContext>(options=> options.UseSqlServer("Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"));
-            services.AddSingleton<IDashboardService, DashboardService>();
-            services.AddSingleton<IParcaRepository, ParcaRepository>();
-            services.AddSingleton<IParcaService, ParcaService>();
-            services.AddSingleton<IDepoRepository, DepoRepository>();
-            services.AddSingleton<IDepoService, DepoService>();
-            services.AddSingleton<IRafRepository, RafRepository>();
-            services.AddSingleton<IRafService, RafService>();
-            services.AddSingleton<IMusteriRepository, MusteriRepository>();
-            services.AddSingleton<IMusteriService, MusteriService>();
-            services.AddSingleton<ISiparisDetayRepository, SiparisDetayRepository>();
-            services.AddSingleton<ISiparisDetayService, SiparisDetayService>();
-            services.AddSingleton<IStokHareketRepository, StokHareketRepository>();
-            services.AddSingleton<IStokHareketService, StokHareketService>();
-            
+            services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<IParcaRepository, ParcaRepository>();
+            services.AddTransient<IParcaService, ParcaService>();
+            services.AddTransient<IDepoRepository, DepoRepository>();
+            services.AddTransient<IDepoService, DepoService>();
+            services.AddTransient<IRafRepository, RafRepository>();
+            services.AddTransient<IRafService, RafService>();
+            services.AddTransient<IMusteriRepository, MusteriRepository>();
+            services.AddTransient<IMusteriService, MusteriService>();
+            services.AddTransient<ISiparisDetayRepository, SiparisDetayRepository>();
+            services.AddTransient<ISiparisDetayService, SiparisDetayService>();
+            services.AddTransient<IStokHareketRepository, StokHareketRepository>();
+            services.AddTransient<IStokHareketService, StokHareketService>();
+            services.AddTransient<ITedarikciRepository, TedarikciRepository>();
+            services.AddTransient<ITedarikciService, TedarikciService>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+            services.AddTransient<IUsersService, UsersService>();
+
             services.AddTransient<MainViewModel>();
             services.AddTransient<DashboardViewModel>();
             services.AddTransient<TedarikciViewModel>();
@@ -75,6 +79,7 @@ namespace Erpyonetimi
             services.AddTransient<ParcaYonetimViewModel>();
             services.AddTransient<TedarikciViewModel>();
             services.AddTransient<TedarikciYonetimViewmodel>();
+            services.AddTransient<UsersYonetimViewModel>();
  
         }
         protected override async void OnStartup(StartupEventArgs e)

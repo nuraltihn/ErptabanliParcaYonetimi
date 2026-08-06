@@ -3,15 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Erpyonetimi.Domain.Entities;
+
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ITedarikciService
     {
-        List<Tedarikci> GetAll ();
-        Tedarikci? GetById(int id);
-        Tedarikci? GetByKod(string tedarikciKodu);
+        List<Tedarikci> GetAllTedarikci();
         void AddTedarikci(Tedarikci tedarikci);
-        void RemoveTedarikci(Tedarikci tedarikci);
-        void UpdateTedarikci(Tedarikci tedarikci);
     }
 }

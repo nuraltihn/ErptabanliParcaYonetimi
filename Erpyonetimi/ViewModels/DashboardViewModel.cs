@@ -1,13 +1,14 @@
 ﻿using Erpyonetimi.Application.Services;
+using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
+using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Helpers;
-using Erpyonetimi.Data.Helpers;
-using Erpyonetimi.Application.Services.Interfaces;
 using System.Collections.ObjectModel;
-using Erpyonetimi.Domain.Entities;
-using Erpyonetimi.Context;
+using System.Text;
+using System.Windows;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -37,40 +38,27 @@ namespace Erpyonetimi.ViewModels
             SonParcalar = new ObservableCollection<Parca>();
             SonSiparisler = new ObservableCollection<Siparis>();
 
-            //VeriYukle();
+            VeriYukle();
         }
 
-        private async Task VeriYukle()
+        private void VeriYukle()
         {
             try
             {
-                ToplamKullanici = await Task.Run(() => _dashboardService.GetToplamKullanici());
-                ToplamParca = await Task.Run(() => _dashboardService.GetToplamParca());
-                ToplamKategori = await Task.Run(() => _dashboardService.GetToplamKategori());
-                ToplamTedarikci = await Task.Run(() => _dashboardService.GetToplamTedarikci());
-                KrittikStokSayisi = await Task.Run(() => _dashboardService.GetKritikStokSayisi());
+                ToplamKullanici = _dashboardService.GetToplamKullanici();
+                ToplamParca = _dashboardService.GetToplamParca();
+                ToplamKategori = _dashboardService.GetToplamKategori();
+                ToplamTedarikci = _dashboardService.GetToplamTedarikci();
+                KrittikStokSayisi = _dashboardService.GetKritikStokSayisi();
 
-                var kullanicilar = await Task.Run(() => _dashboardService.GetSonKullanicilar(10));
-                SonKullanicilar.Clear();
-                foreach (var item in kullanicilar)
-                {
-                    SonKullanicilar.Add(item);
-                }
+                SonKullanicilar = new ObservableCollection<Users>(
+                    _dashboardService.GetSonKullanicilar(10));
 
-                var parcalar = await Task.Run(() => _dashboardService.GetSonParcalar(10));
-                SonParcalar.Clear();
-                foreach (var item in parcalar)
-                {
-                    SonParcalar.Add(item);
-                }
+                SonParcalar = new ObservableCollection<Parca>(
+                    _dashboardService.GetSonParcalar(10));
 
-                var siparisler = await Task.Run(() => _dashboardService.GetSonSiparisler(10));
-                SonSiparisler.Clear();
-                foreach (var item in siparisler)
-                {
-                    SonSiparisler.Add(item);
-                }
-
+                SonSiparisler = new ObservableCollection<Siparis>(
+                    _dashboardService.GetSonSiparisler(10));
 
                 OnPropertyChanged(nameof(ToplamKullanici));
                 OnPropertyChanged(nameof(ToplamParca));
@@ -80,13 +68,11 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged(nameof(SonKullanicilar));
                 OnPropertyChanged(nameof(SonParcalar));
                 OnPropertyChanged(nameof(SonSiparisler));
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
-       
         }
     }
 }
