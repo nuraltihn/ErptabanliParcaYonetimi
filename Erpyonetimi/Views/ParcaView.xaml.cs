@@ -22,5 +22,10 @@ namespace Erpyonetimi.Views
         {
             InitializeComponent();
         }
+
+        private void RowDefinition_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

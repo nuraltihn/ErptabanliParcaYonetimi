@@ -21,17 +21,17 @@
             <ColumnDefinition Width="*"/>
             
         </Grid.ColumnDefinitions>
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="Gray" Padding="10"/>
+        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#1F2937" Padding="10"/>
 
         <Border Grid.Row="2" Grid.Column="0" Background="WhiteSmoke" CornerRadius="7" Margin="20">
             <Button Content="Kullanıcı Kontrolü" FontSize="10" Height="30"  Grid.Row="2" Grid.Column="0" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
         </Border>
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="Gray" Padding="10"/>
+        
 
         <Border Grid.Row="2" Grid.Column="1" Background="WhiteSmoke" CornerRadius="7" Margin="20">
             <Button Content="Kategori Kontrolü" FontSize="10" Height="30"  Grid.Row="2" Grid.Column="1" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
         </Border>
-        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="Gray" Padding="10"/>
+        
 
         <Border Grid.Row="2" Grid.Column="2" Background="WhiteSmoke" CornerRadius="7" Margin="20">
             <Button Content="Parça Kontrolü" FontSize="10" Height="30"  Grid.Row="2" Grid.Column="2" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>

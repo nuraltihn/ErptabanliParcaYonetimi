@@ -1,4 +1,5 @@
-﻿using Erpyonetimi.Commands;
+﻿using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Commands;
 using Erpyonetimi.Context;
 using Erpyonetimi.Domain.Entities;
 using System;
@@ -61,34 +62,34 @@ namespace Erpyonetimi.ViewModels
 
         public ICommand EkleCommand { get;}
 
-        public TedarikciViewModel()
+        private readonly ITedarikciService _tedarikciService;
+
+        public TedarikciViewModel(ITedarikciService tedarikciService)
         {
+            _tedarikciService = tedarikciService;
+
             EkleCommand = new RelayCommand(Ekle);
+
             Listele();
         }
         private void Listele()
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
+            Tedarikciler = new ObservableCollection<Tedarikci>(
+                _tedarikciService.GetAllTedarikci());
 
-            Tedarikciler = new ObservableCollection<Tedarikci>(db.Tedarikciler.ToList());
             OnPropertyChanged(nameof(Tedarikciler));
         }
         private void Ekle()
         {
-            var factory = new ErpDbContextFactory();
+            _tedarikciService.AddTedarikci(
+                new Tedarikci
+                {
+                    TedarikciKodu = TedarikciKodu,
+                    FirmaAdi = FirmaAdi,
+                    Tel = Tel,
+                    Email = Email
+                });
 
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-
-            db.Tedarikciler.Add(new Tedarikci
-            {
-                TedarikciKodu=TedarikciKodu,
-                FirmaAdi=FirmaAdi,
-                Tel=Tel,
-                Email=Email
-            });
-
-            db.SaveChanges();
             Listele();
         }
 

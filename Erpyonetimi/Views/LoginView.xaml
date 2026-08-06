@@ -9,7 +9,7 @@
     <Grid>
         <Border Width="350" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="RoyalBlue" CornerRadius="10" BorderThickness="1" >
             <StackPanel>
-                <TextBlock Text="Parça Yönetimi Giriş" FontSize="24" Margin="0 0 0 20" HorizontalAlignment="Center" FontWeight="DemiBold" />
+                <TextBlock Text="ERP Yönetimi Giriş" FontSize="24" Margin="0 0 0 20" HorizontalAlignment="Center" FontWeight="DemiBold" />
 
                 <TextBlock Text="Kullanıcı Adı"/>
                 <TextBox Text="{Binding KullaniciAdi,UpdateSourceTrigger=PropertyChanged}"

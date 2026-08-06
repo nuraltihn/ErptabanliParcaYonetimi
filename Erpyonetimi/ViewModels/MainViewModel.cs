@@ -25,7 +25,8 @@ namespace Erpyonetimi.ViewModels
         }
         private readonly DashboardViewModel _dashboardViewModel;
         private readonly TedarikciViewModel _tedarikciViewModel;
-
+        private readonly ParcaViewModel _parcaViewModel;
+        private readonly UsersYonetimViewModel _usersYonetimViewModel;
         public Visibility Sidemenugorunme
         {
             get
@@ -43,7 +44,7 @@ namespace Erpyonetimi.ViewModels
                     : new GridLength(230);
             }
         }
-       public bool AdminPaneligor
+       public bool UserPanelgor
         {
             get
             {
@@ -51,17 +52,21 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
-        public ICommand AdminPanelCommand { get; }
+      
+        public ICommand UserYonCommand { get; }
         public ICommand DashboardCommand { get; }
         public ICommand TedarikciCommand { get; }
         public ICommand ParcaCommand { get; }
       
-        public MainViewModel()
+        public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
+            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel)
         {
-            //_dashboardViewModel = dashboardViewModel;
-            //_tedarikciViewModel= tedarikciViewModel;
+            _usersYonetimViewModel = usersYonetimViewModel;
+            _dashboardViewModel = dashboardViewModel;
+            _tedarikciViewModel= tedarikciViewModel;
+            _parcaViewModel = parcaViewModel;
             CurrentView = new LoginViewModel(this);
-            AdminPanelCommand = new RelayCommand(OpenAdminPanel);
+            UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
             TedarikciCommand = new RelayCommand(OpenTedarikci);
             ParcaCommand = new RelayCommand(OpenParca);
@@ -71,16 +76,15 @@ namespace Erpyonetimi.ViewModels
         public void Kullanicigirisyapti(Users users)
         {
             UserSession.CurrentUser = users;
-            CurrentView = UserSession.IsAdmin ? new AdminPanelViewModel()
-                 :  _dashboardViewModel;
+            CurrentView = _dashboardViewModel;
 
-            OnPropertyChanged(nameof(AdminPaneligor));
-            OnPropertyChanged(nameof(AdminPanelVisibility));
+            OnPropertyChanged(nameof(UserPanelgor));
+            OnPropertyChanged(nameof(UserPanelVisibility));
         }
       
         private void OpenParca()
         {
-            CurrentView = new ParcaViewModel();
+            CurrentView = _parcaViewModel;
         }
         private void OpenTedarikci()
         {
@@ -90,16 +94,17 @@ namespace Erpyonetimi.ViewModels
         {
             CurrentView = _dashboardViewModel;
         }
-        private void OpenAdminPanel()
+        private void OpenUserPanel()
         {
+           
             if (!UserSession.IsAdmin)
             {
                 MessageBox.Show("Erişim yetkiniz yok");
                 return;
             }
-            CurrentView = new AdminPanelViewModel();
+            CurrentView = new UsersYonetimViewModel();
         }
-        public Visibility AdminPanelVisibility
+        public Visibility UserPanelVisibility
         {
             get
             {
