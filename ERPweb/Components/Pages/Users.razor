@@ -1,4 +1,5 @@
 ﻿@page "/users"
+@rendermode InteractiveServer
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 
@@ -14,16 +15,116 @@
 	+ Yeni Kullanıcı
 </button>
 
+@if (showModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Kullanıcı</h5>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Ad Soyad</label>
+                        <input class="form-control"
+                               @bind="yeniUser.AdSoyad" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kullanıcı Adı</label>
+                        <input class="form-control"
+                               @bind="yeniUser.KulAd" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Şifre</label>
+                        <input type="password" class="form-control"
+                                    @bind="yeniUser.Sifre"/>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"
+                            @onclick="ModalKapat">
+                        İptal
+                    </button>
+
+                    <button class="btn btn-primary"
+                    @onclick="Kaydet">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<hr />
+<table class="table table striped">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Kullanıcı Adı</th>
+            <th>Rol</th>
+            <th>Telefon</th>
+            <th>Email</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.AdSoyad</td>
+                <td>@user.KulAd</td>
+                <td>@user.RolId</td>
+                <td>@user.Tel</td>
+                <td>@user.Email</td>
+                
+                <td>
+                    <button class="btn btn-warning btn-sm">
+                        Düzenle
+                    </button>
+                    <button class="btn btn-danger btn-sm ms-2">
+                        Sil
+                    </button>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+
+</table>
+
 @code 
 {
-	private bool showModal = false;
-	private void YeniKullanici()
-	{
-		showModal = true;
-	}
-	private void ModalKapat()
-	{
-		showModal = false;
-	}
+    private bool showModal = false;
+    private List<Erpyonetimi.Domain.Entities.Users> users = new();
+    private Erpyonetimi.Domain.Entities.Users yeniUser = new();
+    protected override void OnInitialized()
+    {
+        users = UserService.GetAllUsers();
+
+    }
+    private void YeniKullanici()
+    {
+        showModal = true;
+    }
+    private void ModalKapat()
+    {
+        showModal = false;
+    }
+    private void Kaydet()
+    {
+        UserService.AddUser(yeniUser);  //vt ye kaydetmek için 
+        users = UserService.GetAllUsers(); // listeyi yenilemek için
+        showModal = false; // modal ı kapatmak için
+        yeniUser = new Erpyonetimi.Domain.Entities.Users(); //form ı temizlemek için
+
+    }
+
 }
 	

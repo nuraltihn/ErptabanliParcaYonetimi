@@ -48,6 +48,7 @@ builder.Services.AddScoped<ISiparisRepository, SiparisRepository>();
 builder.Services.AddScoped<ISiparisDetayRepository, SiparisDetayRepository>();  
 
 var app = builder.Build();
+Datalar.Seed();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
