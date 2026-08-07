@@ -1,11 +1,13 @@
 ﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Commands;
 using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Erpyonetimi.ViewModels
@@ -18,6 +20,9 @@ namespace Erpyonetimi.ViewModels
         private string _yetkiliKisi;
         private string _tel;
         private string _email;
+        private string _adres;
+        private string _vergino;
+        private string _fax;
         private Tedarikci _seciliTedarikci;
         public Tedarikci SeciliTedarikci
         {
@@ -36,6 +41,15 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
+        public Visibility AdminButtonVisibil
+        {
+            get
+            {
+                return UserSession.IsAdmin
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+        }
         public string TedarikciKodu
         {
             get => _tedarikciKodu;
@@ -45,7 +59,33 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-
+        public string Adres
+        {
+            get => _adres;
+            set
+            {
+                _adres = value;
+                OnPropertyChanged();
+            }
+        }
+        public string VergiNo
+        {
+            get => _vergino;
+            set
+            {
+                _vergino = value;
+                OnPropertyChanged();
+            }
+        }
+        public string Fax
+        {
+            get => _fax;
+            set
+            {
+                _fax = value;
+                OnPropertyChanged();
+            }
+        }
         
         public string FirmaAdi
         {
@@ -77,12 +117,18 @@ namespace Erpyonetimi.ViewModels
             set { _email = value; OnPropertyChanged(); }
         }
 
+        private string _aramaMetni;
+        public string AramaMetni
+        {
+            get => _aramaMetni;
+            set { _aramaMetni = value; OnPropertyChanged(); }
+        }
         public ObservableCollection<Tedarikci> Tedarikciler { get; set;  }
 
         public ICommand TedarikciEkleCommand { get;}
         public ICommand TedarikciGuncelleCommand { get; }
         public ICommand TedarikciSilCommand { get; }
-
+        public ICommand AraCommand { get; }
         private readonly ITedarikciService _tedarikciService;
 
         public TedarikciViewModel(ITedarikciService tedarikciService)
@@ -94,7 +140,16 @@ namespace Erpyonetimi.ViewModels
             TedarikciEkleCommand = new RelayCommand(Ekle);
             TedarikciGuncelleCommand = new RelayCommand(Guncelle);
             TedarikciSilCommand = new RelayCommand(Sil);
+            AraCommand = new RelayCommand(Ara);
            
+        }
+        private void Ara()
+        {
+            Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci()
+                .Where(x => x.FirmaAdi.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase)
+                || x.TedarikciKodu.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase)));
+
+            OnPropertyChanged(nameof(Tedarikciler));
         }
 
         private void Listele()
@@ -107,19 +162,31 @@ namespace Erpyonetimi.ViewModels
 
         private void Ekle()
         {
+            if (!UserSession.IsAdmin)
+                return;
+
             _tedarikciService.AddTedarikci(
                 new Tedarikci
                 {
                     TedarikciKodu = TedarikciKodu,
                     FirmaAdi = FirmaAdi,
+                    YetkiliKisi = YetkiliKisi,
                     Tel = Tel,
-                    Email = Email
+                    Email = Email,
+                    Adres= Adres,
+                    VergiNo= VergiNo,
+                    Fax= Fax
+                    
                 });
 
             Listele();
         }
         private void Sil()
         {
+            if (!UserSession.IsAdmin)
+                return;  
+
+
             if (SeciliTedarikci != null) {
                ;
             _tedarikciService.DeleteTedarikci(SeciliTedarikci.Id);
@@ -128,11 +195,26 @@ namespace Erpyonetimi.ViewModels
         }
         private void Guncelle()
         {
-            if(SeciliTedarikci != null)
-            {
-                _tedarikciService.UpdateTedarikci(SeciliTedarikci);
-                Listele();
-            }
+            
+            if (!UserSession.IsAdmin)
+                return;
+
+            if (SeciliTedarikci == null)
+                return;
+
+            SeciliTedarikci.TedarikciKodu = TedarikciKodu;
+            SeciliTedarikci.FirmaAdi= FirmaAdi;
+            SeciliTedarikci.YetkiliKisi= YetkiliKisi;
+            SeciliTedarikci.Tel= Tel;
+            SeciliTedarikci.Email = Email;
+            SeciliTedarikci.Adres = Adres;
+            SeciliTedarikci.VergiNo = VergiNo;
+            SeciliTedarikci.Fax = Fax;
+
+
+            _tedarikciService.UpdateTedarikci(SeciliTedarikci);
+            Listele();
+           
         }
 
     }

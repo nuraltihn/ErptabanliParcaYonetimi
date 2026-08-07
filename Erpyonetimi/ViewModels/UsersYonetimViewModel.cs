@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Input;
+using Erpyonetimi.Helpers;
+using System.Windows;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -16,6 +18,8 @@ namespace Erpyonetimi.ViewModels
     {
         private readonly IUsersService _usersService;
         public ObservableCollection<Users> Userlist { get; set; }
+        public ObservableCollection<Roles> Roller { get; set; }
+        private readonly ErpDbContext _context;
 
         private Users _selecteduser;
         public Users SelectedUser
@@ -24,6 +28,15 @@ namespace Erpyonetimi.ViewModels
             set
             {
                 _selecteduser = value;
+                if (_selecteduser != null)
+                {
+                    AdSoyad = _selecteduser.AdSoyad;
+                    KulAd = _selecteduser.KulAd;
+                    RolId=_selecteduser.RolId ?? 0;
+    SeciliRol = Roller.FirstOrDefault(
+                        x => x.Id == _selecteduser.RolId);
+                    Sifre = "";
+                }
                 OnPropertyChanged();
             }
         }
@@ -70,18 +83,34 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
+        private Roles _seciliRol;
+        public Roles SeciliRol
+        {
+            get => _seciliRol;
+            set
+            {
+                _seciliRol = value;
+                if (_seciliRol != null)
+                    RolId = _seciliRol.Id;
 
+                OnPropertyChanged();
+
+            }
+        }
 
         public ICommand UsersEkleCommand { get; }
         public ICommand UsersGuncelCommand { get; }
         public ICommand UsersSilCommand { get; }
         public UsersYonetimViewModel()
         {
-            var context = new ErpDbContextFactory()
+            _context = new ErpDbContextFactory()
                 .CreateDbContext(Array.Empty<string>());
-            var repo = new UsersRepository(context);
+
+            var repo = new UsersRepository(_context);
             _usersService = new UsersService(repo);
-            
+
+            Roller = new ObservableCollection<Roles>(
+                _context.Roles.ToList());
 
             Userlist = new ObservableCollection<Users>(
                 _usersService.GetAllUsers());
@@ -92,19 +121,48 @@ namespace Erpyonetimi.ViewModels
 
         private void UsersEkleme()
         {
+            if (string.IsNullOrWhiteSpace(KulAd))
+            {
+                MessageBox.Show("Kullanıcı adı boş olamaz");
+                return;
+            }
             var user = new Users
             {
                 AdSoyad= AdSoyad,
                 KulAd= KulAd,
-                Sifre= Sifre,
+                Sifre= PasswordHelper.HashPassword(Sifre),
                 RolId= RolId
             };
+
             _usersService.AddUser(user);
+            Listele();
+            Temizle();
+            MessageBox.Show("Kullanıcı eklendi.");
         }
+
+
+        private void Listele()
+        {
+            Userlist = new ObservableCollection<Users>(
+                _usersService.GetAllUsers());
+            OnPropertyChanged(nameof(Userlist));
+        }
+
+
         private void UsersGuncelleme()
         {
-            if (SelectedUser != null)
+            if (SelectedUser == null)
+                return;
+
+            SelectedUser.AdSoyad = AdSoyad;
+            SelectedUser.KulAd = KulAd;
+            SelectedUser.RolId = RolId;
+            if (!string.IsNullOrWhiteSpace(Sifre))
+            {
+                SelectedUser.Sifre = PasswordHelper.HashPassword(Sifre);
+            }
                 _usersService.UpdateUser(SelectedUser);
+            Listele();
 
         }
         private void UsersSilme()
@@ -113,7 +171,23 @@ namespace Erpyonetimi.ViewModels
                 return;
 
             _usersService.DeleteUser(SelectedUser.Id);
-            Userlist.Remove(SelectedUser);
+            Listele();
+            Temizle();
+        }
+        private void Temizle()
+        {
+            SelectedUser = null;
+            AdSoyad = "";
+            KulAd = "";
+            Sifre = "";
+            RolId = 0;
+            SeciliRol = null;
+            OnPropertyChanged(nameof(AdSoyad));
+            OnPropertyChanged(nameof(KulAd));
+            OnPropertyChanged(nameof(Sifre));
+            OnPropertyChanged(nameof(RolId));
+            OnPropertyChanged(nameof(SeciliRol));
+               
         }
     }
 }

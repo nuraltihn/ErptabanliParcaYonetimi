@@ -104,19 +104,26 @@ namespace Erpyonetimi.ViewModels
         public ICommand StokCikisCommanet { get; }
 
         private readonly IParcaService _parcaService;
-        public ParcaViewModel(IParcaService parcaService)
+        private readonly IKategoriService _kategoriService;
+        private readonly ITedarikciService _tedarikciService;
+        public ParcaViewModel(IParcaService parcaService, IKategoriService kategoriService, ITedarikciService tedarikciService)
         {
             _parcaService = parcaService;
+        _kategoriService = kategoriService;
+            _tedarikciService = tedarikciService;
             Parcalar = new ObservableCollection<Parca>(
                 _parcaService.GetAllParca());
+            Kategoriler = new ObservableCollection<Kategori>(_kategoriService.GetAllKategori());
+            Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci());
             EkleCommand = new RelayCommand(Ekle);
+
             GuncelleCommand = new RelayCommand(Guncelle);
             SilCommand = new RelayCommand(Sil);
             ListeleCommand = new RelayCommand(Listele);
             AraCommand = new RelayCommand(Ara);
 
             OnPropertyChanged(nameof(CrudVisibility));
-            
+    
         }
 
         public Visibility CrudVisibility
@@ -142,8 +149,8 @@ namespace Erpyonetimi.ViewModels
                 ParcaKodu = ParcaKodu,
                 ParcAdi = ParcAdi,
                 Marka = Marka,
-                KategoriId = 1,
-                TedarikciId = 1,
+                KategoriId = SeciliKategori.Id,
+                TedarikciId = SeciliTedarikci.Id,
                 AlisFiyat = AlisFiyat,
                 SatisFiyat = SatisFiyat,
                 MevcutStok = MevcutStok,
@@ -163,8 +170,8 @@ namespace Erpyonetimi.ViewModels
             SeciliParca.ParcaKodu = ParcaKodu;
             SeciliParca.ParcAdi = ParcAdi;
             SeciliParca.Marka = Marka;
-            SeciliParca.KategoriId = KategoriId;
-            SeciliParca.TedarikciId= TedarikciId;
+            SeciliParca.KategoriId = SeciliKategori.Id;
+            SeciliParca.TedarikciId= SeciliTedarikci.Id;
             SeciliParca.AlisFiyat= AlisFiyat;
             SeciliParca.SatisFiyat = SatisFiyat;
             SeciliParca.MevcutStok = MevcutStok;

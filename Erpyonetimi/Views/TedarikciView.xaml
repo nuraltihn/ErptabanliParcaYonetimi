@@ -26,9 +26,9 @@
                 <TextBlock Text="Ara" VerticalAlignment="Center"
                            Margin="15 0 10 0"/>
                 <TextBox Width="250"
-                         Text="{Binding AraMetni, UpdateSourceTrigger=PropertyChanged}"/>
+                         Text="{Binding AramaMetni, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Button Content="Ara:" 
+                <Button Content="Ara" 
                         Width="100"
                         Margin="10 0 0 0"
                         Command="{Binding AraCommand}"/>
@@ -51,7 +51,7 @@
             <TextBox Text="{Binding TedarikciKodu}" Grid.Row="0" Grid.Column="1" Width="150" HorizontalAlignment="Left" Margin=" 5"/>
 
             <TextBlock Text="Firma Adı:" Grid.Row="0" Grid.Column="2" Margin="5" HorizontalAlignment="Right"/>
-            <TextBox Text="{Binding FirmAdi}" Grid.Row="0" Grid.Column="3" Width="150" HorizontalAlignment="Left" Margin="5"/>
+            <TextBox Text="{Binding FirmaAdi}" Grid.Row="0" Grid.Column="3" Width="150" HorizontalAlignment="Left" Margin="5"/>
 
             <TextBlock Text="Yetkili Kişi:" Grid.Row="1" Grid.Column="0" Margin="5"/>
             <TextBox Text="{Binding YetkiliKisi}" Grid.Row="1" Grid.Column="1" Width="150" HorizontalAlignment="Left" Margin="5"/>
@@ -78,11 +78,11 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                <Button Content=" Ekle" Width="100" Margin="5" Command="{Binding TedarikciEkleCommand}"/>
-                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}"/>
-                <Button Content="Sil" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}"/>
+                <Button Content=" Ekle" Width="100" Margin="5" Command="{Binding TedarikciEkleCommand}" Visibility="{Binding AdminButtonVisibil}"/>
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}" Visibility="{Binding AdminButtonVisibil}" />
+                <Button Content="Sil" Width="100" Margin="5" Command="{Binding TedarikciSilCommand}" Visibility="{Binding AdminButtonVisibil}"/>
             </StackPanel>
-            <DataGrid Grid.Row="2"
+            <DataGrid Grid.Row="1"
                       ItemsSource="{Binding Tedarikciler}"
                       SelectedItem="{Binding SeciliTedarikci}"
                       AutoGenerateColumns="False">
@@ -100,6 +100,14 @@
 
                     <DataGridTextColumn Header="Email"
                                         Binding="{Binding Email}"/>
+                    
+                    <DataGridTextColumn Header="Adres"
+                                        Binding="{Binding Adres}"/>
+
+                    <DataGridTextColumn Header="Vergi No"
+                                        Binding="{Binding VergiNo}"/>
+                    <DataGridTextColumn Header="Fax"
+                                        Binding="{Binding Fax}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
