@@ -1,0 +1,191 @@
+﻿@page "/users"
+@rendermode InteractiveServer
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IUsersService UserService
+
+<h3>Kullanıcı Yönetimi</h3>
+<hr />
+<button class="btn btn-primary" @onclick="YeniKullanici">
+    + Yeni Kullanıcı
+</button>
+
+@if (showModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @(duzenlemeModu ? "Kullanıcı Düzenle" : "Yeni Kullanıcı")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="ModalKapat"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Ad Soyad</label>
+                        <input class="form-control"
+                               @bind="yeniUser.AdSoyad" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <input class="form-control"
+                               @bind="yeniUser.KulAd" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şifre</label>
+                        <input type="password"
+                               class="form-control"
+                               @bind="yeniUser.Sifre" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" @bind="yeniUser.RolId">
+                            <option value="1">Admin</option>
+                            <option value="2">Depo</option>
+                            <option value="3">Satış</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-secondary"
+                            @onclick="ModalKapat">
+                        İptal
+                    </button>
+
+                    <button class="btn btn-success"
+                            @onclick="Kaydet">
+                        Kaydet
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+<hr />
+
+<table class="table table-striped">
+
+    <thead>
+
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Kullanıcı Adı</th>
+            <th>Rol</th>
+            <th>Telefon</th>
+            <th>Email</th>
+            <th>İşlemler</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.AdSoyad</td>
+                <td>@user.KulAd</td>
+                <td>@user.Rol?.RolAdi</td>
+                <td>@user.Tel</td>
+                <td>@user.Email</td>
+                <td>
+
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="() => Duzenle(user)">
+                        Düzenle
+                    </button>
+
+                    <button class="btn btn-danger btn-sm ms-2"
+                            @onclick="() => Sil(user.Id)">
+                        Sil
+                    </button>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@code
+{
+    private bool showModal = false;
+    private bool duzenlemeModu = false;
+
+    private List<Users> users = new();
+
+    private Users yeniUser = new();
+
+    protected override void OnInitialized()
+    {
+        users = UserService.GetAllUsers();
+    }
+
+    private void YeniKullanici()
+    {
+        duzenlemeModu = false;
+        yeniUser = new Users();
+        showModal = true;
+    }
+
+    private void ModalKapat()
+    {
+        showModal = false;
+    }
+
+    private void Kaydet()
+    {
+        if (duzenlemeModu)
+        {
+            UserService.UpdateUser(yeniUser);
+        }
+        else
+        {
+            UserService.AddUser(yeniUser);
+        }
+
+        users = UserService.GetAllUsers();
+
+        showModal = false;
+        duzenlemeModu = false;
+
+        yeniUser = new Users();
+    }
+
+    private void Sil(int id)
+    {
+        UserService.DeleteUser(id);
+        users = UserService.GetAllUsers();
+    }
+
+    private void Duzenle(Users user)
+    {
+        yeniUser = new Users
+        {
+            Id = user.Id,
+            AdSoyad = user.AdSoyad,
+            KulAd = user.KulAd,
+            Sifre = user.Sifre,
+            RolId = user.RolId,
+            Tel = user.Tel,
+            Email = user.Email
+        };
+
+        duzenlemeModu = true;
+        showModal = true;
+    }
+}

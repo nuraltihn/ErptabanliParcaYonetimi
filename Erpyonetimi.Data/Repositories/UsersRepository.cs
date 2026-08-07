@@ -32,7 +32,7 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Users user)
         {
-            _context.Update(user);
+            _context.Users.Update(user);
             _context.SaveChanges();
         }
         public void Delete(int id)
@@ -47,7 +47,10 @@ namespace Erpyonetimi.Data.Repositories
         
         public List<Users> GetAll()
         {
-            return _context.Users.ToList();
+            return _context.Users
+                .Include(x => x.Rol)
+                 .AsNoTracking()
+                .ToList();
         }
         
     }

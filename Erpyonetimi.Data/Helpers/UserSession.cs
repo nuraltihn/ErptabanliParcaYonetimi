@@ -10,7 +10,7 @@ namespace Erpyonetimi.Data.Helpers
 {
     public class UserSession
     {
-        public static Users CurrentUser { get; set; }
+        public static Users?CurrentUser { get; set; }
 
         public static bool IsAdmin =>
             CurrentUser?.RolId == 1;
