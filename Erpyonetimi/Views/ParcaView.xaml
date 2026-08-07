@@ -14,6 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#1F2937" Padding="10" Margin="0 0 0 10 "/>
+        <TextBlock Text="Parça Yönetimi" Grid.Row="1" FontSize="24" FontFamily="Leelawadee UI" />
         <StackPanel Grid.Row="1" Margin="0 10 10 5" Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Width="250" Height="30" Margin="0 0 10 0" Text="{Binding AramaMetni}"
                       VerticalAlignment="Center"/>

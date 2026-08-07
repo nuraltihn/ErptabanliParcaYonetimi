@@ -74,11 +74,11 @@ namespace Erpyonetimi
             services.AddTransient<TedarikciViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<KategoriViewModel>();
-            services.AddTransient<KategoriYonetimViewModel>();
+            
             services.AddTransient<ParcaViewModel>();
-            services.AddTransient<ParcaYonetimViewModel>();
+           
             services.AddTransient<TedarikciViewModel>();
-            services.AddTransient<TedarikciYonetimViewmodel>();
+       
             services.AddTransient<UsersYonetimViewModel>();
  
         }
