@@ -18,6 +18,24 @@ namespace Erpyonetimi.ViewModels
         private string _yetkiliKisi;
         private string _tel;
         private string _email;
+        private Tedarikci _seciliTedarikci;
+        public Tedarikci SeciliTedarikci
+        {
+            get => _seciliTedarikci;
+            set
+            {
+                _seciliTedarikci = value;
+                if (_seciliTedarikci != null)
+                {
+                    TedarikciKodu = _seciliTedarikci.TedarikciKodu;
+                    FirmaAdi = _seciliTedarikci.FirmaAdi;
+                    YetkiliKisi = _seciliTedarikci.YetkiliKisi;
+                    Tel = _seciliTedarikci.Tel;
+                    Email = _seciliTedarikci.Email;
+                }
+                OnPropertyChanged();
+            }
+        }
         public string TedarikciKodu
         {
             get => _tedarikciKodu;
@@ -35,6 +53,7 @@ namespace Erpyonetimi.ViewModels
             set
             {
                 _firmaAdi = value;
+                OnPropertyChanged();
             }
         }
 
@@ -60,7 +79,9 @@ namespace Erpyonetimi.ViewModels
 
         public ObservableCollection<Tedarikci> Tedarikciler { get; set;  }
 
-        public ICommand EkleCommand { get;}
+        public ICommand TedarikciEkleCommand { get;}
+        public ICommand TedarikciGuncelleCommand { get; }
+        public ICommand TedarikciSilCommand { get; }
 
         private readonly ITedarikciService _tedarikciService;
 
@@ -68,10 +89,14 @@ namespace Erpyonetimi.ViewModels
         {
             _tedarikciService = tedarikciService;
 
-            EkleCommand = new RelayCommand(Ekle);
-
-            Listele();
+            Tedarikciler = new ObservableCollection<Tedarikci>(
+                _tedarikciService.GetAllTedarikci());
+            TedarikciEkleCommand = new RelayCommand(Ekle);
+            TedarikciGuncelleCommand = new RelayCommand(Guncelle);
+            TedarikciSilCommand = new RelayCommand(Sil);
+           
         }
+
         private void Listele()
         {
             Tedarikciler = new ObservableCollection<Tedarikci>(
@@ -79,6 +104,7 @@ namespace Erpyonetimi.ViewModels
 
             OnPropertyChanged(nameof(Tedarikciler));
         }
+
         private void Ekle()
         {
             _tedarikciService.AddTedarikci(
@@ -92,7 +118,22 @@ namespace Erpyonetimi.ViewModels
 
             Listele();
         }
-
+        private void Sil()
+        {
+            if (SeciliTedarikci != null) {
+               ;
+            _tedarikciService.DeleteTedarikci(SeciliTedarikci.Id);
+                Listele();
+            }
+        }
+        private void Guncelle()
+        {
+            if(SeciliTedarikci != null)
+            {
+                _tedarikciService.UpdateTedarikci(SeciliTedarikci);
+                Listele();
+            }
+        }
 
     }
 }

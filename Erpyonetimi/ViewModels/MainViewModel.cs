@@ -27,6 +27,7 @@ namespace Erpyonetimi.ViewModels
         private readonly TedarikciViewModel _tedarikciViewModel;
         private readonly ParcaViewModel _parcaViewModel;
         private readonly UsersYonetimViewModel _usersYonetimViewModel;
+        private readonly KategoriViewModel _kategoriViewModel;
         public Visibility Sidemenugorunme
         {
             get
@@ -57,19 +58,22 @@ namespace Erpyonetimi.ViewModels
         public ICommand DashboardCommand { get; }
         public ICommand TedarikciCommand { get; }
         public ICommand ParcaCommand { get; }
+        public ICommand KategoriCommand { get; }
       
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
-            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel)
+            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel)
         {
             _usersYonetimViewModel = usersYonetimViewModel;
             _dashboardViewModel = dashboardViewModel;
             _tedarikciViewModel= tedarikciViewModel;
             _parcaViewModel = parcaViewModel;
+            _kategoriViewModel = kategoriViewModel;
             CurrentView = new LoginViewModel(this);
             UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
             TedarikciCommand = new RelayCommand(OpenTedarikci);
             ParcaCommand = new RelayCommand(OpenParca);
+            KategoriCommand = new RelayCommand(OpenKat);
 
         }
 
@@ -93,6 +97,10 @@ namespace Erpyonetimi.ViewModels
         private void OpenDashboard()
         {
             CurrentView = _dashboardViewModel;
+        }
+        private void OpenKat()
+        {
+            CurrentView = _kategoriViewModel;
         }
         private void OpenUserPanel()
         {

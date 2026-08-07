@@ -8,6 +8,9 @@ namespace Erpyonetimi.Application.Services.Interfaces
     public interface ITedarikciService
     {
         List<Tedarikci> GetAllTedarikci();
+        Tedarikci? GetById(int id);
         void AddTedarikci(Tedarikci tedarikci);
+        void DeleteTedarikci(int id);
+        void UpdateTedarikci(Tedarikci tedarikci);
     }
 }

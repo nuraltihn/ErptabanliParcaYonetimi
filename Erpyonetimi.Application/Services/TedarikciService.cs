@@ -26,5 +26,24 @@ namespace Erpyonetimi.Application.Services
         {
             _tedarikciRepository.Add(tedarikci);
         }
+
+        public Tedarikci? GetById(int id)
+        {
+            return _tedarikciRepository.GetById(id);
+        }
+
+        public void DeleteTedarikci(int id)
+        {
+            var tedarikci = _tedarikciRepository.GetById(id);
+            if (tedarikci != null)
+            {
+                _tedarikciRepository.Delete(tedarikci);
+            }
+        }
+
+        public void UpdateTedarikci(Tedarikci tedarikci)
+        {
+            _tedarikciRepository.Update(tedarikci);
+        }
     }
 }

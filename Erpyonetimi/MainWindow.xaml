@@ -7,7 +7,8 @@
         xmlns:vm="clr-namespace:Erpyonetimi.ViewModels"
         mc:Ignorable="d"
         
-        Title="MainWindow" Height="450" Width="800">
+        Title="Erp Yönetim Sistemi" Height="450" Width="800"
+        WindowState="Maximized" >
     <Grid >
         
         <Grid.ColumnDefinitions>
@@ -36,15 +37,7 @@
                             HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
                 </StackPanel>
                 <StackPanel>
-                    <RadioButton Style="{StaticResource Sidemenubutton}"
-                      GroupName="Sidemenu" IsChecked="True"
-                Command="{Binding UserYonCommand}"
-               Visibility="{Binding UserPanelVisibility}" >
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Kullanıcı Yönetimi"/>
-                        </StackPanel>
-                    </RadioButton>
+                  
 
 
                     <RadioButton Style="{StaticResource Sidemenubutton}"
@@ -54,37 +47,55 @@
                     <TextBlock Text="h" Margin="0 0 12 0"/>
                     <TextBlock Text="Dashboard"/>
                 </StackPanel>
-                </RadioButton>
-
+                </RadioButton> 
+                    
+                    
                     <RadioButton Style="{StaticResource Sidemenubutton}"
-                        GroupName="Sidemenu"
-                                 Command="{Binding ParcaCommand}">
+                      GroupName="Sidemenu" IsChecked="True"
+                Command="{Binding UserYonCommand}"
+               Visibility="{Binding UserPanelVisibility}" >
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Parça"/>
+                            <TextBlock Text="Kullanıcı Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
-
-
-                  
+                    
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+         GroupName="Sidemenu"
+                                 Command="{Binding KategoriCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Kategori Yönetimi"/>
+                        </StackPanel>
+                    </RadioButton>
+ 
                     <RadioButton Style="{StaticResource Sidemenubutton}"
                             GroupName="Sidemenu"
                                  Command="{Binding TedarikciCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Tedarikçi"/>
+                            <TextBlock Text="Tedarikçi Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
 
-                    
-                    <RadioButton Style="{StaticResource Sidemenubutton}"
-         GroupName="Sidemenu">
+                      <RadioButton Style="{StaticResource Sidemenubutton}"
+                        GroupName="Sidemenu"
+                                 Command="{Binding ParcaCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
-                            <TextBlock Text="Kategori"/>
+                            <TextBlock Text="Parça Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
-                    
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+    GroupName="Sidemenu"
+             Command="{Binding RafCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Raf Yönetimi"/>
+                        </StackPanel>
+                    </RadioButton>
+
                     
                 </StackPanel>
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Erpyonetimi.ViewModels
@@ -49,7 +50,7 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
-        public ICommand KategoriEklecommand { get; }
+        public ICommand KategoriEkleCommand { get; }
         public ICommand KategoriGuncelleCommand { get; }
         public ICommand KategoriSilCommand { get; }
         private readonly IKategoriService _kategoriService;
@@ -58,7 +59,7 @@ namespace Erpyonetimi.ViewModels
             _kategoriService = kategoriService;
             Kategoriler = new ObservableCollection<Kategori>(
                 _kategoriService.GetAllKategori());
-            KategoriEklecommand = new RelayCommand(Ekle);
+            KategoriEkleCommand = new RelayCommand(Ekle);
             KategoriGuncelleCommand = new RelayCommand(Guncelle);
             KategoriSilCommand = new RelayCommand(Sil);
            
@@ -67,7 +68,10 @@ namespace Erpyonetimi.ViewModels
        
       
         private void Ekle()
-        {var kategori = new Kategori
+        {
+            MessageBox.Show("ekle çalıştı");
+            
+            var kategori = new Kategori
             {
                 KategoriAdi = KategoriAdi,
                 Aciklama = Aciklama
