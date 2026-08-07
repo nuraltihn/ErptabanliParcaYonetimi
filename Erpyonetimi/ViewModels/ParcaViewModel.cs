@@ -102,6 +102,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand AraCommand { get; }
         public ICommand StokGirisCommand { get; }
         public ICommand StokCikisCommanet { get; }
+        public ICommand KritikStoklarCommand { get; }
 
         private readonly IParcaService _parcaService;
         private readonly IKategoriService _kategoriService;
@@ -116,7 +117,7 @@ namespace Erpyonetimi.ViewModels
             Kategoriler = new ObservableCollection<Kategori>(_kategoriService.GetAllKategori());
             Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci());
             EkleCommand = new RelayCommand(Ekle);
-
+            KritikStoklarCommand = new RelayCommand(KritikStoklariGetir);
             GuncelleCommand = new RelayCommand(Guncelle);
             SilCommand = new RelayCommand(Sil);
             ListeleCommand = new RelayCommand(Listele);
@@ -161,6 +162,7 @@ namespace Erpyonetimi.ViewModels
             _parcaService.AddParca(parca);
             Parcalar.Add(parca);
             MessageBox.Show("parça eklendi");
+            Temizle();
         }
 
         private void Guncelle()
@@ -210,6 +212,26 @@ namespace Erpyonetimi.ViewModels
             Parcalar = new ObservableCollection<Parca>(
                 _parcaService.GetAllParca());
             OnPropertyChanged(nameof(Parcalar));
+        }
+        private void KritikStoklariGetir()
+        {
+            var kritikler = _parcaService.GetAllParca()
+                .Where(x => x.MevcutStok < x.MinimumStok);
+            Parcalar = new ObservableCollection<Parca>(kritikler);
+            OnPropertyChanged(nameof(Parcalar));
+        }
+        private void Temizle()
+        {
+            ParcaKodu = "";
+            ParcAdi = "";
+            Marka = "";
+            Aciklama = "";
+            AlisFiyat = 0;
+            SatisFiyat = 0;
+            MevcutStok = 0;
+            MinimumStok = 0;
+            SeciliKategori = null;
+            SeciliKategori = null;
         }
     }
 }
