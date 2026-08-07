@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Erpyonetimi.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="White" Margin="10">
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
