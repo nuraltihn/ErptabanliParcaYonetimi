@@ -48,7 +48,7 @@ namespace Erpyonetimi
             services.AddTransient<ParcaView>();
             services.AddTransient<AdminPanel>();
             services.AddTransient<UsersYonetimView>();
-
+            services.AddTransient<KategoriView>();
 
             services.AddDbContext<ErpDbContext>(options=> options.UseSqlServer("Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"));
             services.AddTransient<IDashboardService, DashboardService>();
@@ -68,6 +68,8 @@ namespace Erpyonetimi
             services.AddTransient<ITedarikciService, TedarikciService>();
             services.AddTransient<IUsersRepository, UsersRepository>();
             services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IKategoriRepository, KategoriRepository>();
+            services.AddTransient<IKategoriService, KategoriService>();
 
             services.AddTransient<MainViewModel>();
             services.AddTransient<DashboardViewModel>();

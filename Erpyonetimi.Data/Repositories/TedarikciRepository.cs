@@ -29,5 +29,22 @@ namespace Erpyonetimi.Data.Repositories
             _context.Tedarikciler.Add(tedarikci);
             _context.SaveChanges();
         }
+
+        public void Update(Tedarikci tedarikci)
+        {
+            _context.Tedarikciler.Update(tedarikci);
+            _context.SaveChanges();
+        }
+
+        public void Delete(Tedarikci tedarikci)
+        {
+            _context.Tedarikciler.Remove(tedarikci);
+            _context.SaveChanges();
+        }
+
+        public Tedarikci? GetById(int id)
+        {
+            return _context.Tedarikciler.FirstOrDefault(x => x.Id == id);
+        }
     }
 }

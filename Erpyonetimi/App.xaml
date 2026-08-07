@@ -28,7 +28,6 @@ xmlns:views="clr-namespace:Erpyonetimi.Views"
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:KategoriViewModel}">
             <views:KategoriView/>
-
         </DataTemplate>
     
         <Style x:Key="Sidemenubutton" TargetType="RadioButton">
