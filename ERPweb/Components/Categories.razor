@@ -1,5 +1,141 @@
-﻿<h3>Categories</h3>
+﻿@page "/categories"
+@rendermode InteractiveServer
 
-@code {
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
+@inject IKategoriService KategoriService
 
+
+<h3>Kategori Yönetimi</h3>
+<hr />
+
+<button class="btn btn-primary" @onclick="YeniKategori">
+	+ Yeni Kategori
+
+</button>
+
+@if (showModal)
+{
+	<div class="modal d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title">
+						@(duzenlemeModu ? "Kategori Düzenle" : "Yeni Kategori")
+					</h5>
+				</div>
+
+				<div class="modal-body">
+
+					<div class="mb-3">
+						<label> Kategori Adı</label>
+						<input class="form-control"
+						@bind="yeniKategori.KategoriAdi"/>
+					</div>
+
+					<div class="mb-3">
+						<label>Açıklama</label>
+						<textarea class="form-control"
+									  @bind="yeniKategori.Aciklama"></textarea>	
+					</div>
+				
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary"
+					@onclick="ModalKapat">
+				İptal
+			</button>
+			<button class="btn btn-success"
+			@onclick="Kaydet">
+		Kaydet
+	</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+<hr />
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Kategori Adı</th>
+			<th>Açıklama</th>
+			<th>İşlemler</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var kategori in kategoriler)
+		{
+			<tr>
+				<td>@kategori.KategoriAdi</td>
+				<td>@kategori.Aciklama</td>
+				<td>
+					<button class="btn btn-warning btn-sm"
+					@onclick="() => Sil(kategori.Id)">
+				       Sil </button>
+					   <button class="btn btn-danger btn-sm ms-2"
+					   @onclick="() => Duzenle(kategori)">
+					   Düzenle </button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code 
+{
+	private void Sil(int id)
+	{
+		KategoriService.DeleteKategori(id);
+		kategoriler = KategoriService.GetAllKategori();
+	}
+	private bool showModal = false;
+	private bool duzenlemeModu = false;
+
+	private List<Kategori> kategoriler = new();
+	private Kategori yeniKategori = new();
+
+	protected override void OnInitialized()
+	{
+		kategoriler = KategoriService.GetAllKategori();
+
+	}
+	private void YeniKategori()
+	{
+		yeniKategori = new Kategori();
+		duzenlemeModu = false;
+		showModal = true;
+	}	
+	private void ModalKapat()
+	{
+		showModal = false;
+	}
+	private void Kaydet ()
+	{ 
+		if(duzenlemeModu)
+		{
+			KategoriService.UpdateKategori(yeniKategori);
+		}		
+		else
+		{
+			KategoriService.AddKategori(yeniKategori);
+		}
+		kategoriler = KategoriService.GetAllKategori();
+		showModal = false;
+		duzenlemeModu = false;
+		yeniKategori = new Kategori();
+	}
+	private void Duzenle(Kategori kategori)
+	{
+		yeniKategori = new Kategori
+		{
+			Id = kategori.Id,
+			KategoriAdi = kategori.KategoriAdi,
+			Aciklama = kategori.Aciklama
+		};
+
+		duzenlemeModu = true;
+		showModal = true;
+	}
 }

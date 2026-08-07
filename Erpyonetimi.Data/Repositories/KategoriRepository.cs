@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Linq;
 namespace Erpyonetimi.Data.Repositories
 {
     public class KategoriRepository : IKategoriRepository
@@ -32,21 +33,37 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Kategori kategori)
         {
-            _context.Kategoriler.Update(kategori);
-            _context.SaveChanges();
+            var eskiKategori = _context.Kategoriler.FirstOrDefault(k => k.Id == kategori.Id);
+            if (eskiKategori != null)
+            {
+                eskiKategori.KategoriAdi = kategori.KategoriAdi;
+                eskiKategori.Aciklama = kategori.Aciklama;
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("Kategori bulunamadı.");
+            }
         }
         public void Delete(Kategori kategori)
         {
             var dbKategori = _context.Kategoriler
-                .Include(k => k.Parcalar)
-                .FirstOrDefault(k => k.Id == kategori.Id);
+     .Include(k => k.Parcalar)
+     .FirstOrDefault(k => k.Id == kategori.Id);
+
+            if (dbKategori == null)
+            {
+                throw new Exception("Kategori bulunamadı.");
+            }
 
             if (dbKategori.Parcalar.Any())
-                throw new Exception("Bu kategori kullanımda."); 
+            {
+                throw new Exception("Bu kategori kullanımda.");
+            }
 
-            _context.Kategoriler.Remove(kategori);
+            _context.Kategoriler.Remove(dbKategori);
             _context.SaveChanges();
         }
-        }
     }
+}
 
