@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="Erpyonetimi.Views.DepoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Erpyonetimi.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#1F2937" CornerRadius="8" Padding="15" Margin="0 0 0 15">
+            <TextBlock Text="Depo Yönetimi" FontSize="22" FontWeight="bold" Foreground="White"/>
+        </Border>
+        <Grid Grid.Row="1" Margin=" 0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Depo Adı:" Grid.Row="0" Margin="5"/>
+            <TextBox Text="{Binding Depaadi}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+            <TextBlock Text="Konum:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+            <TextBox Text="{Binding Konum}" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0 10 0 0">
+                <Button Content="Ekle" Width="100" Margin="5" Command="{Binding DepoEkleCommand}"/>
+
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding DepoGuncelleCommand}"/>
+
+                <Button Content="Sil" Width="100" Margin="5" Command="{Binding DepSilCommand}"/>
+
+            </StackPanel>
+        </Grid>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Depolar}" SelectedItem="{Binding SeciliDepo}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
+                <DataGridTextColumn Header="Depo Adı" Binding="{Binding Depaadi}" Width="*"/>
+                <DataGridTextColumn Header="Konum" Binding="{Binding Konum}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>    
+    </Grid>
+</UserControl>

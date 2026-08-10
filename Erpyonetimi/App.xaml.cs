@@ -49,6 +49,10 @@ namespace Erpyonetimi
             services.AddTransient<AdminPanel>();
             services.AddTransient<UsersYonetimView>();
             services.AddTransient<KategoriView>();
+            services.AddTransient<StokHareketView>();
+            services.AddTransient<DepoView>();
+            services.AddTransient<RafView>();
+
 
             services.AddDbContext<ErpDbContext>(options=> options.UseSqlServer("Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"));
             services.AddTransient<IDashboardService, DashboardService>();
@@ -76,12 +80,15 @@ namespace Erpyonetimi
             services.AddTransient<TedarikciViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<KategoriViewModel>();
+            services.AddTransient<DepoViewModel>();
+            services.AddTransient<RafViewModel>();
             
             services.AddTransient<ParcaViewModel>();
            
             services.AddTransient<TedarikciViewModel>();
        
             services.AddTransient<UsersYonetimViewModel>();
+            services.AddTransient<StokHareketViewModel>();
  
         }
         protected override async void OnStartup(StartupEventArgs e)

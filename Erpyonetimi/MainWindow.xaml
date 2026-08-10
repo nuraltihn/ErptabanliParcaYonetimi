@@ -68,7 +68,16 @@
                             <TextBlock Text="Kategori Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
- 
+                     
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+    GroupName="Sidemenu"
+             Command="{Binding MusteriCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Müşteri Yönetimi"/>
+                        </StackPanel>
+                    </RadioButton>
+
                     <RadioButton Style="{StaticResource Sidemenubutton}"
                             GroupName="Sidemenu"
                                  Command="{Binding TedarikciCommand}">
@@ -89,6 +98,17 @@
 
                     <RadioButton Style="{StaticResource Sidemenubutton}"
     GroupName="Sidemenu"
+             Command="{Binding DepoCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Depo Yönetimi"/>
+                        </StackPanel>
+                    </RadioButton>
+
+
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+    GroupName="Sidemenu"
              Command="{Binding RafCommand}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="h" Margin="0 0 12 0"/>
@@ -96,7 +116,26 @@
                         </StackPanel>
                     </RadioButton>
 
-                    
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+    GroupName="Sidemenu"
+             Command="{Binding SiparisHCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Sipariş Hareketleri"/>
+                        </StackPanel>
+                    </RadioButton>
+
+
+                    <RadioButton Style="{StaticResource Sidemenubutton}"
+    GroupName="Sidemenu"
+             Command="{Binding StokHCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="Stok Hareketleri"/>
+                        </StackPanel>
+                    </RadioButton>
+
                 </StackPanel>
 
             </DockPanel>

@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="Erpyonetimi.Views.StokHareketView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Erpyonetimi.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#1F2937" CornerRadius="8" Padding="15" Margin="0 0 0 15">
+            <TextBlock Text="Stok Hareketleri" FontSize="22" FontWeight="Bold" Foreground="White"/>
+        </Border>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15">
+            <Button Content="Listele" Width="100" Margin="5" Command="{Binding StokListeleCommand }"/>
+        </StackPanel>
+        <Grid Grid.Row="2" Margin="0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="180"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Parca:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+            <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" ItemsSource="{Binding Parcalar}"
+                      SelectedItem="{Binding SeciliParca}" DisplayMemberPath="ParcAdi"/>
+            <TextBlock Text="İşlem Tipi:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+            <ComboBox Grid.Row="0" Grid.Column="3" Margin="5" ItemsSource="{Binding IslemTipleri}"
+                      SelectedItem="{Binding IslemTipi}"/>
+
+            <TextBlock Text="Miktar" Grid.Row="1" Grid.Column="0" Margin="5"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding Miktar}"/>
+
+            <TextBlock Text="Depo:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding Depolars}"
+                      SelectedItem="{Binding SeciliDepo}" DisplayMemberPath="Depaadi"/>
+
+            <TextBlock Text="Açıklama:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Margin="5" Text="{Binding Aciklama}"/>
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=" auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                <Button Content="Ekle" Width="100" Margin="5" Command="{Binding StokHEkleCommand}"/>
+            </StackPanel>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Hareketler}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Parça" Binding="{Binding Parca.ParcAdi}" Width="*"/>
+                    <DataGridTextColumn Header="İşlem Tipi" Binding="{Binding IslemTipi}" Width="120"/>
+                    <DataGridTextColumn Header="Miktar" Binding="{Binding Miktar}" Width="100"/>
+                    <DataGridTextColumn Header="Tarih" Binding="{Binding Tarih}" Width="180"/>
+                    <DataGridTextColumn Header="Açıklama" Binding="{Binding Aciklama}" Width="200"/>
+                    <DataGridTextColumn Header="Kullanıcı" Binding="{Binding Kullanici.KulAd}" Width="150"/>
+
+                </DataGrid.Columns>
+            </DataGrid>        
+        </Grid>
+        
+    </Grid>
+</UserControl>

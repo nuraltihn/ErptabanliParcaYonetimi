@@ -32,8 +32,17 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Users user)
         {
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            var mevcut = _context.Users.Find(user.Id);
+            if (mevcut != null)
+            {
+                mevcut.AdSoyad = user.AdSoyad;
+                mevcut.KulAd = user.KulAd;
+                mevcut.Sifre = user.Sifre;
+                mevcut.RolId = user.RolId
+;
+                _context.SaveChanges();
+            }
+            
         }
         public void Delete(int id)
         {
