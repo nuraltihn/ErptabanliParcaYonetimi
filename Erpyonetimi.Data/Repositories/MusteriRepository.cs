@@ -4,6 +4,7 @@ using System.Text;
 using Erpyonetimi.Context;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 namespace Erpyonetimi.Data.Repositories
 {
     public class MusteriRepository : IMusteriRepository
@@ -27,7 +28,9 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Musteri> GetAll()
         {
-            return _context.Musteriler.ToList();
+            return _context.Musteriler
+                .AsNoTracking()
+                .ToList();
         }
 
         public Musteri? GetById(int id)

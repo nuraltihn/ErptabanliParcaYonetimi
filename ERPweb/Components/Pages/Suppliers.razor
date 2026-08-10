@@ -1,5 +1,188 @@
-﻿<h3>Suppliers</h3>
+﻿@page "/suppliers"
+@rendermode InteractiveServer
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
 
-@code {
+@inject ITedarikciService TedarikciService
 
+<h3>Tedarikçi Yönetimi</h3>
+<button class="btn btn-primary" @onclick="YeniTedarikci">
+    + Yeni Tedarikçi
+
+</button>
+<hr />
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tedarikçi Kodu</th>
+            <th>Firma Adı</th>
+            <th>Yetkili Kişi</th>
+            <th>Telefon</th>
+            <th>Email</th>
+            <th>Vergi No</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tedarikci in tedarikciler)
+        {
+            <tr>
+                <td>@tedarikci.TedarikciKodu</td>
+                <td>@tedarikci.FirmaAdi</td>
+                <td>@tedarikci.YetkiliKisi</td>
+                <td>@tedarikci.Tel</td>
+                <td>@tedarikci.Email</td>
+                <td>@tedarikci.VergiNo</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" 
+                    @onclick="() => Duzenle(tedarikci)">
+                        Düzenle
+                    </button>
+                    <button class="btn btn-danger btn-sm ms-2" 
+                    @onclick="() => Sil(tedarikci.Id)">
+                        Sil
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (showModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @(duzenlemeModu ? "Tedarikçi Düzenle" : "Yeni Tedarikçi")
+                    </h5>
+                    <button type="button" class="btn-close" 
+                    @onclick="ModalKapat"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tedarikçi Kodu</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.TedarikciKodu" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Firma Adı</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.FirmaAdi" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yetkili Kişi</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.YetkiliKisi" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefon</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.Tel" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.Email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Adres</label>
+                        <textarea class="form-control" rows="3" 
+                        @bind="yeniTedarikci.Adres"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fax</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.Fax" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vergi No</label>
+                        <input class="form-control" 
+                        @bind="yeniTedarikci.VergiNo" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" 
+                    @onclick="ModalKapat">İptal</button>
+                    <button class="btn btn-success" 
+                    @onclick="Kaydet">Kaydet</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    private bool showModal = false;
+    private bool duzenlemeModu = false;
+
+    private List<Tedarikci> tedarikciler = new();
+    private Tedarikci yeniTedarikci = new();
+
+    protected override void OnInitialized()
+    {
+        tedarikciler = TedarikciService.GetAllTedarikci();
+    }
+
+    private void YeniTedarikci()
+    {
+        yeniTedarikci = new Tedarikci();
+        duzenlemeModu = false;
+        showModal = true;
+    }
+
+    private void ModalKapat()
+    {
+        showModal = false;
+        duzenlemeModu = false;
+    }
+
+    private void Kaydet()
+    {
+        if (duzenlemeModu)
+        {
+            TedarikciService.UpdateTedarikci(yeniTedarikci);
+        }
+        else
+        {
+            TedarikciService.AddTedarikci(yeniTedarikci);
+        }
+
+        tedarikciler = TedarikciService.GetAllTedarikci();
+        showModal = false;
+        duzenlemeModu = false;
+        yeniTedarikci = new Tedarikci();
+    }
+
+    private void Duzenle(Tedarikci tedarikci)
+    {
+        yeniTedarikci = new Tedarikci
+        {
+            Id = tedarikci.Id,
+            TedarikciKodu = tedarikci.TedarikciKodu,
+            FirmaAdi = tedarikci.FirmaAdi,
+            YetkiliKisi = tedarikci.YetkiliKisi,
+            Tel = tedarikci.Tel,
+            Email = tedarikci.Email,
+            Adres = tedarikci.Adres,
+            Fax = tedarikci.Fax,
+            VergiNo = tedarikci.VergiNo
+        };
+
+        duzenlemeModu = true;
+        showModal = true;
+    }
+
+    private void Sil(int id)
+    {
+        TedarikciService.DeleteTedarikci(id);
+        tedarikciler = TedarikciService.GetAllTedarikci();
+    }
 }

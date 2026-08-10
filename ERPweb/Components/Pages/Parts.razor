@@ -1,5 +1,275 @@
-﻿<h3>Parts</h3>
+﻿@page "/parts"
+@rendermode InteractiveServer
 
-@code {
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
 
+@inject IParcaService ParcaService
+@inject IKategoriService KategoriService
+@inject ITedarikciService TedarikciService
+@inject IRafService RafService
+
+<h3>Parça Yönetimi</h3>
+<hr />
+<button class="btn btn-primary" @onclick="YeniParca">
+    + Yeni Parça
+</button>
+<hr />
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Parça Kodu</th>
+            <th>Parça Adı</th>
+            <th>Kategori</th>
+            <th>Tedarikçi</th>
+            <th>Marka</th>
+            <th>Model</th>
+            <th>Stok</th>
+            <th>Alış Fiyatı</th>
+            <th>Satış Fiyatı</th>
+            <th>Raf</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parca in parcalar)
+        {
+            <tr>
+                <td>@parca.ParcaKodu</td>
+                <td>@parca.ParcAdi</td>
+                <td>@parca.Kategori?.KategoriAdi</td>
+                <td>@parca.Tedarikci?.FirmaAdi</td>
+                <td>@parca.Marka</td>
+                <td>@parca.Model</td>
+                <td>@parca.MevcutStok</td>
+                <td>@parca.AlisFiyat</td>
+                <td>@parca.SatisFiyat</td>
+                <td>@parca.RafId</td>
+                <td>
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="() => Duzenle(parca)">
+                        Düzenle
+                    </button>
+
+                    <button class="btn btn-danger btn-sm ms-2"
+                            @onclick="() => Sil(parca.Id)">
+                        Sil
+                    </button>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (showModal)
+{
+    <div class="modal d-block tab-index='-1'" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @(duzenlemeModu ? "Parça Düzenle" : "Yeni Parça")
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="ModalKapat"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Parça Kodu</label>
+                        <input class="form-control" @bind="yeniParca.ParcaKodu" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Parça Adı</label>
+                        <input class="form-control" @bind="yeniParca.ParcAdi" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" @bind="yeniParca.KategoriId">
+                            <option value="0">-- Kategori Seçin --</option>
+                            @foreach (var kategori in kategoriler)
+                            {
+                                <option value="@kategori.Id">@kategori.KategoriAdi</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tedarikçi</label>
+                        <select class="form-select" @bind="yeniParca.TedarikciId">
+                            <option value="0">-- Tedarikçi Seçin --</option>
+                            @foreach (var tedarikci in tedarikciler)
+                            {
+                                <option value="@tedarikci.Id">@tedarikci.FirmaAdi</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Marka</label>
+                        <input class="form-control" @bind="yeniParca.Marka" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model</label>
+                        <input class="form-control" @bind="yeniParca.Model" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Malzeme</label>
+                        <input class="form-control" @bind="yeniParca.Malzeme"/>
+                    </div>
+                    <div class="mb-3">
+                        <label>Ağırlık</label>
+                        <input class="form-control" @bind="yeniParca.Agirlik" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Uzunluk</label>
+                        <input type="number" class="form-control" @bind="yeniParca.Uzunluk" />
+                    </div>
+                     <div class="mb-3">
+                         <label>Renk</label>
+                         <input class="form-control"
+							   @bind="yeniParca.Renk" />
+                     </div>
+                     <div class="mb-3">
+                         <label>Birim</label>
+                         <input class="form-control"
+                         @bind="yeniParca.Birim" />
+                     </div>
+
+                     <div class="mb-3">
+                         <label>Alış Fiyatı</label>
+                         <input type="number" step="0.01"
+                         class="form-control"
+							   @bind="yeniParca.AlisFiyat" />
+					</div>
+
+                            <div class="mb-3">
+                                <label>Satış Fiyatı</label>
+                                <input type="number" step="0.01"
+                                class="form-control"
+                                @bind="yeniParca.SatisFiyat" />
+                     </div>
+                     <div class="mb-3">
+                         <label>Mevcut Stok</label>
+                         <input type="number"
+                             class="form-control"
+                             @bind="yeniParca.MevcutStok"/>
+                     </div>
+                     <div class="mb-3">
+                         <label>Minimum Stok</label>
+                         <input type="number"
+                             class="form-control"
+                             @bind="yeniParca.MinimumStok" />
+                     </div>
+                     <div class="mb-3">
+                         <label>Raf</label>
+                         <select class="form-select" @bind="yeniParca.RafId">
+                             <option value ="">-- Raf Seçin --</option>
+                             @foreach (var raf in raflar)
+                             {
+                                 <option value="@raf.Id">
+                                     @raf.Id</option>
+							 }
+                         </select>
+                     </div>
+                     <div class="mb-3">
+                         <label>Açıklama</label>
+                         <textarea class="form-control"
+                         rows="3"
+                         @bind="yeniParca.Aciklama"></textarea>
+                     </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="ModalKapat">İptal</button>
+                    <button class="btn btn-success" @onclick="Kaydet">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    private bool showModal = false;
+    private bool duzenlemeModu = false;
+    private List<Parca> parcalar = new();
+    private List<Kategori> kategoriler = new();
+    private List<Tedarikci> tedarikciler = new();
+    private List<Raflar> raflar = new();
+    private Parca yeniParca = new();
+
+    protected override void OnInitialized()
+    {
+        parcalar = ParcaService.GetAllParca();
+        kategoriler = KategoriService.GetAllKategori();
+        tedarikciler = TedarikciService.GetAllTedarikci();
+        raflar = RafService.GetAll();
+    }
+
+    private void YeniParca()
+    {
+        yeniParca = new Parca();
+        duzenlemeModu = false;
+        showModal = true;
+    }
+
+    private void ModalKapat()
+    {
+        showModal = false;
+    }
+
+    private void Kaydet()
+    {
+        if(duzenlemeModu)
+        {
+            ParcaService.UpdateParca(yeniParca);
+        }
+        else
+        {
+            ParcaService.AddParca(yeniParca);
+		}
+		parcalar = ParcaService.GetAllParca();
+		showModal = false;
+		duzenlemeModu = false;
+		yeniParca = new Parca();
+
+    }
+    private void Duzenle(Parca parca)
+    {
+        yeniParca = new Parca
+        {
+            Id = parca.Id,
+            ParcaKodu = parca.ParcaKodu,
+            ParcAdi = parca.ParcAdi,
+            KategoriId = parca.KategoriId,
+            TedarikciId = parca.TedarikciId,
+            Marka = parca.Marka,
+            Model = parca.Model,
+            Malzeme = parca.Malzeme,
+            Agirlik = parca.Agirlik,
+            Uzunluk = parca.Uzunluk,
+            Genislik = parca.Genislik,
+            Yukseklik = parca.Yukseklik,
+            Renk = parca.Renk,
+            Birim = parca.Birim,
+            AlisFiyat = parca.AlisFiyat,
+            SatisFiyat = parca.SatisFiyat,
+            MevcutStok = parca.MevcutStok,
+            MinimumStok = parca.MinimumStok,
+            RafId = parca.RafId,
+            Aciklama = parca.Aciklama
+        };
+
+        duzenlemeModu = true;
+        showModal = true;
+    }
+    private void Sil(int id)
+    {
+        var parca = ParcaService.GetById(id);
+        if (parca != null)
+        {
+            ParcaService.RemoveParca(parca);
+            parcalar = ParcaService.GetAllParca();
+        }
+
+    }
 }

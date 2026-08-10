@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Erpyonetimi.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Erpyonetimi.Data.Repositories
@@ -21,7 +22,9 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Tedarikci> GetAll()
         {
-            return _context.Tedarikciler.ToList();
+            return _context.Tedarikciler
+                .AsNoTracking()
+                .ToList();
         }
 
         public void Add(Tedarikci tedarikci)

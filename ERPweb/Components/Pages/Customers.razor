@@ -1,5 +1,49 @@
-﻿<h3>Customers</h3>
+﻿@page "/customers"
+@rendermode InteractiveServer
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
 
-@code {
+@inject IMusteriService MusteriService
+<h3>Müşteri Yönetimi</h3>
 
+<button class="btn btn-primary">
+	+Yeni Müşteri
+</button>
+
+<table class="contenteditable table-striped mt-3">
+	<thead>
+		<tr>
+			<th>Müşteri Kodu</th>
+			<th>Firma Adı</th>
+			<th>Yetkili Kişi</th>
+			<th>Telefon</th>
+			<th>Email</th>
+			<th>Vergi No</th>
+
+
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var musteri in musteriler)
+		{
+			<tr>
+				<td>@musteri.MusteriKodu</td>
+				<td>@musteri.FirmaAdi</td>
+				<td>@musteri.YetkiliKisi</td>
+				<td>@musteri.Tel</td>
+				<td>@musteri.Email</td>
+				<td>@musteri.VergiNo</td>
+			</tr>
+		}
+		
+	</tbody>
+</table>
+
+@code
+{
+	private List<Musteri> musteriler = new();
+	protected override void OnInitialized()
+	{
+		musteriler = MusteriService.GetAll();
+	}
 }
