@@ -28,6 +28,9 @@ namespace Erpyonetimi.ViewModels
         private readonly ParcaViewModel _parcaViewModel;
         private readonly UsersYonetimViewModel _usersYonetimViewModel;
         private readonly KategoriViewModel _kategoriViewModel;
+        private readonly StokHareketViewModel _stokHareketViewModel;
+        private readonly DepoViewModel _depoViewModel;
+        private readonly RafViewModel _rafViewModel;
         public Visibility Sidemenugorunme
         {
             get
@@ -60,21 +63,30 @@ namespace Erpyonetimi.ViewModels
         public ICommand ParcaCommand { get; }
         public ICommand KategoriCommand { get; }
       
+        public ICommand RafCommand { get; }
+        public ICommand StokHCommand { get; }
+        public ICommand DepoCommand { get; }
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
-            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel)
+            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
+            DepoViewModel depoViewModel, RafViewModel rafViewModel)
         {
             _usersYonetimViewModel = usersYonetimViewModel;
             _dashboardViewModel = dashboardViewModel;
             _tedarikciViewModel= tedarikciViewModel;
             _parcaViewModel = parcaViewModel;
             _kategoriViewModel = kategoriViewModel;
+            _stokHareketViewModel = stokHareketViewModel;
+            _depoViewModel = depoViewModel;
+            _rafViewModel = rafViewModel;
             CurrentView = new LoginViewModel(this);
             UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
             TedarikciCommand = new RelayCommand(OpenTedarikci);
             ParcaCommand = new RelayCommand(OpenParca);
             KategoriCommand = new RelayCommand(OpenKat);
-
+            StokHCommand = new RelayCommand(OpenStok);
+            DepoCommand = new RelayCommand(OpenDepo);
+            RafCommand = new RelayCommand(OpenRaf);
         }
 
         public void Kullanicigirisyapti(Users users)
@@ -86,6 +98,18 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(UserPanelVisibility));
         }
       
+        private void OpenRaf()
+        {
+            CurrentView= _rafViewModel;
+        }
+        private void OpenDepo()
+        {
+            CurrentView = _depoViewModel;
+        }
+        private void OpenStok()
+        {
+            CurrentView = _stokHareketViewModel;
+        }
         private void OpenParca()
         {
             CurrentView = _parcaViewModel;

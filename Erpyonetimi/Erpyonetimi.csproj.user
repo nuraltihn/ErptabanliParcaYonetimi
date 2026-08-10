@@ -8,6 +8,9 @@
     <Compile Update="Views\DashboardView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\DepoView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\KategoriView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -15,6 +18,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\ParcaView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\RafView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\StokHareketView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\TedarikciView.xaml.cs">

@@ -22,8 +22,12 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Depolar depo)
         {
-            _context.Depolar.Remove(depo);
-            _context.SaveChanges();
+            var silinecek =_context.Depolar.FirstOrDefault(x=>x.Id== depo.Id);
+            if (silinecek != null)
+            {
+                _context.Depolar.Remove(silinecek);
+                _context.SaveChanges();
+            }
         }
 
         public List<Depolar> GetAll()
@@ -38,8 +42,13 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Depolar depo)
         {
-            _context.Depolar.Update(depo);
-            _context.SaveChanges();
+            var guncelleme =_context.Depolar.FirstOrDefault(x=>x.Id == depo.Id);
+            if (guncelleme != null) 
+            {
+                guncelleme.Depaadi = depo.Depaadi;
+                guncelleme.Konum = depo.Konum;
+                _context.SaveChanges();
+            }
         }
     }
 }

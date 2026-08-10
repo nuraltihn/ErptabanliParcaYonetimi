@@ -36,8 +36,8 @@ namespace Erpyonetimi.ViewModels
         public int MinimumStok { get => _minimumStok; set { _minimumStok = value; OnPropertyChanged(); } }
         private string _aciklama = string.Empty;
         public string Aciklama { get => _aciklama; set { _aciklama = value; OnPropertyChanged(); } }
-        private Kategori _secilikategori;
-        public Kategori SeciliKategori
+        private Kategori? _secilikategori;
+        public Kategori? SeciliKategori
         {
             get => _secilikategori;
             set
@@ -46,8 +46,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private Tedarikci _seciliTedarikci;
-        public Tedarikci SeciliTedarikci
+        private Tedarikci? _seciliTedarikci;
+        public Tedarikci? SeciliTedarikci
         {
             get => _seciliTedarikci;
             set
@@ -70,6 +70,8 @@ namespace Erpyonetimi.ViewModels
                     ParcaKodu= value.ParcaKodu;
                     ParcAdi = value.ParcAdi;
                     Marka = value.Marka;
+                    SeciliKategori= Kategoriler.FirstOrDefault(x=>x.Id== value.Kategori.Id);
+                    SeciliTedarikci= Tedarikciler.FirstOrDefault(x=>x.Id== value.Tedarikci.Id);
                     KategoriId= value.KategoriId;
                     TedarikciId = value.TedarikciId;
                     AlisFiyat = value.AlisFiyat;
@@ -143,13 +145,15 @@ namespace Erpyonetimi.ViewModels
             MessageBox.Show(
     $"ParcaKodu = {ParcaKodu}\n" +
     $"ParcAdi = {ParcAdi}"
-);
+);     
             MessageBox.Show($"kategoriId:{KategoriId}");
             var parca = new Parca
             {
+                
                 ParcaKodu = ParcaKodu,
                 ParcAdi = ParcAdi,
                 Marka = Marka,
+           
                 KategoriId = SeciliKategori.Id,
                 TedarikciId = SeciliTedarikci.Id,
                 AlisFiyat = AlisFiyat,
@@ -169,9 +173,15 @@ namespace Erpyonetimi.ViewModels
         {
             if (SeciliParca == null)
                 return;
+            if(SeciliKategori==null|| SeciliTedarikci == null)
+            {
+                MessageBox.Show("Kategori ve tedarikçi seçiniz.");
+                return;
+            }
             SeciliParca.ParcaKodu = ParcaKodu;
             SeciliParca.ParcAdi = ParcAdi;
             SeciliParca.Marka = Marka;
+
             SeciliParca.KategoriId = SeciliKategori.Id;
             SeciliParca.TedarikciId= SeciliTedarikci.Id;
             SeciliParca.AlisFiyat= AlisFiyat;
@@ -231,7 +241,7 @@ namespace Erpyonetimi.ViewModels
             MevcutStok = 0;
             MinimumStok = 0;
             SeciliKategori = null;
-            SeciliKategori = null;
+            SeciliTedarikci = null;
         }
     }
 }
