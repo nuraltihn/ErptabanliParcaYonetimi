@@ -162,6 +162,8 @@ namespace Erpyonetimi.ViewModels
 
         private void Ekle()
         {
+            if (TedarikciKodu == null || FirmaAdi==null|| YetkiliKisi==null)
+                return;
             if (!UserSession.IsAdmin)
                 return;
 

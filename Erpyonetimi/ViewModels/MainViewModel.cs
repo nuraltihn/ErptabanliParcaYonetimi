@@ -31,6 +31,7 @@ namespace Erpyonetimi.ViewModels
         private readonly StokHareketViewModel _stokHareketViewModel;
         private readonly DepoViewModel _depoViewModel;
         private readonly RafViewModel _rafViewModel;
+        private readonly MusteriViewModel _musteriViewModel;
         public Visibility Sidemenugorunme
         {
             get
@@ -66,9 +67,10 @@ namespace Erpyonetimi.ViewModels
         public ICommand RafCommand { get; }
         public ICommand StokHCommand { get; }
         public ICommand DepoCommand { get; }
+        public ICommand MusteriCommand { get; }
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
             ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
-            DepoViewModel depoViewModel, RafViewModel rafViewModel)
+            DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel)
         {
             _usersYonetimViewModel = usersYonetimViewModel;
             _dashboardViewModel = dashboardViewModel;
@@ -78,6 +80,7 @@ namespace Erpyonetimi.ViewModels
             _stokHareketViewModel = stokHareketViewModel;
             _depoViewModel = depoViewModel;
             _rafViewModel = rafViewModel;
+            _musteriViewModel = musteriViewModel;
             CurrentView = new LoginViewModel(this);
             UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
@@ -87,6 +90,7 @@ namespace Erpyonetimi.ViewModels
             StokHCommand = new RelayCommand(OpenStok);
             DepoCommand = new RelayCommand(OpenDepo);
             RafCommand = new RelayCommand(OpenRaf);
+            MusteriCommand = new RelayCommand(OpenMusteri);
         }
 
         public void Kullanicigirisyapti(Users users)
@@ -97,7 +101,10 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(UserPanelgor));
             OnPropertyChanged(nameof(UserPanelVisibility));
         }
-      
+      private void OpenMusteri()
+        {
+            CurrentView = _musteriViewModel;
+        }
         private void OpenRaf()
         {
             CurrentView= _rafViewModel;

@@ -69,8 +69,8 @@ namespace Erpyonetimi.ViewModels
       
         private void Ekle()
         {
-            MessageBox.Show("ekle çalıştı");
-            
+            if (KategoriAdi == null && Aciklama == null)
+                return;
             var kategori = new Kategori
             {
                 KategoriAdi = KategoriAdi,

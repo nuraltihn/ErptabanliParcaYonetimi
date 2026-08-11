@@ -141,12 +141,13 @@ namespace Erpyonetimi.ViewModels
 
         
         private void Ekle()
+            
         {
-            MessageBox.Show(
-    $"ParcaKodu = {ParcaKodu}\n" +
-    $"ParcAdi = {ParcAdi}"
-);     
-            MessageBox.Show($"kategoriId:{KategoriId}");
+            if (SeciliParca == null)
+                return;
+            if (ParcAdi == null && ParcaKodu==null)
+                return; 
+ 
             var parca = new Parca
             {
                 

@@ -6,6 +6,7 @@ using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.ViewModels;
 using Erpyonetimi.Views;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,9 +53,25 @@ namespace Erpyonetimi
             services.AddTransient<StokHareketView>();
             services.AddTransient<DepoView>();
             services.AddTransient<RafView>();
+            services.AddTransient<MusteriView>();
 
+            string sqlConn =
+    "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
 
-            services.AddDbContext<ErpDbContext>(options=> options.UseSqlServer("Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"));
+            services.AddDbContext<ErpDbContext>(options =>
+            {
+                try
+                {
+                    using var conn = new SqlConnection(sqlConn);
+                    conn.Open();
+
+                    options.UseSqlServer(sqlConn);
+                }
+                catch
+                {
+                    options.UseSqlite("Data Source=erp.db");
+                }
+            });
             services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<IParcaRepository, ParcaRepository>();
             services.AddTransient<IParcaService, ParcaService>();
@@ -82,6 +99,7 @@ namespace Erpyonetimi
             services.AddTransient<KategoriViewModel>();
             services.AddTransient<DepoViewModel>();
             services.AddTransient<RafViewModel>();
+            services.AddTransient<MusteriViewModel>();
             
             services.AddTransient<ParcaViewModel>();
            
@@ -89,6 +107,7 @@ namespace Erpyonetimi
        
             services.AddTransient<UsersYonetimViewModel>();
             services.AddTransient<StokHareketViewModel>();
+            
  
         }
         protected override async void OnStartup(StartupEventArgs e)

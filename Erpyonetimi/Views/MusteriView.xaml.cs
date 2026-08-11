@@ -1,5 +1,4 @@
-﻿using Erpyonetimi.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -15,22 +14,13 @@ using System.Windows.Shapes;
 namespace Erpyonetimi.Views
 {
     /// <summary>
-    /// LoginView.xaml etkileşim mantığı
+    /// Interaction logic for MusteriView.xaml
     /// </summary>
-    public partial class LoginView : UserControl
+    public partial class MusteriView : UserControl
     {
-        public LoginView()
+        public MusteriView()
         {
             InitializeComponent();
         }
-
-
-        //private void Passwordkutu_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
-        //{
-        //    if(DataContext is LoginViewModel vm)
-        //    {
-        //        vm.Sifre = PasswordBox.Password;
-        //    }
-        //}
     }
 }
