@@ -93,6 +93,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Depo seçiniz");
                 return;
             }
+            if (RafKodu == null)
+                return;
             var raf = new Raflar
             {
                 RafKodu = RafKodu,

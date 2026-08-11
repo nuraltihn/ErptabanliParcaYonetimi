@@ -91,15 +91,15 @@
             <DataGrid Grid.Row="1" ItemsSource="{Binding Parcalar}" SelectedItem="{Binding SeciliParca}"
                       AutoGenerateColumns="False">
                 <DataGrid.Columns>
-                <DataGridTextColumn Header="Kod" Binding="{Binding ParcaKodu}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding ParcAdi}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding Marka}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding Kategori.KategoriAdi}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding Tedarikci.FirmaAdi}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding AlisFiyat}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding SatisFiyat}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding MevcutStok}"/>
-                <DataGridTextColumn Header="Kod" Binding="{Binding MinimumStok}"/>
+                <DataGridTextColumn Header="ParcaKodu" Binding="{Binding ParcaKodu}"/>
+                <DataGridTextColumn Header="ParcAdi" Binding="{Binding ParcAdi}"/>
+                <DataGridTextColumn Header="Marka" Binding="{Binding Marka}"/>
+                <DataGridTextColumn Header="Kategori" Binding="{Binding Kategori.KategoriAdi}"/>
+                <DataGridTextColumn Header="Tedarikçi" Binding="{Binding Tedarikci.FirmaAdi}"/>
+                <DataGridTextColumn Header="Alış Fiyatı" Binding="{Binding AlisFiyat}"/>
+                <DataGridTextColumn Header="Satis FFiyatı" Binding="{Binding SatisFiyat}"/>
+                <DataGridTextColumn Header="Mevcut Stok" Binding="{Binding MevcutStok}"/>
+                <DataGridTextColumn Header="Minimum Stok" Binding="{Binding MinimumStok}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

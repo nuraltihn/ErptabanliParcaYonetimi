@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Collections.Generic;
@@ -12,19 +13,18 @@ namespace Erpyonetimi.Context
         {
             var optionsBuilder = new DbContextOptionsBuilder<ErpDbContext>();
 
-            optionsBuilder.UseSqlServer(
-                "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;",
-                sqlOptions =>
-                {
-                   
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(10),
-                        errorNumbersToAdd: null);
+            string sqlConn=
+                "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
 
-                    sqlOptions.CommandTimeout(60);
-                });
-
+           try{
+                using var conn = new SqlConnection(sqlConn);
+                conn.Open();
+                optionsBuilder.UseSqlServer(sqlConn);
+            }
+            catch
+            {
+                optionsBuilder.UseSqlite("Data Source=erp.db");
+            }
             return new ErpDbContext(optionsBuilder.Options);
         }
     }

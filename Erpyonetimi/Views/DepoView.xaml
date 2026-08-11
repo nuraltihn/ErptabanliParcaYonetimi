@@ -35,11 +35,11 @@
             <TextBox Text="{Binding Konum}" Grid.Row="0" Grid.Column="3" Margin="5"/>
 
             <StackPanel Grid.Row="1" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0 10 0 0">
-                <Button Content="Ekle" Width="100" Margin="5" Command="{Binding DepoEkleCommand}"/>
+                <Button Cursor="Hand" Content="Ekle" Width="100" Margin="5" Command="{Binding DepoEkleCommand}"/>
 
                 <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding DepoGuncelleCommand}"/>
 
-                <Button Content="Sil" Width="100" Margin="5" Command="{Binding DepSilCommand}"/>
+                <Button Content="Sil" Width="100" Margin="5" Command="{Binding DepoSilCommand}"/>
 
             </StackPanel>
         </Grid>

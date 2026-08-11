@@ -22,8 +22,14 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Musteri musteri)
         {
-            _context.Musteriler.Remove(musteri);
+            var silinecek = _context.Musteriler.FirstOrDefault(x=>x.Id == musteri.Id);
+            if(silinecek != null)
+            {
+            _context.Musteriler.Remove(silinecek);
             _context.SaveChanges();
+
+            }
+            
         }
 
         public List<Musteri> GetAll()
@@ -45,23 +51,22 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Musteri musteri)
         {
-            var mevcut = _context.Musteriler.Find(musteri.Id);
-            if(mevcut != null)
-            {
-                mevcut.MusteriKodu = musteri.MusteriKodu;
-                mevcut.FirmaAdi = musteri.FirmaAdi;
-                mevcut.YetkiliKisi = musteri.YetkiliKisi;
-                mevcut.Ad = musteri.Ad;
-                mevcut.Soyad = musteri.Soyad;
-                mevcut.Adres = musteri.Adres;
-                mevcut.Sehir = musteri.Sehir;
-                mevcut.Tel = musteri.Tel;
-                mevcut.Email = musteri.Email;
-                mevcut.VergiNo = musteri.VergiNo;
-                mevcut.Fax = musteri.Fax;
-                _context.SaveChanges();
+            var mevcut = _context.Musteriler.FirstOrDefault(x => x.Id == musteri.Id);
+            if (mevcut == null)
+                return;
 
-            }
+            mevcut.MusteriKodu = musteri.MusteriKodu;
+            mevcut.FirmaAdi = musteri.FirmaAdi;
+            mevcut.YetkiliKisi = musteri.YetkiliKisi;
+            mevcut.Ad = musteri.Ad;
+            mevcut.Soyad = musteri.Soyad;
+            mevcut.Adres = musteri.Adres;
+            mevcut.Sehir = musteri.Sehir;
+            mevcut.Tel = musteri.Tel;
+            mevcut.Email = musteri.Email;
+            mevcut.VergiNo = musteri.VergiNo;
+            mevcut.Fax = musteri.Fax;
+            _context.SaveChanges();
         }
     }
 }

@@ -65,6 +65,8 @@ namespace Erpyonetimi.ViewModels
 
         private void Ekle()
         {
+            if (Depaadi == null && Konum == null)
+                return;
             var depo = new Depolar
             {
                 Depaadi = Depaadi,
@@ -78,14 +80,12 @@ namespace Erpyonetimi.ViewModels
         }
         private void Sil()
         {
-            if (SeciliDepo == null)
-                return;
-
+            if(SeciliDepo== null) return;
             _depoService.DeleteDepo(SeciliDepo);
            
             MessageBox.Show("Depo silindi");
             Temizle();
-          
+           
             Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
             OnPropertyChanged(nameof(Depolar));
         }

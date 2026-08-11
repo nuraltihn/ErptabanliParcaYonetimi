@@ -14,6 +14,7 @@ using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Data.Repositories;
+using System.Windows.Controls;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -32,14 +33,14 @@ namespace Erpyonetimi.ViewModels
         }
 
 
-        private string _sifre = "";
-        public string Sifre
-        {
-            get => _sifre;
-            set { _sifre = value; 
-            OnPropertyChanged(nameof(Sifre));  
-            }
-        }
+        //private string _sifre = "";
+        //public string Sifre
+        //{
+        //    get => _sifre;
+        //    set { _sifre = value; 
+        //    OnPropertyChanged(nameof(Sifre));  
+        //    }
+        //}
 
         public ICommand GirisCommand { get; }
         private readonly MainViewModel _mainViewModel;
@@ -53,18 +54,23 @@ namespace Erpyonetimi.ViewModels
             GirisCommand = new RelayCommand(Login);
         }
 
-        private void Login()
+        private void Login(object parameter)
         {
-            var user = _authservice.Login(KullaniciAdi, Sifre);
-            
-            if(user != null)
+            if(parameter is PasswordBox passwordBox)
             {
-                _mainViewModel.Kullanicigirisyapti(user);
+                var password = passwordBox.Password ?? "";
+                var user = _authservice.Login(KullaniciAdi, password);
+
+                if (user != null)
+                {
+                    _mainViewModel.Kullanicigirisyapti(user);
+                }
+                else
+                {
+                    MessageBox.Show("Kullanıcı yada şifre hatalı.");
+                }
             }
-            else
-            {
-                MessageBox.Show("Kullanıcı yada şifre hatalı.");
-            }
+          
         }
 
     }
