@@ -45,8 +45,23 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Musteri musteri)
         {
-            _context.Musteriler.Update(musteri);
-            _context.SaveChanges();
+            var mevcut = _context.Musteriler.Find(musteri.Id);
+            if(mevcut != null)
+            {
+                mevcut.MusteriKodu = musteri.MusteriKodu;
+                mevcut.FirmaAdi = musteri.FirmaAdi;
+                mevcut.YetkiliKisi = musteri.YetkiliKisi;
+                mevcut.Ad = musteri.Ad;
+                mevcut.Soyad = musteri.Soyad;
+                mevcut.Adres = musteri.Adres;
+                mevcut.Sehir = musteri.Sehir;
+                mevcut.Tel = musteri.Tel;
+                mevcut.Email = musteri.Email;
+                mevcut.VergiNo = musteri.VergiNo;
+                mevcut.Fax = musteri.Fax;
+                _context.SaveChanges();
+
+            }
         }
     }
 }

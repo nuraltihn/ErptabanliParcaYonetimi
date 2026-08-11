@@ -70,13 +70,13 @@
 			<tr>
 				<td>@kategori.KategoriAdi</td>
 				<td>@kategori.Aciklama</td>
-				<td>
-					<button class="btn btn-warning btn-sm"
-					@onclick="() => Sil(kategori.Id)">
-				       Sil </button>
-					   <button class="btn btn-danger btn-sm ms-2"
+				<td>					<button class="btn btn-warning btn-sm ms-2"
 					   @onclick="() => Duzenle(kategori)">
 					   Düzenle </button>
+					<button class="btn btn-danger btn-sm ms-2"
+					@onclick="() => Sil(kategori.Id)">
+				       Sil </button>
+
 				</td>
 			</tr>
 		}
@@ -138,5 +138,5 @@
 		duzenlemeModu = true;
 		showModal = true;
 	}
-	private string aramaMetni = "";
+	
 }

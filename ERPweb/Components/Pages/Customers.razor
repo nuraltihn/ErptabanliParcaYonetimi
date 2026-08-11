@@ -6,11 +6,11 @@
 @inject IMusteriService MusteriService
 <h3>Müşteri Yönetimi</h3>
 
-<button class="btn btn-primary">
+<button class="btn btn-primary" @onclick="YeniMusteri">
 	+Yeni Müşteri
 </button>
 
-<table class="contenteditable table-striped mt-3">
+<table class="table table-striped mt-3">
 	<thead>
 		<tr>
 			<th>Müşteri Kodu</th>
@@ -19,7 +19,7 @@
 			<th>Telefon</th>
 			<th>Email</th>
 			<th>Vergi No</th>
-
+			<th>İşlemler</th>
 
 		</tr>
 	</thead>
@@ -33,17 +33,197 @@
 				<td>@musteri.Tel</td>
 				<td>@musteri.Email</td>
 				<td>@musteri.VergiNo</td>
+				<td><button class="btn btn-warning btn-sm"
+					@onclick="() => Duzenle(musteri)">
+					Düzenle
+				</button>
+				<button class="btn btn-danger btn-sm ms-2"
+				@onclick="() => Sil(musteri.Id)">
+			Sil</button>
+			</td>
+				
+
 			</tr>
 		}
 		
 	</tbody>
 </table>
 
+@if (showModal)
+{
+	<div class="modal d-block" tabindex="-1"
+		 style="background-color:rgba(0,0,0,0.5);">
+
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title">
+						@(duzenlemeModu ? "Müşteri Düzenle" : "Yeni Müşteri")
+					</h5>
+
+					<button type="button"
+							class="btn-close"
+							@onclick="ModalKapat">
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<div class="mb-3">
+					<label>Müşteri Kodu</label>
+					<input class="form-control"
+					@bind="yeniMusteri.MusteriKodu" />
+					</div>
+
+					<div class="mb-3">
+				<label>Firma Adı</label>
+					<input class="form-control"
+					@bind="yeniMusteri.FirmaAdi" />
+					</div>
+
+					<div class="mb-3">
+					<label>Yetkili Kişi</label>
+					<input class="form-control"
+					 @bind="yeniMusteri.YetkiliKisi" />
+					</div>
+
+					<div class="mb-3">
+					<label>Ad</label>
+					<input class="form-control"
+					@bind="yeniMusteri.Ad" />
+					</div>
+
+					<div class="mb-3">
+					<label>Soyad</label>
+					<input class="form-control"
+					@bind="yeniMusteri.Soyad" />
+					</div>
+
+					<div class="mb-3">
+						<label>Adres</label>
+						<textarea class="form-control"
+						@bind="yeniMusteri.Adres">
+                        </textarea>
+						</div>
+
+						<div class="mb-3">
+						<label>Şehir</label>
+						<input class="form-control"
+						 @bind="yeniMusteri.Sehir" />
+						</div>
+
+						<div class="mb-3">
+						<label>Telefon</label>
+						<input class="form-control"
+					     @bind="yeniMusteri.Tel" />
+						</div>
+
+						<div class="mb-3">
+						<label>Email</label>
+						<input class="form-control"
+					    @bind="yeniMusteri.Email" />
+						</div>
+
+						<div class="mb-3">
+						<label>Vergi No</label>
+						<input class="form-control"
+						@bind="yeniMusteri.VergiNo" />
+						</div>
+
+						<div class="mb-3">
+						<label>Fax</label>
+						<input class="form-control"
+						@bind="yeniMusteri.Fax" />
+						</div>
+
+					</div>
+
+					<div class="modal-footer">
+
+						<button class="btn btn-secondary"
+								@onclick="ModalKapat">
+							İptal
+						</button>
+
+						<button class="btn btn-success"
+								@onclick="Kaydet">
+							Kaydet
+						</button>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	}
+
 @code
 {
+	private bool showModal = false;
+	private bool duzenlemeModu = false;
+
 	private List<Musteri> musteriler = new();
+	private Musteri yeniMusteri = new();
+
 	protected override void OnInitialized()
 	{
 		musteriler = MusteriService.GetAll();
+	}
+
+	private void YeniMusteri()
+	{
+		yeniMusteri = new Musteri();
+		duzenlemeModu = false;
+		showModal = true;
+	}
+	private void ModalKapat()
+	{
+		showModal = false;
+	}
+	private void Kaydet()
+	{
+		if(duzenlemeModu)
+		{
+			MusteriService.UpdateMusteri(yeniMusteri);
+		}
+		else
+		{
+			MusteriService.AddMusteri(yeniMusteri);
+		}
+		musteriler = MusteriService.GetAll();
+		showModal = false;
+		duzenlemeModu = false;
+		yeniMusteri = new Musteri();
+	}
+	private void Sil(int id)
+	{
+		var musteri = MusteriService.GetById(id);
+		if (musteri != null)
+		{
+			MusteriService.DeleteMusteri(musteri);
+			musteriler = MusteriService.GetAll();
+		}
+	}
+	private void Duzenle(Musteri musteri)
+	{
+		yeniMusteri = new Musteri
+			{
+				Id = musteri.Id,
+				MusteriKodu = musteri.MusteriKodu,
+				FirmaAdi = musteri.FirmaAdi,
+				YetkiliKisi = musteri.YetkiliKisi,
+				Ad = musteri.Ad,
+				Soyad = musteri.Soyad,
+				Adres = musteri.Adres,
+				Sehir = musteri.Sehir,
+				Tel = musteri.Tel,
+				Email = musteri.Email,
+				VergiNo = musteri.VergiNo,
+				Fax = musteri.Fax
+
+			};
+		duzenlemeModu = true;
+		showModal = true;
 	}
 }

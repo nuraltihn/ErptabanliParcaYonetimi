@@ -28,23 +28,36 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Siparis> GetAll()
         {
-            return _context.Siparisler.Include(s => s.Musteri).ToList();
+            return _context.Siparisler.Include(s => s.Musteri)
+                .AsNoTracking()
+                .ToList();
         }
 
         public Siparis? GetById(int id)
         {
-            return _context.Siparisler.FirstOrDefault(x=>x.Id == id);
+            return _context.Siparisler
+                .FirstOrDefault(x=>x.Id == id);
         }
 
         public Siparis? GetByNo(string siparisNo)
         {
-            return _context.Siparisler.FirstOrDefault(x=>x.SiparisNo == siparisNo);
+            return _context.Siparisler
+                .FirstOrDefault(x=>x.SiparisNo == siparisNo);
         }
 
         public void Update(Siparis siparis)
         {
-            _context.Siparisler.Update(siparis);
-            _context.SaveChanges();
+            var mevcut = _context.Siparisler.Find(siparis.Id);
+            if (mevcut !=null)
+            {
+                mevcut.SiparisNo = siparis.SiparisNo;
+                mevcut.MusteriId = siparis.MusteriId;
+                mevcut.SiparisTarihi = siparis.SiparisTarihi;
+                mevcut.ToplamTutar = siparis.ToplamTutar;
+                mevcut.Durum = siparis.Durum;
+
+                _context.SaveChanges();
+            }
         }
     }
 }
