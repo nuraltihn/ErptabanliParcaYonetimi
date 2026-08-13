@@ -15,6 +15,13 @@ namespace Erpyonetimi.Application.Services
         }
         public void AddParca(Parca parca)
         {
+            var mevcutParca = _parcaRepository
+                .GetAll()
+                .FirstOrDefault(x=>x.ParcaKodu == parca.ParcaKodu);
+            if (mevcutParca != null)
+            {
+                throw new InvalidOperationException("Bu parça kodu zaten mevcut.");
+            }
             _parcaRepository.Add(parca);
         }
 

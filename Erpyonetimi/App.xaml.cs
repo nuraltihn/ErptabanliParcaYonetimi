@@ -35,6 +35,7 @@ namespace Erpyonetimi
                 ConfigureServices(services,context.Configuration);
             }).Build();
 
+
             //var services = new ServiceCollection();
             //ConfigureServices(services);
             //ServiceProvider = services.BuildServiceProvider();
@@ -54,24 +55,27 @@ namespace Erpyonetimi
             services.AddTransient<DepoView>();
             services.AddTransient<RafView>();
             services.AddTransient<MusteriView>();
+            services.AddTransient<SiparisView>();
+            services.AddTransient<SiparisDetayView>();
 
             string sqlConn =
     "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
 
             services.AddDbContext<ErpDbContext>(options =>
             {
-                try
-                {
-                    using var conn = new SqlConnection(sqlConn);
-                    conn.Open();
+            try
+            {
+                using var conn = new SqlConnection(sqlConn);
+                conn.Open();
 
-                    options.UseSqlServer(sqlConn);
-                }
-                catch
-                {
-                    options.UseSqlite("Data Source=erp.db");
+                options.UseSqlServer(sqlConn);
+            }
+            catch
+            {
+                options.UseSqlite("Data Source=erp.db");
                 }
             });
+
             services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<IParcaRepository, ParcaRepository>();
             services.AddTransient<IParcaService, ParcaService>();
@@ -91,6 +95,8 @@ namespace Erpyonetimi
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IKategoriRepository, KategoriRepository>();
             services.AddTransient<IKategoriService, KategoriService>();
+            services.AddTransient<ISiparisRepository, SiparisRepository>();
+            services.AddTransient<ISiparisService, SiparisService>();
 
             services.AddTransient<MainViewModel>();
             services.AddTransient<DashboardViewModel>();
@@ -100,9 +106,9 @@ namespace Erpyonetimi
             services.AddTransient<DepoViewModel>();
             services.AddTransient<RafViewModel>();
             services.AddTransient<MusteriViewModel>();
-            
+            services.AddTransient<SiparisDetayViewModel>();
             services.AddTransient<ParcaViewModel>();
-           
+           services.AddTransient<SiparisViewModel>();
             services.AddTransient<TedarikciViewModel>();
        
             services.AddTransient<UsersYonetimViewModel>();
@@ -113,17 +119,32 @@ namespace Erpyonetimi
         protected override async void OnStartup(StartupEventArgs e)
         {
             await _host.StartAsync();
+            //try
+            //{
+            //    using var conn = new SqlConnection(
+            //        "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;"
+            //    );
 
+            //    conn.Open();
 
+            //    MessageBox.Show("SQL Server bağlantısı başarılı");
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
 
             base.OnStartup(e);
+           
+            }
+
+           
             
 
-            //Datalar.Seed();
+       
          
         }
     }
 
-}

@@ -26,6 +26,12 @@
     <Compile Update="Views\RafView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SiparisDetayView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SiparisView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\StokHareketView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

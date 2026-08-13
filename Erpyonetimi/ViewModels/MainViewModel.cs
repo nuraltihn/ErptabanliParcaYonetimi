@@ -32,6 +32,8 @@ namespace Erpyonetimi.ViewModels
         private readonly DepoViewModel _depoViewModel;
         private readonly RafViewModel _rafViewModel;
         private readonly MusteriViewModel _musteriViewModel;
+        private readonly SiparisViewModel _siparisViewModel;
+        private readonly SiparisDetayViewModel _siparisDetayViewModel;
         public Visibility Sidemenugorunme
         {
             get
@@ -68,9 +70,11 @@ namespace Erpyonetimi.ViewModels
         public ICommand StokHCommand { get; }
         public ICommand DepoCommand { get; }
         public ICommand MusteriCommand { get; }
+        public ICommand SiparisCommand { get; }
+        public ICommand SiparisDetayCommand { get; }
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
             ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
-            DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel)
+            DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel, SiparisViewModel siparisViewModel, SiparisDetayViewModel siparisDetayViewModel)
         {
             _usersYonetimViewModel = usersYonetimViewModel;
             _dashboardViewModel = dashboardViewModel;
@@ -81,6 +85,8 @@ namespace Erpyonetimi.ViewModels
             _depoViewModel = depoViewModel;
             _rafViewModel = rafViewModel;
             _musteriViewModel = musteriViewModel;
+            _siparisViewModel = siparisViewModel;
+            _siparisDetayViewModel = siparisDetayViewModel;
             CurrentView = new LoginViewModel(this);
             UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
@@ -91,15 +97,33 @@ namespace Erpyonetimi.ViewModels
             DepoCommand = new RelayCommand(OpenDepo);
             RafCommand = new RelayCommand(OpenRaf);
             MusteriCommand = new RelayCommand(OpenMusteri);
+            SiparisCommand = new RelayCommand(OpenSiparis);
+            SiparisDetayCommand = new RelayCommand(OpenSiparisDetay);
         }
 
         public void Kullanicigirisyapti(Users users)
         {
             UserSession.CurrentUser = users;
+          
+
             CurrentView = _dashboardViewModel;
+
+           
 
             OnPropertyChanged(nameof(UserPanelgor));
             OnPropertyChanged(nameof(UserPanelVisibility));
+            OnPropertyChanged(nameof(AdminVisibility));
+            OnPropertyChanged(nameof(DepoVisibility));
+            OnPropertyChanged(nameof(SatisVisibility));
+        }
+        private void OpenSiparisDetay()
+        {
+            CurrentView = _siparisDetayViewModel;
+        }
+
+        private void OpenSiparis()
+        {
+            CurrentView = _siparisViewModel;
         }
       private void OpenMusteri()
         {
@@ -153,6 +177,20 @@ namespace Erpyonetimi.ViewModels
             }
 
         }
+
+        public Visibility AdminVisibility=>
+            UserSession.CurrentUser?.Rol?.RolAdi=="Sistem Yöneticisi"
+            ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility DepoVisibility =>
+            UserSession.CurrentUser?.Rol?.RolAdi=="Sistem Yöneticisi"||
+            UserSession.CurrentUser?.Rol?.RolAdi == "Depo Personeli"
+            ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility SatisVisibility=>
+            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi" ||
+            UserSession.CurrentUser?.Rol?.RolAdi == "Satış Personeli"
+            ? Visibility.Visible : Visibility.Collapsed;
+
+
 
     }
 }

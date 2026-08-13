@@ -71,7 +71,9 @@
             </Grid>
             
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 0 0 10">
-                <Button Content="Ekle" Width="100" Margin="5" Command="{Binding MusteriEkleCommand}" />
+            <TextBlock Margin="10 0 0 0" Text="Ara:" FontSize="14" VerticalAlignment="Center"/>
+            <TextBox Width=" 250" Margin="10 5 5 5" Text="{Binding AramaMetni,UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Ekle" Width="100" Margin="5" Command="{Binding MusteriEkleCommand}" />
                   <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding MusteriGuncelleCommand}" />
                   <Button Content="Sil" Width="100" Margin="5" Command="{Binding MusteriSilCommand}" />
                   <Button Content="Listele" Width="100" Margin="5" Command="{Binding MusteriListeleCommand}" />

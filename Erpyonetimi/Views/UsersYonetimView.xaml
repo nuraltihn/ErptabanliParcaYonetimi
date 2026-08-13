@@ -52,6 +52,8 @@
                 <ComboBox Grid.Row="1" Grid.Column="3" Margin="5" ItemsSource="{Binding Roller}"
                           SelectedItem="{Binding SeciliRol}" DisplayMemberPath="RolAdi"/>
                 <StackPanel Grid.Row="3" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
+                    <TextBlock Text="Ara:" Margin="5" FontSize="14"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Margin="5" Text="{Binding AramaMetni ,UpdateSourceTrigger=PropertyChanged}" Width="200"/>
                     <Button Content="Ekle" Width="100" Margin="5" Command="{Binding UsersEkleCommand}"/>
                     <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding UsersGuncelCommand}"/>
                     <Button Content="Sil" Width="100" Margin="5" Command="{Binding UsersSilCommand}"/>
@@ -63,7 +65,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
                 <DataGridTextColumn Header="Ad Soyad" Binding="{Binding AdSoyad}" Width="200"/>
-                <DataGridCheckBoxColumn Header="Kullanıcı Adı" Binding="{Binding KulAd}" Width="150"/>
+                <DataGridTextColumn Header="Kullanıcı Adı" Binding="{Binding KulAd}" Width="150"/>
                 <DataGridTextColumn Header="Rol Adı" Binding="{Binding Rol.RolAdi}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>

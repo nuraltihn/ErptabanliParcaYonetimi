@@ -53,6 +53,14 @@ namespace Erpyonetimi.Application.Services
                 .Take(adet)
                 .ToList();
         }
+        public int GetToplamMusteri()
+        {
+            return _context.Musteriler.Count();
+        }
+        public int GetToplamSiparis()
+        {
+            return _context.Siparisler.Count();
+        }
 
     }
 }
