@@ -3,8 +3,10 @@
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
+@using Erpyonetimi.Data.Helpers
 
 @inject IUsersService UserService
+@inject NavigationManager Navigation
 
 <h3>Kullanıcı Yönetimi</h3>
 <hr />
@@ -132,6 +134,11 @@
 
     protected override void OnInitialized()
     {
+        if(!UserSession.IsAdmin)
+        {
+            Navigation.NavigateTo("/dashboard");
+            return;
+        }
         users = UserService.GetAllUsers();
     }
 

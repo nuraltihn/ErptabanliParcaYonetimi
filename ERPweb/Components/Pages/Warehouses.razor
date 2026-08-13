@@ -1,5 +1,162 @@
-﻿<h3>Warehouses</h3>
+﻿@page "/warehouses"
+@rendermode InteractiveServer
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
+@inject IDepoService DepoService
 
-@code {
+<h3>Depo Yönetimi</h3>
 
+<button class="btn btn-primary" 
+@onclick="YeniDepo">
+    +Yeni Depo
+</button>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Depo Adı</th>
+            <th>Konum</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var depo in depolar)
+        {
+    <tr>
+    <td>@depo.Depaadi</td>
+    <td>@depo.Konum</td>
+
+      <td>
+      <button class="btn btn-warning btn-sm"
+      @onclick="() => Duzenle(depo)">
+                        Düzenle
+                    </button>
+
+                    <button class="btn btn-danger btn-sm ms-2"
+                            @onclick="() => Sil(depo.Id)">
+                        Sil
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (showModal)
+{
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color: rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @(duzenlemeModu ? "Depo Düzenle" : "Yeni Depo")
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="ModalKapat">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Depo Adı</label>
+
+                        <input class="form-control"
+                               @bind="yeniDepo.Depaadi" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Konum</label>
+
+                        <input class="form-control"
+                               @bind="yeniDepo.Konum" />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-secondary"
+                            @onclick="ModalKapat">
+                        İptal
+                    </button>
+
+                    <button class="btn btn-success"
+                            @onclick="Kaydet">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    private bool showModal = false;
+    private bool duzenlemeModu = false;
+    private List<Depolar> depolar = new();
+    private Depolar yeniDepo = new();
+
+    protected override void OnInitialized()
+    {
+        depolar = DepoService.GetAll();
+    }
+
+    private void YeniDepo()
+    {
+        yeniDepo = new Depolar();
+        duzenlemeModu = false;
+        showModal = true;
+    }
+
+    private void ModalKapat()
+    {
+        showModal = false;
+    }
+
+    private void Kaydet()
+    {
+        if (duzenlemeModu)
+        {
+            DepoService.UpdateDepo(yeniDepo);
+        }
+        else
+        {
+            DepoService.AddDepo(yeniDepo);
+        }
+
+        depolar = DepoService.GetAll();
+        showModal = false;
+        duzenlemeModu = false;
+        yeniDepo = new Depolar();
+    }
+
+    private void Duzenle(Depolar depo)
+    {
+        yeniDepo = new Depolar
+        {
+            Id = depo.Id,
+            Depaadi = depo.Depaadi,
+            Konum = depo.Konum
+        };
+        duzenlemeModu = true;
+        showModal = true;
+    }
+
+    private void Sil(int id)
+    {
+        var depo = DepoService.GetById(id);
+        if (depo != null)
+        {
+            DepoService.DeleteDepo(depo);
+            depolar = DepoService.GetAll();
+        }
+    }
 }

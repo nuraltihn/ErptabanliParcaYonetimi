@@ -31,18 +31,30 @@ namespace Erpyonetimi.Data.Repositories
             return _context.SiparisDetaylari
                 .Include(x => x.Siparis)
                 .Include(x => x.Parca)
+                .AsNoTracking()
                 .ToList();
         }
 
         public SiparisDetaylari? GetById(int id)
         {
-            return _context.SiparisDetaylari.FirstOrDefault(x => x.Id == id);
+            return _context.SiparisDetaylari
+                .Include(x => x.Parca)
+                .Include(x => x.Siparis)
+                .FirstOrDefault(x => x.Id == id);
         }
 
         public void Update(SiparisDetaylari detay)
         {
-            _context.SiparisDetaylari.Update(detay);
-            _context.SaveChanges();
+            var mevcut = _context.SiparisDetaylari.Find(detay.Id);
+            if (mevcut != null)
+            {
+                mevcut.SiparisId = detay.SiparisId;
+                mevcut.ParcaId = detay.ParcaId;
+                mevcut.Miktar = detay.Miktar;
+                mevcut.BirimFiyat = detay.BirimFiyat;
+                mevcut.ToplamFiyat = detay.ToplamFiyat;
+                _context.SaveChanges();
+            }
         }
     }
 }

@@ -1,60 +1,71 @@
-﻿<div class="nav-item px-3">
+﻿@using Erpyonetimi.Data.Helpers
+
+<div class="nav-item px-3">
 	<NavLink class="nav-link" href="/dashboard">
 	Dashboard
 	</NavLink>
 </div>
-
-<div class= "nav-item px-3">
-	<NavLink class="nav-link" href="/users">
-		Kullanıcı Yönetimi
-	</NavLink>
-</div>
-
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/categories">
-		Kategori Yönetimi
-	</NavLink>
-</div>
-
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/parts">
-		Parça Yönetimi
+@if (UserSession.IsAdmin)
+{
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/users">
+			Kullanıcı Yönetimi
 		</NavLink>
-</div>
+	</div>
 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/suppliers">
-		Tedarikçi Yönetimi
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/categories">
+			Kategori Yönetimi
 		</NavLink>
-</div>
+	</div>
 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/customers">
-		Müşteri Yönetimi
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/suppliers">
+			Tedarikçi Yönetimi
 		</NavLink>
-</div>
+	</div>
+}
+@if (UserSession.IsAdmin|| UserSession.IsSatis)
+{
+	
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/parts">
+			Parça Yönetimi
+		</NavLink>
+	</div>
 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/Orders">
-		Sipariş Yönetimi
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/customers">
+			Müşteri Yönetimi
 		</NavLink>
-</div>
- 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/warehoses">
-		Depo Yönetimi 
-		</NavLink>
-</div>
+	</div>
 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/shelves">
-		Raf Yönetimi
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/Orders">
+			Sipariş Yönetimi
 		</NavLink>
-</div>
+	</div>
+
+}
+
+@if (UserSession.IsAdmin || UserSession.IsDepo)
+{
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/warehouses">
+			Depo Yönetimi
+		</NavLink>
+	</div>
+
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/shelves">
+			Raf Yönetimi
+		</NavLink>
+	</div>
 
 
-<div class="nav-item px-3">
-	<NavLink class="nav-link" href="/stockmovements">
-		Stok Yönetimi
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/stockmovements">
+			Stok Yönetimi
 		</NavLink>
-</div>
+	</div>
+}

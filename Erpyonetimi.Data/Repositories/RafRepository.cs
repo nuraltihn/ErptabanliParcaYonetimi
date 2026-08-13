@@ -44,8 +44,14 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Raflar raf)
         {
-            _context.Raflar.Update(raf);
-            _context.SaveChanges();
+            var mevcut = _context.Raflar
+                .FirstOrDefault(x => x.Id == raf.Id);
+            if (mevcut != null)
+            {
+                mevcut.DepoId = raf.DepoId;
+                mevcut.RafKodu = raf.RafKodu;
+                _context.SaveChanges();
+            }
         }
     }
 }

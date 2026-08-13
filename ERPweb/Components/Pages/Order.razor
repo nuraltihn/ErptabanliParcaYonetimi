@@ -1,18 +1,19 @@
 ﻿@page "/orders"
 @rendermode InteractiveServer
-
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
+@using Erpyonetimi.Data.Helpers
 
 @inject ISiparisService SiparisService
 @inject IMusteriService MusteriService
+@inject ISiparisDetayService SiparisDetayService
+@inject IParcaService ParcaService
+@inject NavigationManager Navigation
 
 <h3>Sipariş Yönetimi</h3>
-
 <button class="btn btn-primary" @onclick="YeniSiparis">
 	+Yeni Sipariş
 </button>
-
 
 <table class="table table-striped mt-3">
 	<thead>
@@ -24,7 +25,6 @@
 			<th>Durum</th>
 			<th>İşlemler</th>
 		</tr>
-
 	</thead>
 	<tbody>
 		@foreach (var siparis in siparisler)
@@ -36,7 +36,7 @@
 				<td>@siparis.ToplamTutar ₺</td>
 				<td>@siparis.Durum</td>
 				<td>
-					<button class="btn btn-warning btn-sm"
+					<button class="btn btn-warning btn-sm" 
 					@onclick="() => Duzenle(siparis)">
 						Düzenle
 					</button>
@@ -44,121 +44,229 @@
 					@onclick="() => Sil(siparis.Id)">
 						Sil
 					</button>
-
-					<button class="btn btn-info btn-sm ms-2"
-							title="Sipariş Detayı">
+					<button class="btn btn-info btn-sm ms-2" title="Sipariş Detayı" 
+					@onclick="() => DetayGoster(siparis)">
 						ⓘ
 					</button>
-
-	
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
 @if (showModal)
 {
-	<div class="modal d-block" tabindex="-1"
-	style="background-color :rgba(0,0,0,0.5);">
-
-    <div> class="modal-dialog">
-		<div class="modal-content">
-
-			<div class="modal-header">
-				<h5 class="modal-title">
-					@(duzenlemeModu ? "Sipariş Düzenle" :"Yeni Sipariş")
-				</h5>
-				<button type="button"
-					class="btn-close"
-					@onclick="ModalKapat">
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="mb-3">
-					<label>Sipariş No</label>
-					<input class="form-control"
-					@bind="yeniSiparis.SiparisNo" />
+	<div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+	<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+	<h5 class="modal-title">
+	@(duzenlemeModu ? "Sipariş Düzenle" : "Yeni Sipariş")
+	</h5>
+  <button type="button" class="btn-close"
+  @onclick="ModalKapat"></button>
 				</div>
-				<div class="mb-3">
-					<label>Müşteri</label>
-					<select class="form-select"
-					@bind="yeniSiparis.MusteriId">
-					<option value="0">--Müşteri Seçin--</option>
-					@foreach(var musteri in musteriler)
+	<div class="modal-body">
+	<div class="mb-3">
+    <label>Sipariş No</label>
+	<input class="form-control"
+	@bind="yeniSiparis.SiparisNo" />
+					</div>
+					<div class="mb-3">
+						<label>Müşteri</label>
+						<select class="form-select" 
+						@bind="yeniSiparis.MusteriId">
+							<option value="0">--Müşteri Seçin--</option>
+							@foreach (var musteri in musteriler)
 							{
-								<option value="@musteri.Id">
-									@musteri.FirmaAdi
-								</option>
+								<option value="@musteri.Id">@musteri.FirmaAdi</option>
 							}
 						</select>
-				</div>
-				<div class="mb-3">
-					<label>Sipariş Tarihi</label>
-					<input type="date"
-						class="form-control"
+					</div>
+					<div class="mb-3">
+						<label>Sipariş Tarihi</label>
+						<input type="date" class="form-control" 
 						@bind="yeniSiparis.SiparisTarihi" />
+					</div>
+					
+					<div class="mb-3">
+						<label>Durum</label>
+						<select class="form-select"
+						@bind="yeniSiparis.Durum">
+							<option value="Bekliyor">Bekliyor</option>
+							<option value="Hazırlanıyor">Hazırlanıyor</option>
+							<option value="Tamamlandı">Tamamlandı</option>
+							<option value="İptal">İptal</option>
+						</select>
+					</div>
 				</div>
-
-				<div class="mb-3">
-					<label>Toplam Tutar</label>
-					<input type="number"
-						step="0.01"
-						class="form-control"
-						@bind="yeniSiparis.ToplamTutar" />
+				<div class="modal-footer">
+					<button class="btn btn-secondary" 
+					@onclick="ModalKapat">İptal</button>
+					<button class="btn btn-success" 
+					@onclick="Kaydet">Kaydet</button>
 				</div>
-
-				<div class="mb-3">
-					<label>Durum</label>
-					<select class="form-select"
-					@bind="yeniSiparis.Durum">
-					<option value="Bekliyor">Bekliyor</option>
-					<option value="Hazırlanıyor">Hazırlanıyor</option>
-					<option value="Tamamlandı">Tamamlandı</option>
-					<option value="İptal">İptal</option>
-				</select>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary"
-				@onclick="ModalKapat">
-			    İptal
-		</button>
-		<button class="btn btn-success"
-		@onclick="Kaydet">
-	          Kaydet
-     </button>
 			</div>
 		</div>
-
-</div>
-</div>
+	</div>
 }
-@code 
+
+
+@if (detayModal)
 {
+<div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Sipariş Detayı</h5>
+<button type="button" class="btn-close" 
+@onclick="DetayKapat"></button>
+				</div>
+				<div class="modal-body">
+					@if (seciliSiparis != null)
+					{
+						<p><strong>Sipariş No:</strong> @seciliSiparis.SiparisNo</p>
+						<p><strong>Müşteri:</strong> @seciliSiparis.Musteri?.FirmaAdi</p>
+						<p><strong>Tarih:</strong> @seciliSiparis.SiparisTarihi.ToShortDateString()</p>
+						<p><strong>Durum:</strong> @seciliSiparis.Durum</p>
+						<hr />
+						<h6>Parça Ekle</h6>
+						<div class="mb-3">
+							<label class="form-label">Parça</label>
+							<select class="form-select"
+							@bind="yeniDetay.ParcaId">
+							<option value="0">--Parça Seçin--</option>
+							@foreach(var parca in parcalar)
+								{
+									<option value="@parca.Id">
+										@parca.ParcAdi
+									</option>
+								}
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Miktar</label>
+							<input type="number"
+								class="form-control"
+								min="1"
+								@bind="yeniDetay.Miktar" />
+
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Birim Fiyat</label>
+							<input type="number"
+								class="form-control"
+								step="0.01"
+								@bind="yeniDetay.BirimFiyat" />
+						</div>
+
+						<button class="btn btn-success"
+						@onclick="DetayKaydet">
+
+						@(detayDuzenlemeModu ? "Güncelle" : "+Parça Ekle")
+					 
+				</button>
+
+				<hr />
+
+			<h6>Sipariş Kalemleri</h6>
+			@if (siparisDetaylari.Count == 0)
+						{
+							<p class="text-muted">
+								Bu siparişte henüz parça bulunmuyor.
+								</p>
+						}
+						else
+						{
+							<table class="table table-sm">
+								<thead>
+									<tr>
+										<th>Parça</th>
+										<th>Miktar</th>
+										<th>Birim Fiyat</th>
+										<th>Toplam</th>
+										<th>İşlem</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var detay in siparisDetaylari)
+									{
+										<tr>
+											<td>@detay.Parca?.ParcAdi</td>
+											<td>@detay.Miktar</td>
+											<td>@detay.BirimFiyat</td>
+											<td>@detay.ToplamFiyat</td>
+											
+											 <td>
+												<button class="btn btn-warning btn-sm"
+												@onclick="() => DetayDuzenle(detay)">
+											 Düzenle
+										</button>
+										<button class="btn btn-danger btn-sm ms-1"
+										@onclick="() => DetaySil(detay)">
+									Sil
+								</button>
+										      </td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						}
+					}
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" 
+					@onclick="DetayKapat">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@code {
 	private bool showModal = false;
-	private bool duzenlemeModu = false;
+	private bool duzenlemeModu = false; 
+	private Siparis? seciliSiparis;
+	private List<SiparisDetaylari> siparisDetaylari = new();
+	private bool detayDuzenlemeModu = false;
+
 	private List<Siparis> siparisler = new();
 	private List<Musteri> musteriler = new();
+	private List<Parca> parcalar = new();
+	private SiparisDetaylari yeniDetay = new();
 	private Siparis yeniSiparis = new();
+
+	private bool detayModal = false;
+
+
 	protected override void OnInitialized()
 	{
+		if (!UserSession.IsAdmin && !UserSession.IsSatis)
+		{
+			Navigation.NavigateTo("/dashboard");
+			return;
+		}
+
 		siparisler = SiparisService.GetAll();
 		musteriler = MusteriService.GetAll();
-
+		parcalar = ParcaService.GetAllParca();
 	}
+
 	private void YeniSiparis()
 	{
 		yeniSiparis = new Siparis();
 		duzenlemeModu = false;
 		showModal = true;
 	}
+
 	private void ModalKapat()
 	{
 		showModal = false;
 	}
+
 	private void Kaydet()
 	{
-		if(duzenlemeModu)
+		if (duzenlemeModu)
 		{
 			SiparisService.UpdateSiparis(yeniSiparis);
 		}
@@ -172,20 +280,22 @@
 		duzenlemeModu = false;
 		yeniSiparis = new Siparis();
 	}
+
 	private void Duzenle(Siparis siparis)
 	{
 		yeniSiparis = new Siparis
-			{
-				Id = siparis.Id,
-				SiparisNo = siparis.SiparisNo,
-				MusteriId = siparis.MusteriId,
-				SiparisTarihi = siparis.SiparisTarihi,
-				ToplamTutar = siparis.ToplamTutar,
-				Durum = siparis.Durum
-			};
+		{
+			Id = siparis.Id,
+			SiparisNo = siparis.SiparisNo,
+			MusteriId = siparis.MusteriId,
+			SiparisTarihi = siparis.SiparisTarihi,
+			ToplamTutar = siparis.ToplamTutar,
+			Durum = siparis.Durum
+		};
 		duzenlemeModu = true;
 		showModal = true;
 	}
+
 	private void Sil(int id)
 	{
 		var siparis = SiparisService.GetById(id);
@@ -194,5 +304,92 @@
 			SiparisService.RemoveSiparis(siparis);
 			siparisler = SiparisService.GetAll();
 		}
+	}
+
+	private void DetayGoster(Siparis siparis)
+	{
+		seciliSiparis = siparis;
+		siparisDetaylari = SiparisDetayService
+			.GetAll()
+			.Where(x => x.SiparisId == siparis.Id)
+			.ToList();
+		yeniDetay = new SiparisDetaylari();
+		detayModal = true;
+	}
+	private void DetayKaydet()
+	{
+		if (seciliSiparis == null)
+			return;
+		if (yeniDetay.ParcaId == 0)
+			return;
+		if (yeniDetay.Miktar <= 0)
+			return;
+
+		yeniDetay.SiparisId = seciliSiparis.Id;
+		yeniDetay.ToplamFiyat =
+			yeniDetay.Miktar * yeniDetay.BirimFiyat;
+
+		if (detayDuzenlemeModu)
+		{
+			SiparisDetayService.UpdateDetay(yeniDetay);
+		}
+		else
+		{
+			yeniDetay.Id = 0;
+			SiparisDetayService.AddDetay(yeniDetay);
+		}
+
+		siparisDetaylari = SiparisDetayService
+			.GetAll()
+			.Where(x => x.SiparisId == seciliSiparis.Id)
+			.ToList();
+
+		SiparisToplaminiGuncelle();
+		yeniDetay = new SiparisDetaylari();
+		detayDuzenlemeModu = false;
+	}
+
+	private void DetayKapat()
+	{
+		detayModal = false;
+		seciliSiparis = null;
+		siparisDetaylari = new List<SiparisDetaylari>();
+	}
+
+	private void DetaySil(SiparisDetaylari detay)
+	{
+		SiparisDetayService.DeleteDetay(detay);
+		if (seciliSiparis != null)
+		{
+			siparisDetaylari = SiparisDetayService
+			.GetAll()
+				.Where(x => x.SiparisId == seciliSiparis.Id)
+				.ToList();
+			SiparisToplaminiGuncelle();
+		}
+	}
+	private void DetayDuzenle(SiparisDetaylari detay)
+	{
+		yeniDetay = new SiparisDetaylari
+			{
+				Id = detay.Id,
+				SiparisId = detay.SiparisId,
+			    ParcaId = detay.ParcaId,
+				Miktar = detay.Miktar,
+				BirimFiyat = detay.BirimFiyat,
+				ToplamFiyat = detay.ToplamFiyat
+			};
+
+		detayDuzenlemeModu = true;
+	}
+
+	private void SiparisToplaminiGuncelle()
+	{
+		if (seciliSiparis == null)
+			return;
+		seciliSiparis.ToplamTutar = siparisDetaylari
+		.Sum(x => x.ToplamFiyat);
+		SiparisService.UpdateSiparis(seciliSiparis);
+		siparisler = SiparisService.GetAll();
 	}
 }

@@ -1,15 +1,20 @@
 ﻿@page "/dashboard"
-@using Erpyonetimi.Application.Services.Interfaces
 
+@using Erpyonetimi.Application.Services.Interfaces
+@using Erpyonetimi.Data.Helpers
 @inject IDashboardService DashboardService
 
 <div class="container mt-4">
+
     <h2>ERP Yönetim Paneli</h2>
     <hr />
 
     <div class="alert alert-primary mb-4">
-        Hoş Geldiniz <strong>@kullaniciAdi</strong> | Rol: @rolAdi
+        Hoş Geldiniz
+        <strong>@kullaniciAdi</strong>
+        | Rol: @rolAdi
     </div>
+
 
     <h4 class="mb-3">Genel Durum</h4>
     <div class="row mb-4">
@@ -19,46 +24,124 @@
                 <h2>@toplamParcaSayisi</h2>
             </div>
         </div>
+
         <div class="col-md-4 mb-3">
             <div class="card bg-light text-center p-3 shadow-sm">
                 <h5>Toplam Kategori</h5>
                 <h2>@toplamKategoriSayisi</h2>
             </div>
         </div>
+
         <div class="col-md-4 mb-3">
             <div class="card bg-light text-center p-3 shadow-sm">
                 <h5>Toplam Kullanıcı</h5>
                 <h2>@toplamKullaniciSayisi</h2>
             </div>
         </div>
+
     </div>
+
 
     <h4 class="mb-3">Hızlı Erişim</h4>
     <div class="row">
-        <div class="col-md-4 mb-2">
-            <NavLink href="/parts" class="btn btn-outline-primary w-100">Parça Yönetimi</NavLink>
-        </div>
-        <div class="col-md-4 mb-2">
-            <NavLink href="/categories" class="btn btn-outline-primary w-100">Kategori Yönetimi</NavLink>
-        </div>
-        <div class="col-md-4 mb-2">
-            <NavLink href="/users" class="btn btn-outline-primary w-100">Kullanıcı Yönetimi</NavLink>
-        </div>
+
+        @if (UserSession.IsAdmin || UserSession.IsSatis)
+        {
+            <div class="col-md-4 mb-2">
+                <NavLink href="/parts"
+                         class="btn btn-outline-primary w-100">
+                    Parça Yönetimi
+                </NavLink>
+            </div>
+        }
+        @if (UserSession.IsAdmin)
+        {
+            <div class="col-md-4 mb-2">
+                <NavLink href="/categories"
+                         class="btn btn-outline-primary w-100">
+                    Kategori Yönetimi
+                </NavLink>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <NavLink href="/users"
+                         class="btn btn-outline-primary w-100">
+                    Kullanıcı Yönetimi
+                </NavLink>
+            </div>
+        }
+        @if (UserSession.IsAdmin || UserSession.IsSatis)
+        {
+            <div class="col-md-4 mb-2">
+                <NavLink href="/customers"
+                         class="btn btn-outline-primary w-100">
+                    Müşteri Yönetimi
+                </NavLink>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <NavLink href="/orders"
+                         class="btn btn-outline-primary w-100">
+                    Sipariş Yönetimi
+                </NavLink>
+            </div>
+        }
+        @if (UserSession.IsAdmin || UserSession.IsDepo)
+        {
+            <div class="col-md-4 mb-2">
+                <NavLink href="/warehouses"
+                         class="btn btn-outline-primary w-100">
+                    Depo Yönetimi
+                </NavLink>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <NavLink href="/shelves"
+                         class="btn btn-outline-primary w-100">
+                    Raf Yönetimi
+                </NavLink>
+            </div>
+
+            <div class="col-md-4 mb-2">
+                <NavLink href="/stockmovements"
+                         class="btn btn-outline-primary w-100">
+                    Stok Yönetimi
+                </NavLink>
+            </div>
+        }
+
     </div>
+
 </div>
 
-@code {
-    // İleride Authentication üzerinden alınacak!!!.
-    private string kullaniciAdi = "Admin";
-    private string rolAdi = "Yönetici";
+
+@code
+{
+    private string kullaniciAdi = "";
+    private string rolAdi = "";
 
     private int toplamParcaSayisi = 0;
     private int toplamKategoriSayisi = 0;
     private int toplamKullaniciSayisi = 0;
-
     protected override void OnInitialized()
     {
-        // Tümünü dashboardtan çekiliyor
+        if (UserSession.CurrentUser != null)
+        {
+            kullaniciAdi = UserSession.CurrentUser.AdSoyad;
+
+            if (UserSession.IsAdmin)
+            {
+                rolAdi = "Yönetici";
+            }
+            else if (UserSession.IsDepo)
+            {
+                rolAdi = "Depo";
+            }
+            else if (UserSession.IsSatis)
+            {
+                rolAdi = "Satış";
+            }
+        }
         toplamParcaSayisi = DashboardService.GetToplamParca();
         toplamKategoriSayisi = DashboardService.GetToplamKategori();
         toplamKullaniciSayisi = DashboardService.GetToplamKullanici();

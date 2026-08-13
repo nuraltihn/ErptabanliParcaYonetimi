@@ -1,5 +1,171 @@
-﻿<h3>Shelves</h3>
+﻿@page "/shelves"
+@rendermode InteractiveServer
 
-@code {
+@using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Application.Services.Interfaces
+@using Erpyonetimi.Data.Helpers
 
+@inject IRafService RafService
+@inject IDepoService DepoService
+@inject NavigationManager Navigation
+
+<h3>Raf Yönetimi</h3>
+<button class="btn btn-primary"
+@onclick="YeniRaf">
++Yeni Raf
+</button>
+
+<table class="table table-striped mt-3">
+	<thead>
+		<tr>
+			<th>Raf Kodu</th>
+			<th>Depo</th>
+			<th>İşlemler</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var raf in raflar)
+		{
+			<tr>
+				<td>@raf.RafKodu</td>
+				<td>@raf.Depo?.Depaadi</td>
+				<td>
+					<button class="btn btn-warning btn-sm"
+					@onclick="() => Duzenle(raf)">
+				Düzenle
+			</button>
+			<button class="btn btn-danger btn-sm ms-2"
+			@onclick="() => Sil(raf.Id)">
+		Sil
+	               </button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@if (showModal)
+{
+	<div class="modal d-block"
+	tabindex="-1"
+	style="background-color: rgba(0,0,0,0.5);">
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title">
+				@(duzenlemeModu ? "Raf Düzenle" :"Yeni Raf")
+			</h5>
+			<button type="button"
+				class="btn-close"
+				@onclick="ModalKapat">
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="mb-3">
+				<label>Depo</label>
+				<select class="form-select"
+				@bind="yeniRaf.DepoId">
+			<option value="0">
+				--DepoSeçin--
+			</option>
+			@foreach (var depo in depolar)
+							{
+								<option value="@depo.Id">
+									@depo.Depaadi
+								</option>
+							}
+						</select>
+			</div>
+
+			<div class="mb-3">
+				<label>Raf Kodu</label>
+				<input class="form-control"
+				@bind="yeniRaf.RafKodu" />
+			</div>
+		</div>
+
+		<div class="modal-footer">
+			<button class="btn btn-secondary"
+			@onclick="ModalKapat">
+		İptal
+	</button>
+	<button class="btn btn-success"
+	@onclick="Kaydet">
+Kaydet
+</button>
+		</div>
+	</div>
+</div>
+</div>
+}
+@code
+{
+	private bool showModal = false;
+	private bool duzenlemeModu = false;
+	private List<Raflar> raflar =
+	new();
+	private List<Depolar> depolar = new();
+	private Raflar yeniRaf = new();
+
+	protected override void OnInitialized()
+	{
+		if (!UserSession.IsAdmin && !UserSession.IsDepo)
+		{
+			Navigation.NavigateTo("/dashboard");
+			return;
+		}
+
+		raflar = RafService.GetAll();
+		depolar = DepoService.GetAll();
+	}
+	private void YeniRaf()
+	{
+		yeniRaf = new Raflar();
+		duzenlemeModu = false;
+		showModal = true;
+	}
+	private void ModalKapat()
+	{
+		showModal = false;
+	}
+
+	private void Kaydet()
+	{
+		if (yeniRaf.DepoId == 0)
+			return;
+		if (string.IsNullOrWhiteSpace(yeniRaf.RafKodu))
+			return;
+		if(duzenlemeModu)
+		{
+			RafService.UpdateRaf(yeniRaf);
+		}
+		else
+		{
+			RafService.AddRaf(yeniRaf);
+		}
+		raflar = RafService.GetAll();
+		showModal = false;
+		duzenlemeModu = false;
+		yeniRaf = new Raflar();
+	}
+	private void Duzenle (Raflar raf)
+	{
+		yeniRaf = new Raflar
+			{
+				Id = raf.Id,
+				DepoId = raf.DepoId,
+				RafKodu = raf.RafKodu
+			};
+		duzenlemeModu = true;
+		showModal = true;
+	}
+	private void Sil(int id)
+	{
+	var raf = RafService.GetById(id);
+	if( raf != null)
+	{
+		RafService.RemoveRaf(raf);
+		raflar = RafService.GetAll();
+	}
+}
 }

@@ -3,12 +3,12 @@
 
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
-
+@using Erpyonetimi.Data.Helpers
 @inject IParcaService ParcaService
 @inject IKategoriService KategoriService
 @inject ITedarikciService TedarikciService
 @inject IRafService RafService
-
+@inject NavigationManager Navigation
 <h3>Parça Yönetimi</h3>
 <hr />
 <button class="btn btn-primary" @onclick="YeniParca">
@@ -199,6 +199,11 @@
 
     protected override void OnInitialized()
     {
+        if (!UserSession.IsAdmin && !UserSession.IsSatis)
+        {
+            Navigation.NavigateTo("/dashboard");
+            return;
+        }
         parcalar = ParcaService.GetAllParca();
         kategoriler = KategoriService.GetAllKategori();
         tedarikciler = TedarikciService.GetAllTedarikci();

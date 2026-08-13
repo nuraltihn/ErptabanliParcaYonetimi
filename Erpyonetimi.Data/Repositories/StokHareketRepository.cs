@@ -42,8 +42,21 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(StokHareket stokHareket)
         {
-            _context.StokHareketleri.Update(stokHareket);
-            _context.SaveChanges();
+            var mevcut = _context.StokHareketleri
+                .FirstOrDefault(x => x.Id == stokHareket.Id);
+
+            if (mevcut != null)
+            {
+                mevcut.ParcaId = stokHareket.ParcaId;
+                mevcut.KullaniciId = stokHareket.KullaniciId;
+                mevcut.DepoId = stokHareket.DepoId;
+                mevcut.IslemTipi = stokHareket.IslemTipi;
+                mevcut.Miktar = stokHareket.Miktar;
+                mevcut.Tarih = stokHareket.Tarih;
+                mevcut.Aciklama = stokHareket.Aciklama;
+
+                _context.SaveChanges();
+            }
         }
     }
 }
