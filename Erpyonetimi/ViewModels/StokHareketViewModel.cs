@@ -20,6 +20,31 @@ namespace Erpyonetimi.ViewModels
         public ObservableCollection<Parca> Parcalar { get; set; }
         public ObservableCollection<string> IslemTipleri {  get; set; }
         public ObservableCollection<Depolar> Depolars { get; set; }
+        private StokHareket? _seciliHareket;
+        public StokHareket? SeciliHareket
+        {
+            get => _seciliHareket;
+            set
+            {
+                _seciliHareket = value;
+                if (value != null)
+                {
+                    SeciliParca = Parcalar.FirstOrDefault(x => x.Id == value.ParcaId);
+                    SeciliDepo = Depolars.FirstOrDefault(x => x.Id == value.DepoId);
+                    IslemTipi = value.IslemTipi;
+                    Miktar = value.Miktar;
+                    Aciklama = value.Aciklama; 
+
+                    OnPropertyChanged(nameof(SeciliParca));
+                OnPropertyChanged(nameof(SeciliDepo));
+                OnPropertyChanged(nameof(IslemTipi));
+                OnPropertyChanged(nameof(Miktar));
+                OnPropertyChanged(nameof(Aciklama));
+                }
+                OnPropertyChanged();
+            }
+            
+        }
         private Depolar? _seciliDepo;
         public Depolar? SeciliDepo
         {
@@ -30,8 +55,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private Parca _seciliParca;
-        public Parca SeciliParca
+        private Parca? _seciliParca;
+        public Parca? SeciliParca
         {
             get => _seciliParca;
             set
@@ -72,7 +97,8 @@ namespace Erpyonetimi.ViewModels
         }
         public ICommand StokHEkleCommand { get; }
         public ICommand StokListeleCommand { get; }
-
+        public ICommand StokSilCommand { get; }
+        public ICommand StokGuncelleCommand { get; }
         public StokHareketViewModel(IStokHareketService service, IParcaService parcaService, IDepoService depoService)
         {
            _service = service;
@@ -93,6 +119,61 @@ namespace Erpyonetimi.ViewModels
             };
             StokHEkleCommand = new RelayCommand(Ekle);
             StokListeleCommand = new RelayCommand(Listele);
+            StokGuncelleCommand = new RelayCommand(Guncelle);
+            StokSilCommand = new RelayCommand(Sil);
+        }
+        private void Sil()
+        {
+            if (SeciliHareket == null)
+                return;
+            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            if (parca != null)
+            {
+                if (SeciliHareket.IslemTipi == "Giriş")
+                    parca.MevcutStok -= SeciliHareket.Miktar;
+                else
+                    parca.MevcutStok += SeciliHareket.Miktar;
+
+                _parcaService.UpdateParca(parca);
+            }
+            _service.RemoveStokHareket(SeciliHareket);
+            Listele();
+            MessageBox.Show("Stok hareketi silindi.");
+        }
+        private void Guncelle()
+        {
+            if (SeciliHareket == null || SeciliParca == null || SeciliDepo == null)
+                return;
+
+            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            if (parca == null)
+                return;
+            if (SeciliHareket.IslemTipi == "Giriş")
+                parca.MevcutStok -= SeciliHareket.Miktar;
+            else
+                parca.MevcutStok += SeciliHareket.Miktar;
+
+            if (IslemTipi == "Giriş")
+                parca.MevcutStok += Miktar;
+            else
+            {
+                if (parca.MevcutStok < Miktar)
+                {
+                    MessageBox.Show("Yeterli stok yok.");
+                    return;
+                }
+                parca.MevcutStok -= Miktar;
+            }
+            _parcaService.UpdateParca(parca);
+            SeciliHareket.ParcaId = SeciliParca.Id;
+            SeciliHareket.DepoId = SeciliDepo.Id;
+            SeciliHareket.Miktar = Miktar;
+            SeciliHareket.Aciklama = Aciklama;
+            SeciliHareket.IslemTipi = IslemTipi;
+
+            _service.UpdateStokHareket(SeciliHareket);
+            Listele();
+            MessageBox.Show("Stok hareketi güncellendi.");
         }
         private void Listele()
         {

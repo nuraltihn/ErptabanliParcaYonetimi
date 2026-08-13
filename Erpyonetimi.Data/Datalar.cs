@@ -13,11 +13,9 @@ namespace Erpyonetimi.Data
     public static class Datalar
     {
       
-        public static void Seed()
+        public static void Seed(ErpDbContext db)
         {
-            var factory = new ErpDbContextFactory();
-            using var db = factory.CreateDbContext(Array.Empty<string>());
-            db.Database.Migrate();
+           
 
             try
             {

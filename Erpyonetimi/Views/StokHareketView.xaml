@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Erpyonetimi.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid >
+    <Grid  Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -57,8 +57,11 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
                 <Button Content="Ekle" Width="100" Margin="5" Command="{Binding StokHEkleCommand}"/>
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding StokGuncelleCommand}"/>
+                <Button Content="Sil" Width="100" Margin="5" Command="{Binding StokSilCommand}"/>
             </StackPanel>
             <DataGrid Grid.Row="1" ItemsSource="{Binding Hareketler}"
+                      SelectedItem="{Binding SeciliHareket}"
                       AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Parça" Binding="{Binding Parca.ParcAdi}" Width="*"/>

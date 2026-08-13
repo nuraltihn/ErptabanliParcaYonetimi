@@ -41,15 +41,15 @@
 
             <Border Grid.Column="2" Background="DarkTurquoise" CornerRadius="7" Margin="5" Height="70" >
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="Toplam Tedarikçi Sayısı" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding ToplamTedarikci}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="Toplam Müşteri Sayısı" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ToplamMusteri}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
 
             <Border Grid.Column="3" Background="DarkTurquoise" CornerRadius="7" Margin="5" Height="70" >
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="Kritik Stok Sayısı" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding KrittikStokSayisi}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="Toplam Sipariş Sayısı" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ToplamSiparis}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
         </Grid>
@@ -60,7 +60,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         
-        <DataGrid Grid.Column="0" ItemsSource="{Binding SonKullanicilar}">
+        <DataGrid Grid.Column="0" ItemsSource="{Binding SonKullanicilar}" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Son Kullanıcılar" Binding="{Binding SonKullanicilar}"/>
             </DataGrid.Columns>
@@ -70,7 +70,7 @@
                 <DataGridTextColumn Header="Son Parçalar" Binding="{Binding SonaParcalar}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Grid.Column="3" ItemsSource="{Binding SonSiparisler}">
+        <DataGrid Grid.Column="2" ItemsSource="{Binding SonSiparisler}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Son Siparişler" Binding="{Binding SonSiparisler}"/>
             </DataGrid.Columns>

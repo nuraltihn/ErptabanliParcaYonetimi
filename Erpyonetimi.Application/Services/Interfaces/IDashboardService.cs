@@ -8,6 +8,8 @@ namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IDashboardService
     {
+        int GetToplamSiparis();
+        int GetToplamMusteri();
         int GetToplamKullanici();
         int GetToplamParca();
         int GetToplamKategori();

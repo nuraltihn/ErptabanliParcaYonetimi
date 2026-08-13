@@ -53,7 +53,7 @@ namespace Erpyonetimi.Data.Repositories
                 _context.SaveChanges();
             }
         }
-        
+
         public List<Users> GetAll()
         {
             return _context.Users
@@ -61,6 +61,6 @@ namespace Erpyonetimi.Data.Repositories
                  .AsNoTracking()
                 .ToList();
         }
-        
+
     }
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Erpyonetimi.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid >
+    <Grid Background="White" >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -19,9 +19,10 @@
                    FontSize="22"
                    FontWeight="Bold" Foreground="White"/>
         </Border>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 0 0 15">
-            <TextBox Width="250" Height="30" Text="{Binding AramaMetni}"/>
-            <Button Content="Ara" Width="100" Margin="10 0 0 0" Command="{Binding AraCommand}"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10 0 0 15">
+            <TextBlock Margin="10 0 10 0" Text="Ara:" FontSize="14" VerticalAlignment="Center" />
+            <TextBox Width="250" Height="30" Text="{Binding AramaMetni,UpdateSourceTrigger=PropertyChanged}"/>
+         
             <Button Content="Listele" Width="100" Margin="10 0 0 0" Command="{Binding ListeleCommand}"/>
             <Button Content="Kritik Stok" Width="100" Margin="10 0 0 0" Command="{Binding KritikStoklarCommand}"/>
             

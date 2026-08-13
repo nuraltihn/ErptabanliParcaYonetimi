@@ -56,10 +56,14 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
+        private List<Parca> _tumParcalar;
         private string _aramaMetni = string.Empty;
       public string AramaMetni
         {
-            get => _aramaMetni; set {  _aramaMetni = value; OnPropertyChanged(); }
+            get => _aramaMetni; 
+            set {  _aramaMetni = value; OnPropertyChanged();
+                Filtrele();
+            }
         }
         private Parca? _seciliParca;
         public Parca? SeciliParca{
@@ -101,7 +105,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand SilCommand { get; }
 
         public ICommand ListeleCommand { get; }
-        public ICommand AraCommand { get; }
+    
         public ICommand StokGirisCommand { get; }
         public ICommand StokCikisCommanet { get; }
         public ICommand KritikStoklarCommand { get; }
@@ -123,8 +127,9 @@ namespace Erpyonetimi.ViewModels
             GuncelleCommand = new RelayCommand(Guncelle);
             SilCommand = new RelayCommand(Sil);
             ListeleCommand = new RelayCommand(Listele);
-            AraCommand = new RelayCommand(Ara);
-
+      
+            _tumParcalar = _parcaService.GetAllParca();
+            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
             OnPropertyChanged(nameof(CrudVisibility));
     
         }
@@ -143,6 +148,11 @@ namespace Erpyonetimi.ViewModels
         private void Ekle()
             
         {
+            if (_parcaService.GetAllParca().Any(p => p.ParcaKodu == ParcaKodu))
+            {
+                MessageBox.Show("Bu parça kodu zaten mevcut.");
+                return;
+            }
             if (SeciliParca == null)
                 return;
             if (ParcAdi == null && ParcaKodu==null)
@@ -164,12 +174,30 @@ namespace Erpyonetimi.ViewModels
                 Aciklama = Aciklama
             };
 
-            _parcaService.AddParca(parca);
-            Parcalar.Add(parca);
-            MessageBox.Show("parça eklendi");
+            try
+            {
+                _parcaService.AddParca(parca);
+                Parcalar.Add(parca);
+                MessageBox.Show("Parça eklendi.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             Temizle();
         }
-
+        private void Filtrele()
+        {
+            var sonuc = _tumParcalar
+                .Where(p =>
+                string.IsNullOrWhiteSpace(AramaMetni)
+                || p.ParcaKodu.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
+                || p.ParcAdi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
+                || p.Marka.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            Parcalar = new ObservableCollection<Parca>(sonuc);
+            OnPropertyChanged(nameof(Parcalar));
+        }
         private void Guncelle()
         {
             if (SeciliParca == null)

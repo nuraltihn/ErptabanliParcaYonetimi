@@ -116,19 +116,21 @@ namespace Erpyonetimi.ViewModels
             get => _email;
             set { _email = value; OnPropertyChanged(); }
         }
-
-        private string _aramaMetni;
+        private List<Tedarikci> _tumtedarikciler
+;        private string _aramaMetni;
         public string AramaMetni
         {
             get => _aramaMetni;
-            set { _aramaMetni = value; OnPropertyChanged(); }
+            set { _aramaMetni = value; OnPropertyChanged();
+                Filtrele();
+            }
         }
         public ObservableCollection<Tedarikci> Tedarikciler { get; set;  }
 
         public ICommand TedarikciEkleCommand { get;}
         public ICommand TedarikciGuncelleCommand { get; }
         public ICommand TedarikciSilCommand { get; }
-        public ICommand AraCommand { get; }
+        public ICommand TedarikciListeleCommand { get; }
         private readonly ITedarikciService _tedarikciService;
 
         public TedarikciViewModel(ITedarikciService tedarikciService)
@@ -140,15 +142,18 @@ namespace Erpyonetimi.ViewModels
             TedarikciEkleCommand = new RelayCommand(Ekle);
             TedarikciGuncelleCommand = new RelayCommand(Guncelle);
             TedarikciSilCommand = new RelayCommand(Sil);
-            AraCommand = new RelayCommand(Ara);
+            TedarikciListeleCommand = new RelayCommand(Listele);
+            _tumtedarikciler = _tedarikciService.GetAllTedarikci();
+            Tedarikciler = new ObservableCollection<Tedarikci>(_tumtedarikciler);
            
         }
-        private void Ara()
+        private void Filtrele()
         {
             Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci()
-                .Where(x => x.FirmaAdi.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase)
-                || x.TedarikciKodu.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase)));
-
+                .Where(x => string.IsNullOrWhiteSpace(AramaMetni)
+                    || x.FirmaAdi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
+                    || x.TedarikciKodu?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
+                    || x.YetkiliKisi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true));
             OnPropertyChanged(nameof(Tedarikciler));
         }
 

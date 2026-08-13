@@ -15,7 +15,10 @@ namespace Erpyonetimi.ViewModels
     public class DashboardViewModel:BaseViewModel
     {
         private readonly IDashboardService _dashboardService;
-
+        private int _toplamMusteri;
+        public int ToplamMusteri { get => _toplamMusteri; set { _toplamMusteri = value; OnPropertyChanged(); } }
+        private int _toplamSiparis;
+        public int ToplamSiparis { get => _toplamSiparis; set { _toplamSiparis = value; OnPropertyChanged(); } }
         private int _toplamKullanici;
         private int _toplamParca;
         private int _toplamKategori;
@@ -45,6 +48,8 @@ namespace Erpyonetimi.ViewModels
         {
             try
             {
+                ToplamMusteri = _dashboardService.GetToplamMusteri();
+                ToplamSiparis = _dashboardService.GetToplamSiparis();
                 ToplamKullanici = _dashboardService.GetToplamKullanici();
                 ToplamParca = _dashboardService.GetToplamParca();
                 ToplamKategori = _dashboardService.GetToplamKategori();
@@ -68,6 +73,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged(nameof(SonKullanicilar));
                 OnPropertyChanged(nameof(SonParcalar));
                 OnPropertyChanged(nameof(SonSiparisler));
+                OnPropertyChanged(nameof(ToplamMusteri));
+                OnPropertyChanged(nameof(ToplamSiparis));
             }
             catch (Exception ex)
             {

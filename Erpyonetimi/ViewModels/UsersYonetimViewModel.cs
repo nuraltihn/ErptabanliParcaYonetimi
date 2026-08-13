@@ -20,9 +20,9 @@ namespace Erpyonetimi.ViewModels
         public ObservableCollection<Users> Userlist { get; set; }
         public ObservableCollection<Roles> Roller { get; set; }
         private readonly ErpDbContext _context;
-
-        private Users _selecteduser;
-        public Users SelectedUser
+        private List<Users> _tumKullanicilar;
+        private Users? _selecteduser;
+        public Users? SelectedUser
         {
             get => _selecteduser;
             set
@@ -38,6 +38,17 @@ namespace Erpyonetimi.ViewModels
                     Sifre = "";
                 }
                 OnPropertyChanged();
+            }
+        }
+        private string _aramaMetni;
+        public string AramaMetni
+        {
+            get => _aramaMetni;
+            set
+            {
+                _aramaMetni = value;
+                OnPropertyChanged();
+                Filtrele();
             }
         }
         private string _adSoyad;
@@ -83,8 +94,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private Roles _seciliRol;
-        public Roles SeciliRol
+        private Roles? _seciliRol;
+        public Roles? SeciliRol
         {
             get => _seciliRol;
             set
@@ -109,14 +120,16 @@ namespace Erpyonetimi.ViewModels
             var repo = new UsersRepository(_context);
             _usersService = new UsersService(repo);
 
-            Roller = new ObservableCollection<Roles>(
+           Roller = new ObservableCollection<Roles>(
                 _context.Roles.ToList());
 
-            Userlist = new ObservableCollection<Users>(
+           Userlist = new ObservableCollection<Users>(
                 _usersService.GetAllUsers());
             UsersEkleCommand = new RelayCommand(UsersEkleme);
             UsersGuncelCommand = new RelayCommand(UsersGuncelleme);
             UsersSilCommand = new RelayCommand(UsersSilme);
+            _tumKullanicilar = _usersService.GetAllUsers();
+            Userlist = new ObservableCollection<Users>(_tumKullanicilar);
         }
 
         private void UsersEkleme()
@@ -140,6 +153,15 @@ namespace Erpyonetimi.ViewModels
             MessageBox.Show("Kullanıcı eklendi.");
         }
 
+        private void Filtrele()
+        {
+            var sonuc = _tumKullanicilar
+                .Where(x => string.IsNullOrWhiteSpace(AramaMetni) ||
+                x.AdSoyad.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
+                || x.KulAd.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)).ToList();
+            Userlist= new ObservableCollection<Users>(sonuc);
+            OnPropertyChanged(nameof(Userlist));
+        }
 
         private void Listele()
         {

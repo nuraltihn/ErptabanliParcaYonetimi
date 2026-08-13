@@ -29,6 +29,8 @@ namespace Erpyonetimi.Data.Repositories
         public List<Siparis> GetAll()
         {
             return _context.Siparisler.Include(s => s.Musteri)
+                .Include(s=>s.SiparisDetaylari)
+                .ThenInclude(sd=>sd.Parca)
                 .AsNoTracking()
                 .ToList();
         }

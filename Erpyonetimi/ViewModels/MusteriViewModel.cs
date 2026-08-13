@@ -16,7 +16,7 @@ namespace Erpyonetimi.ViewModels
     {
         private readonly IMusteriService _musteriService;
         public ObservableCollection<Musteri> Musteriler { get; set; }
-
+        private List<Musteri> _tumMusteriler;
         private Musteri? _seciliMusteri;
         public Musteri? SeciliMusteri
         {
@@ -101,7 +101,15 @@ namespace Erpyonetimi.ViewModels
         public string? Email { get => _email; set { _email = value; OnPropertyChanged(); } }
         public string? VergiNo { get => _vergiNo; set { _vergiNo = value; OnPropertyChanged(); } }
         public string? Fax { get => _fax; set { _fax = value; OnPropertyChanged(); } }
-
+        private string _aramaMetni;
+        public string AramaMetni
+        {
+            get => _aramaMetni;
+            set { _aramaMetni = value;
+                OnPropertyChanged();
+                Filtrele();
+            }
+        }
         public ICommand MusteriEkleCommand { get; }
         public ICommand MusteriGuncelleCommand { get; }
         public ICommand MusteriSilCommand { get; }
@@ -115,6 +123,20 @@ namespace Erpyonetimi.ViewModels
             MusteriEkleCommand = new RelayCommand(Ekle);
             MusteriGuncelleCommand = new RelayCommand(Guncelle);
             MusteriSilCommand = new RelayCommand(Sil);
+            _tumMusteriler = _musteriService.GetAll();
+            Musteriler = new ObservableCollection<Musteri>(_tumMusteriler);
+        }
+        private void Filtrele()
+        {
+            var sonuc = _tumMusteriler
+                .Where(p =>
+                string.IsNullOrWhiteSpace(AramaMetni)
+                || p.MusteriKodu.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
+                || p.FirmaAdi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
+                || p.YetkiliKisi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            Musteriler = new ObservableCollection<Musteri>(sonuc);
+            OnPropertyChanged(nameof(Musteriler));
         }
         private void Listele()
         {
@@ -139,6 +161,8 @@ namespace Erpyonetimi.ViewModels
 
         private void Ekle()
         {
+            if (MusteriKodu == null || FirmaAdi == null)
+                return;
             if(_musteriService.GetByKod(MusteriKodu) != null)
             {
                 MessageBox.Show("Bu müşteri kodu zaten mevcut");

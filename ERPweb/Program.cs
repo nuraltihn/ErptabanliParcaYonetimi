@@ -48,7 +48,11 @@ builder.Services.AddScoped<ISiparisRepository, SiparisRepository>();
 builder.Services.AddScoped<ISiparisDetayRepository, SiparisDetayRepository>();  
 
 var app = builder.Build();
-Datalar.Seed();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ErpDbContext>();
+    Datalar.Seed(db);
+}
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);

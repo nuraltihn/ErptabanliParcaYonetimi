@@ -16,6 +16,18 @@ namespace Erpyonetimi.ViewModels
         public ObservableCollection<Depolar> Depolar { get; set; }
         private Depolar? _seciliDepo;
         private string _depaadi = "";
+        private List<Depolar> _tumdepolar;
+        private string _aramaMetni;
+        public string AramaMetni
+        {
+            get => _aramaMetni;
+            set
+            {
+                _aramaMetni = value;
+                OnPropertyChanged();
+                Filtrele();
+            }
+        }
         public string Depaadi
         {
             get => _depaadi;
@@ -60,9 +72,18 @@ namespace Erpyonetimi.ViewModels
             DepoEkleCommand = new RelayCommand(Ekle);
             DepoGuncelleCommand = new RelayCommand(Guncelle);
             DepoSilCommand = new RelayCommand(Sil);
-            
+            _tumdepolar = new List<Depolar>(_depoService.GetAll());
+            Depolar = new ObservableCollection<Depolar>(_tumdepolar);
         }
-
+        private void Filtrele()
+        {
+            var sonuc =_tumdepolar
+                .Where(x => x.Depaadi.ToLower().Contains(AramaMetni.ToLower()) ||
+                            x.Konum.ToLower().Contains(AramaMetni.ToLower()))
+                .ToList();
+            Depolar = new ObservableCollection<Depolar>(sonuc);
+            OnPropertyChanged(nameof(Depolar));
+        }
         private void Ekle()
         {
             if (Depaadi == null && Konum == null)
