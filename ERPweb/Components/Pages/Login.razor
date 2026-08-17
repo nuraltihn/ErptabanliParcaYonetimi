@@ -1,13 +1,16 @@
 ﻿@page "/login"
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
+@using Erpyonetimi.Domain.Entities
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
+@inject ILogService LogService
 @rendermode InteractiveServer
 
 <div style="max-width: 400px; margin: 80px auto; padding: 30px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: #fff;">
     <h3 class="text-center mb-4" style="color: #333;">ERP Sistem Girişi</h3>
-    
+
+    <form @onsubmit="GirisYap">
     <div class="mb-3">
         <label class="form-label">Kullanıcı Adı:</label>
         <input class="form-control" @bind="kullaniciAdi" placeholder="Kullanıcı adınızı girin" />
@@ -17,8 +20,10 @@
         <label class="form-label">Şifre:</label>
         <input type="password" class="form-control" @bind="sifre" placeholder="Şifrenizi girin" />
     </div>
-    
-    <button class="btn btn-primary w-100 py-2" @onclick="GirisYap">Giriş Yap</button>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">Giriş Yap</button>
+
+    </form>
     
     @if (!string.IsNullOrEmpty(hataMesaji))
     {
@@ -43,15 +48,21 @@
 
         try
         {
-           
+
             var user = AuthService.Login(kullaniciAdi, sifre);
 
             if (user != null)
             {
                 UserSession.CurrentUser = user;
+                Log log = new Log();
 
-               
-                Navigation.NavigateTo("/dashboard",true);
+                log.KullaniciId = user.Id;
+                log.Tarih = DateTime.Now;
+                log.Islem = "Kullanıcı Girişi";
+                log.Aciklama = "Sisteme giriş yaptı";
+                LogService.Add(log);
+
+              Navigation.NavigateTo("/dashboard",true);
             }
             else
             {

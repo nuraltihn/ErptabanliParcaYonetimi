@@ -8,12 +8,30 @@
 @inject IMusteriService MusteriService
 @inject ISiparisDetayService SiparisDetayService
 @inject IParcaService ParcaService
+@inject ILogService LogService
 @inject NavigationManager Navigation
 
 <h3>Sipariş Yönetimi</h3>
 <button class="btn btn-primary" @onclick="YeniSiparis">
 	+Yeni Sipariş
 </button>
+<div class="row mt-3 mb-3">
+	<div class="col-md-8">
+		<input class="form-control"
+		placeholder="Sipariş no veya müşteri ara..."
+		@bind="aramaMetni"
+		@bind:event="oninput" />
+	</div>
+	<div class="col-md-4">
+		<select class="form-select" @bind="durumFiltresi">
+			<option value="">Tüm Durumlar</option>
+			<option value="Bekliyor">Bekliyor</option>
+			<option value="Hazırlanıyor">Hazırlanıyor</option>
+			<option value="Tamamlandı">Tamamlandı</option>
+			<option value="İptal">İptal</option>
+		</select>
+	</div>
+</div>
 
 <table class="table table-striped mt-3">
 	<thead>
@@ -27,7 +45,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var siparis in siparisler)
+		@foreach (var siparis in FiltrelenmisSiparisler)
 		{
 			<tr>
 				<td>@siparis.SiparisNo</td>
@@ -233,6 +251,8 @@
 	private List<Siparis> siparisler = new();
 	private List<Musteri> musteriler = new();
 	private List<Parca> parcalar = new();
+	private string aramaMetni = "";
+	private string durumFiltresi = "";
 	private SiparisDetaylari yeniDetay = new();
 	private Siparis yeniSiparis = new();
 
@@ -250,6 +270,29 @@
 		siparisler = SiparisService.GetAll();
 		musteriler = MusteriService.GetAll();
 		parcalar = ParcaService.GetAllParca();
+	}
+	private IEnumerable<Siparis> FiltrelenmisSiparisler
+	{
+		get
+		{
+			var sonuc = siparisler;
+			if(aramaMetni !="")
+			{
+				string arama = aramaMetni.ToLower();
+				sonuc = sonuc.Where(x =>
+				x.SiparisNo.ToLower().Contains(arama) ||
+				x.Musteri.FirmaAdi.ToLower().Contains(arama)
+				).ToList();
+
+			}
+			if(durumFiltresi!="")
+			{
+				sonuc = sonuc.Where(x =>
+				x.Durum == durumFiltresi
+				).ToList();
+			}
+			return sonuc;
+		}
 	}
 
 	private void YeniSiparis()
@@ -269,11 +312,25 @@
 		if (duzenlemeModu)
 		{
 			SiparisService.UpdateSiparis(yeniSiparis);
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Sipariş Düzenleme";
+			log.Aciklama = yeniSiparis.SiparisNo + " numaralı sipariş düzenlendi";
+			LogService.Add(log);
 		}
 		else
 		{
 			SiparisService.AddSiparis(yeniSiparis);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Sipariş Ekleme";
+			log.Aciklama = yeniSiparis.SiparisNo + " numaralı sipariş oluşturuldu";
+			LogService.Add(log);
 		}
+
 		siparisler = SiparisService.GetAll();
 
 		showModal = false;
@@ -302,6 +359,12 @@
 		if (siparis != null)
 		{
 			SiparisService.RemoveSiparis(siparis);
+			Log log = new Log();
+			log.KullaniciId=UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem="Sipariş Silme";
+			log.Aciklama = siparis.SiparisNo + " numaralı sipariş silindi";
+			LogService.Add(log);
 			siparisler = SiparisService.GetAll();
 		}
 	}

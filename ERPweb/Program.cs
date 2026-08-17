@@ -32,10 +32,9 @@ builder.Services.AddScoped<IRafService,RafService>();
 builder.Services.AddScoped<IStokHareketService,StokHareketService>();
 builder.Services.AddScoped<ISiparisService,SiparisService>();
 builder.Services.AddScoped<ISiparisDetayService,SiparisDetayService>();
+builder.Services.AddScoped<ILogService, LogService>();
 
 
-// Repository kayıtları - uygulama servislerinin ihtiyaç duyduğu repository implementasyonları
-// eksik olduğu için DI doğrulaması başarısız oluyordu. Scoped, DbContext ile uyumlu.
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IKategoriRepository, KategoriRepository>();
 builder.Services.AddScoped<ITedarikciRepository, TedarikciRepository>();
@@ -46,6 +45,7 @@ builder.Services.AddScoped<IRafRepository, RafRepository>();
 builder.Services.AddScoped<IStokHareketRepository, StokHareketRepository>();
 builder.Services.AddScoped<ISiparisRepository, SiparisRepository>();
 builder.Services.AddScoped<ISiparisDetayRepository, SiparisDetayRepository>();  
+builder.Services.AddScoped<ILogRepository, LogRepository>();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

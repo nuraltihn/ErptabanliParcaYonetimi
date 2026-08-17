@@ -6,6 +6,8 @@
 @using Erpyonetimi.Data.Helpers
 @inject IKategoriService KategoriService
 @inject NavigationManager Navigation
+@inject ILogService LogService
+
 
 
 <h3>Kategori Yönetimi</h3>
@@ -89,8 +91,21 @@
 {
 	private void Sil(int id)
 	{
-		KategoriService.DeleteKategori(id);
-		kategoriler = KategoriService.GetAllKategori();
+		var kategori = kategoriler.FirstOrDefault(x => x.Id == id);
+
+		if (kategori != null)
+		{
+			KategoriService.DeleteKategori(id);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Kategori Silme";
+			log.Aciklama = kategori.KategoriAdi + " adlı kategori silindi";
+			LogService.Add(log);
+
+			kategoriler = KategoriService.GetAllKategori();
+		}
 	}
 	private bool showModal = false;
 	private bool duzenlemeModu = false;
@@ -122,10 +137,22 @@
 		if(duzenlemeModu)
 		{
 			KategoriService.UpdateKategori(yeniKategori);
-		}		
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Kategori Düzenleme";
+			log.Aciklama = yeniKategori.KategoriAdi + " adlı kategori düzenlendi";
+			LogService.Add(log);
+		}
 		else
 		{
 			KategoriService.AddKategori(yeniKategori);
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Kategori Ekleme";
+			log.Aciklama = yeniKategori.KategoriAdi + " adlı kategori eklendi";
+			LogService.Add(log);
 		}
 		kategoriler = KategoriService.GetAllKategori();
 		showModal = false;

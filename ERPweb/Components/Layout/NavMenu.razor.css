@@ -83,6 +83,7 @@
 
 .nav-scrollable {
     display: none;
+    background-color: #0B1F4B;
 }
 
 .navbar-toggler:checked ~ .nav-scrollable {
@@ -102,4 +103,42 @@
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+}
+.logo-area {
+    text-align: center;
+    padding: 15px 10px;
+}
+
+.logo-area img {
+    width:180px;
+    height:auto;
+}
+.logo-area{
+    text-align: center;
+    padding: 15px 10 px;
+    background-color:white;
+    margin:10px;
+    border-radius:8px;
+
+}
+.logo-area img{
+    width:180px;
+    height:auto;
+}
+.logout-button{
+    width:100%;
+    padding:8px;
+    border:none;
+    border-radius: 5px;
+    background-color:#dc3545;
+    color: white;
+    cursor:pointer;
+    text-align:center;
+    text-decoration:none;
+    display:block;
+
+}
+.logout-button:hover{
+    background-color:#bb2d3b !important;
+    color: white !important;
 }

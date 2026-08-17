@@ -1,5 +1,13 @@
 ﻿@using Erpyonetimi.Data.Helpers
+@using Erpyonetimi.Application.Services.Interfaces
+@using Erpyonetimi.Domain.Entities
+@inject NavigationManager Navigation
+@inject ILogService LogService
+@rendermode InteractiveServer
 
+<div class="logo-area">
+	<img src="/images/logo.svg" alt="Özgenç Makina" />
+</div>
 <div class="nav-item px-3">
 	<NavLink class="nav-link" href="/dashboard">
 	Dashboard
@@ -24,6 +32,7 @@
 			Tedarikçi Yönetimi
 		</NavLink>
 	</div>
+	
 }
 @if (UserSession.IsAdmin|| UserSession.IsSatis)
 {
@@ -68,4 +77,31 @@
 			Stok Yönetimi
 		</NavLink>
 	</div>
+}
+@if (UserSession.IsAdmin)
+{
+	<div class="nav-item px-3">
+		<NavLink class="nav-link" href="/logs">
+			Log Kayıtları
+		</NavLink>
+	</div>
+}
+
+<div class="nav-item px-3">
+	<button class="logout-button"@onclick="CikisYap">
+		Çıkış Yap
+	</button>
+</div>
+@code
+{
+	private void CikisYap()
+	{
+		Log log = new Log();
+		log.KullaniciId = UserSession.CurrentUser.Id;
+		log.Tarih = DateTime.Now;
+		log.Islem = "Kullanıcı Çıkışı";
+		log.Aciklama = "Sistemden çıkış yaptı";
+		LogService.Add(log);
+		Navigation.NavigateTo("/login", true);
+	}
 }

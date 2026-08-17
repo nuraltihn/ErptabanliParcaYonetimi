@@ -5,12 +5,20 @@
 @using Erpyonetimi.Data.Helpers
 @inject IMusteriService MusteriService
 @inject ISiparisDetayService SiparisDetayService
+@inject ILogService LogService
 @inject NavigationManager Navigation
+
 <h3>Müşteri Yönetimi</h3>
 
 <button class="btn btn-primary" @onclick="YeniMusteri">
 	+Yeni Müşteri
 </button>
+<div class="mt-3 mb-3">
+	<input class="form-control"
+	placeholder="Müşteri kodu,firma adı veya yetkili kişi ara..."
+	@bind="aramaMetni"
+	@bind:event="oninput" />
+</div>
 
 <table class="table table-striped mt-3">
 	<thead>
@@ -26,7 +34,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var musteri in musteriler)
+		@foreach (var musteri in FiltrelenmisMusteriler)
 		{
 			<tr>
 				<td>@musteri.MusteriKodu</td>
@@ -164,9 +172,9 @@
 {
 	private bool showModal = false;
 	private bool duzenlemeModu = false;
-
 	private List<Musteri> musteriler = new();
 	private Musteri yeniMusteri = new();
+	private string aramaMetni = "";
 
 	protected override void OnInitialized()
 	{
@@ -178,7 +186,24 @@
 
 		musteriler = MusteriService.GetAll();
 	}
+	private IEnumerable<Musteri> FiltrelenmisMusteriler
+	{
+		get
+		{
+			var sonuc = musteriler;
+			if (aramaMetni != "")
+			{
+				string arama = aramaMetni.ToLower();
 
+				sonuc = sonuc.Where(x =>
+					x.MusteriKodu.ToLower().Contains(arama) ||
+					x.FirmaAdi.ToLower().Contains(arama) ||
+					x.YetkiliKisi.ToLower().Contains(arama)
+				).ToList();
+			}
+			return sonuc;
+		}
+	}
 	private void YeniMusteri()
 	{
 		yeniMusteri = new Musteri();
@@ -194,10 +219,22 @@
 		if(duzenlemeModu)
 		{
 			MusteriService.UpdateMusteri(yeniMusteri);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Müşteri Düzenleme";
+			log.Aciklama = yeniMusteri.FirmaAdi + " adlı müşteri düzenlendi";
+			LogService.Add(log);
 		}
 		else
 		{
 			MusteriService.AddMusteri(yeniMusteri);
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Islem = "Müşteri Ekleme";
+			log.Aciklama = yeniMusteri.FirmaAdi + " adlı müşteri eklendi";
+			LogService.Add(log);
 		}
 		musteriler = MusteriService.GetAll();
 		showModal = false;
@@ -210,6 +247,12 @@
 		if (musteri != null)
 		{
 			MusteriService.DeleteMusteri(musteri);
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Müşteri Silme";
+			log.Aciklama = musteri.FirmaAdi + " adlı müşteri silindi";
+			LogService.Add(log);
 			musteriler = MusteriService.GetAll();
 		}
 	}

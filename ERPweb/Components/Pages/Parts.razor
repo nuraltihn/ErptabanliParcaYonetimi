@@ -8,6 +8,7 @@
 @inject IKategoriService KategoriService
 @inject ITedarikciService TedarikciService
 @inject IRafService RafService
+@inject ILogService LogService
 @inject NavigationManager Navigation
 <h3>Parça Yönetimi</h3>
 <hr />
@@ -15,7 +16,28 @@
     + Yeni Parça
 </button>
 <hr />
+<div class="row mt-3 mb-3">
 
+    <div class="col-md-8">
+        <input class="form-control"
+               placeholder="Parça kodu, adı veya marka ara..."
+               @bind="aramaMetni"
+               @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-4">
+        <select class="form-select" @bind="kategoriFiltresi">
+            <option value="0">Tüm Kategoriler</option>
+
+            @foreach (var kategori in kategoriler)
+            {
+                <option value="@kategori.Id">
+                    @kategori.KategoriAdi
+                </option>
+            }
+        </select>
+    </div>
+</div>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -33,7 +55,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var parca in parcalar)
+        @foreach (var parca in FiltrelenmisParcalar)
         {
             <tr>
                 <td>@parca.ParcaKodu</td>
@@ -191,12 +213,38 @@
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
+    private string aramaMetni = "";
+    private int kategoriFiltresi = 0;
     private List<Parca> parcalar = new();
     private List<Kategori> kategoriler = new();
     private List<Tedarikci> tedarikciler = new();
     private List<Raflar> raflar = new();
     private Parca yeniParca = new();
 
+    private IEnumerable<Parca> FiltrelenmisParcalar
+    {
+        get
+        {
+            var sonuc = parcalar;
+            if (aramaMetni != "")
+            {
+                string arama = aramaMetni.ToLower();
+
+                sonuc = sonuc.Where(x =>
+                    x.ParcaKodu.ToLower().Contains(aramaMetni) ||
+                    x.ParcAdi.ToLower().Contains(aramaMetni) ||
+                    x.Marka.ToLower().Contains(aramaMetni)
+                ).ToList();
+            }
+            if (kategoriFiltresi != 0)
+            {
+                sonuc = sonuc.Where(x =>
+                    x.KategoriId == kategoriFiltresi
+                ).ToList();
+            }
+            return sonuc;
+        }
+    }
     protected override void OnInitialized()
     {
         if (!UserSession.IsAdmin && !UserSession.IsSatis)
@@ -227,15 +275,27 @@
         if(duzenlemeModu)
         {
             ParcaService.UpdateParca(yeniParca);
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Parça Düzenleme";
+            log.Aciklama = yeniParca.ParcAdi + "adlı parça düzenlendi";
+            LogService.Add(log);
         }
         else
         {
             ParcaService.AddParca(yeniParca);
-		}
-		parcalar = ParcaService.GetAllParca();
-		showModal = false;
-		duzenlemeModu = false;
-		yeniParca = new Parca();
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Parça Ekleme";
+            log.Aciklama = yeniParca.ParcAdi + "adlı parça eklendi";
+            LogService.Add(log);
+        }
+        parcalar = ParcaService.GetAllParca();
+        showModal = false;
+        duzenlemeModu = false;
+        yeniParca = new Parca();
 
     }
     private void Duzenle(Parca parca)
@@ -273,6 +333,13 @@
         if (parca != null)
         {
             ParcaService.RemoveParca(parca);
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Parça Silme";
+            log.Aciklama = parca.ParcAdi + " adlı parça silindi";
+            LogService.Add(log);
+
             parcalar = ParcaService.GetAllParca();
         }
 

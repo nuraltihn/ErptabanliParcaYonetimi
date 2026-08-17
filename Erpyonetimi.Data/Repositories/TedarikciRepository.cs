@@ -35,10 +35,22 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Update(Tedarikci tedarikci)
         {
-            _context.Tedarikciler.Update(tedarikci);
-            _context.SaveChanges();
-        }
+            var mevcut = _context.Tedarikciler.FirstOrDefault(x => x.Id == tedarikci.Id);
 
+            if (mevcut != null)
+            {
+                mevcut.TedarikciKodu = tedarikci.TedarikciKodu;
+                mevcut.FirmaAdi = tedarikci.FirmaAdi;
+                mevcut.YetkiliKisi = tedarikci.YetkiliKisi;
+                mevcut.Tel = tedarikci.Tel;
+                mevcut.Email = tedarikci.Email;
+                mevcut.Adres = tedarikci.Adres;
+                mevcut.Fax = tedarikci.Fax;
+                mevcut.VergiNo = tedarikci.VergiNo;
+
+                _context.SaveChanges();
+            }
+        }
         public void Delete(Tedarikci tedarikci)
         {
             _context.Tedarikciler.Remove(tedarikci);

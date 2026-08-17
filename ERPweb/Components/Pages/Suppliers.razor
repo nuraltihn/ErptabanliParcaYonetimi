@@ -4,13 +4,19 @@
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
 @inject ITedarikciService TedarikciService
+@inject ILogService LogService
 @inject NavigationManager Navigation
 
 <h3>Tedarikçi Yönetimi</h3>
 <button class="btn btn-primary" @onclick="YeniTedarikci">
     + Yeni Tedarikçi
-
 </button>
+<div class="mt-3 mb-3">
+    <input class="form-control"
+           placeholder="Tedarikçi kodu, firma adı veya yetkili kişi ara..."
+           @bind="aramaMetni"
+           @bind:event="oninput" />
+</div>
 <hr />
 
 <table class="table table-striped">
@@ -26,7 +32,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var tedarikci in tedarikciler)
+        @foreach (var tedarikci in FiltrelenmisTedarikciler)
         {
             <tr>
                 <td>@tedarikci.TedarikciKodu</td>
@@ -118,14 +124,13 @@
         </div>
     </div>
 }
-
 @code
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
-
     private List<Tedarikci> tedarikciler = new();
     private Tedarikci yeniTedarikci = new();
+    private string aramaMetni = "";
 
     protected override void OnInitialized()
     {
@@ -134,7 +139,28 @@
             Navigation.NavigateTo("/dashboard");
             return;
         }
+
         tedarikciler = TedarikciService.GetAllTedarikci();
+    }
+
+    private IEnumerable<Tedarikci> FiltrelenmisTedarikciler
+    {
+        get
+        {
+            var sonuc = tedarikciler;
+
+            if (aramaMetni != "")
+            {
+                string arama = aramaMetni.ToLower();
+                sonuc = sonuc.Where(x =>
+                    x.TedarikciKodu.ToLower().Contains(arama) ||
+                    x.FirmaAdi.ToLower().Contains(arama) ||
+                    x.YetkiliKisi.ToLower().Contains(arama)
+                ).ToList();
+            }
+
+            return sonuc;
+        }
     }
 
     private void YeniTedarikci()
@@ -155,13 +181,28 @@
         if (duzenlemeModu)
         {
             TedarikciService.UpdateTedarikci(yeniTedarikci);
+
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Tedarikçi Düzenleme";
+            log.Aciklama = yeniTedarikci.FirmaAdi + " adlı tedarikçi düzenlendi";
+            LogService.Add(log);
         }
         else
         {
             TedarikciService.AddTedarikci(yeniTedarikci);
+
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Tedarikçi Ekleme";
+            log.Aciklama = yeniTedarikci.FirmaAdi + " adlı tedarikçi eklendi";
+            LogService.Add(log);
         }
 
         tedarikciler = TedarikciService.GetAllTedarikci();
+
         showModal = false;
         duzenlemeModu = false;
         yeniTedarikci = new Tedarikci();
@@ -188,7 +229,18 @@
 
     private void Sil(int id)
     {
-        TedarikciService.DeleteTedarikci(id);
-        tedarikciler = TedarikciService.GetAllTedarikci();
+        var tedarikci = tedarikciler.FirstOrDefault(x => x.Id == id);
+
+        if (tedarikci != null)
+        {
+            TedarikciService.DeleteTedarikci(id);
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Tedarikçi Silme";
+            log.Aciklama = tedarikci.FirmaAdi + " adlı tedarikçi silindi";
+            LogService.Add(log);
+            tedarikciler = TedarikciService.GetAllTedarikci();
+        }
     }
 }

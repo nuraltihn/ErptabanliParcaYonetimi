@@ -1,6 +1,5 @@
 ﻿@page "/stockmovements"
 @rendermode InteractiveServer
-
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
@@ -8,23 +7,24 @@
 @inject IDepoService DepoService
 @inject IUsersService UserService
 @inject IStokHareketService StokHareketService
+@inject ILogService LogService
 @inject NavigationManager Navigation
 
 <h3>Stok Yönetimi</h3>
 
-<button class="btn btn-primary"
+<button class="btn btn-primary" 
 @onclick="StokHareketiAc">
-+ Stok Hareketi
+    + Stok Hareketi
 </button>
 <table class="table table-striped mt-3">
     <thead>
         <tr>
-            <th>Parça Kodu</th>
-            <th>Parça</th>
-            <th>Raf</th>
-            <th>Mevcut Stok</th>
-            <th>Minimum Stok</th>
-            <th>Durum</th>
+<th>Parça Kodu</th>
+<th>Parça</th>
+<th>Raf</th>
+<th>Mevcut Stok</th>
+<th>Minimum Stok</th>
+ <th>Durum</th>
         </tr>
     </thead>
 
@@ -32,43 +32,58 @@
         @foreach (var parca in parcalar)
         {
             <tr>
-                <td>@parca.ParcaKodu</td>
-                <td>@parca.ParcAdi</td>
-                <td>@parca.Raf?.RafKodu</td>
-                <td>@parca.MevcutStok</td>
-                <td>@parca.MinimumStok</td>
+<td>@parca.ParcaKodu</td>
+<td>@parca.ParcAdi</td>
+<td>@parca.Raf?.RafKodu</td>
+ <td>@parca.MevcutStok</td>
+ <td>@parca.MinimumStok</td>
 
                 <td>
-                    @if (parca.MevcutStok <= parca.MinimumStok)
-                    {
-                        <span class="badge bg-danger">
-                            Kritik Stok
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">
-                            Yeterli
-                        </span>
-                    }
-                </td>
-            </tr>
-        }
+  @if (parca.MevcutStok <= parca.MinimumStok)
+  {
+   <span class="badge bg-danger">Kritik Stok</span>
+  }
+  else
+ {
+<span class="badge bg-success">Yeterli</span>
+ }
+ </td>
+</tr>
+ }
     </tbody>
 </table>
 
 <hr class="mt-5" />
+
 <h4>Stok Hareketleri</h4>
 
-@if (stokHareketleri.Count == 0)
+<div class="row mt-3 mb-3">
+
+    <div class="col-md-6">
+        <input class="form-control"
+               placeholder="Parça ara..."
+               @bind="stokAramaMetni"
+               @bind:event="oninput" />
+    </div>
+
+    <div class="col-md-6">
+        <select class="form-select" @bind="stokIslemFiltresi">
+            <option value="">Tüm İşlemler</option>
+            <option value="Giriş">Giriş</option>
+            <option value="Çıkış">Çıkış</option>
+        </select>
+    </div>
+
+</div>
+
+@if (!FiltrelenmisStokHareketleri.Any())
 {
-    <p class="text-muted">
-        Henüz stok hareketi bulunmuyor.
-    </p>
+    <p class="text-muted">Henüz stok hareketi bulunmuyor.</p>
 }
 else
 {
-    <table class="table table -striped table-hover mt-3">
+    <table class="table table-striped table-hover mt-3">
+
         <thead>
             <tr>
                 <th>Parça</th>
@@ -78,47 +93,51 @@ else
                 <th>Kullanıcı</th>
                 <th>Tarih</th>
                 <th>Açıklama</th>
+                <th>İşlem</th>
             </tr>
         </thead>
+
         <tbody>
-            @foreach (var hareket in stokHareketleri.OrderByDescending( x=> x.Tarih))
+            @foreach (var hareket in FiltrelenmisStokHareketleri)
             {
                 <tr>
-                    <td>
-                        @hareket.Parca?.ParcAdi
-                    </td>
+                    <td>@hareket.Parca?.ParcAdi</td>
+
                     <td>
                         @if (hareket.IslemTipi == "Giriş")
                         {
-                            <span class="badge bg-success">
-                                Giriş
-                            </span>
+                            <span class="badge bg-success">Giriş</span>
                         }
                         else
                         {
-                            <span class="badge bg-danger">
-                                Çıkış
-                            </span>
+                            <span class="badge bg-danger">Çıkış</span>
                         }
                     </td>
-                    <td>
-                        @(hareket.Miktar)
-                    </td>
-                     <td>
-                         @(hareket.Depo?.Depaadi)
-                     </td>
 
-                     <td>
-                         @(hareket.Kullanici?.AdSoyad)
-                     </td>
-                     <td>
-                         @hareket.Tarih.ToString("dd.MM.yyyy HH:mm")
-                     </td>
-                     <td>
-                         @(string.IsNullOrWhiteSpace(hareket.Aciklama)
-                         ? "-"
-                         :hareket.Aciklama)
-                     </td>
+ <td>@hareket.Miktar</td>
+<td>@hareket.Depo?.Depaadi</td>
+ <td>@hareket.Kullanici?.AdSoyad</td>
+  <td>@hareket.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(hareket.Aciklama))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            @hareket.Aciklama
+                        }
+                    </td>
+
+                    <td>
+                        @if (UserSession.IsAdmin || UserSession.IsDepo)
+                        {
+                            <button class="btn btn-warning btn-sm"
+                                    @onclick="() => GeriAl(hareket)">
+                                Geri Al
+                            </button>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
@@ -129,14 +148,12 @@ else
 @if (showModal)
 {
     <div class="modal d-block"
-         tabindex="-1"
          style="background-color: rgba(0,0,0,0.5);">
 
         <div class="modal-dialog">
             <div class="modal-content">
 
                 <div class="modal-header">
-
                     <h5 class="modal-title">
                         Stok @islemTipi
                     </h5>
@@ -145,13 +162,12 @@ else
                             class="btn-close"
                             @onclick="ModalKapat">
                     </button>
-
                 </div>
 
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label>Parça</label>
+                        <label class="form-label">Parça</label>
 
                         <select class="form-select"
                                 @bind="yeniHareket.ParcaId">
@@ -170,9 +186,8 @@ else
                         </select>
                     </div>
 
-
                     <div class="mb-3">
-                        <label>Depo</label>
+                        <label class="form-label">Depo</label>
 
                         <select class="form-select"
                                 @bind="yeniHareket.DepoId">
@@ -191,9 +206,8 @@ else
                         </select>
                     </div>
 
-
                     <div class="mb-3">
-                        <label>Kullanıcı</label>
+                        <label class="form-label">Kullanıcı</label>
 
                         <select class="form-select"
                                 @bind="yeniHareket.KullaniciId">
@@ -212,49 +226,45 @@ else
                         </select>
                     </div>
 
-
                     <div class="mb-3">
-                        <label>İşlem Tipi</label>
+                        <label class="form-label">İşlem Tipi</label>
 
                         <select class="form-select"
                                 @bind="yeniHareket.IslemTipi"
                                 @bind:after="IslemTipiDegisti">
 
-                            <option value="Giriş">
-                                Giriş
-                            </option>
-
-                            <option value="Çıkış">
-                                Çıkış
-                            </option>
+                            <option value="Giriş">Giriş</option>
+                            <option value="Çıkış">Çıkış</option>
 
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label>Miktar</label>
+                        <label class="form-label">Miktar</label>
 
                         <input type="number"
                                min="1"
                                class="form-control"
                                @bind="yeniHareket.Miktar" />
-                     @if (!string.IsNullOrEmpty(stokUyari))
-                        {
-                            <div class="alert alert-danger mt-2">
-                                @stokUyari
-                            </div>
-                        }
-
-
                     </div>
+
                     <div class="mb-3">
-                        <label>Açıklama</label>
+                        <label class="form-label">Açıklama</label>
 
                         <textarea class="form-control"
                                       @bind="yeniHareket.Aciklama">
                         </textarea>
                         </div>
 
+                        @if (!string.IsNullOrEmpty(stokUyari))
+                        {
+                            <div class="alert alert-danger">
+                                @stokUyari
+                            </div>
+                        }
+
                     </div>
+
                     <div class="modal-footer">
 
                         <button class="btn btn-secondary"
@@ -262,20 +272,89 @@ else
                             İptal
                         </button>
 
-                        <button class="btn @(yeniHareket.IslemTipi == "Giriş" ? "btn-success" :"btn-danger")"
-                        @onclick="Kaydet">
-                        @(yeniHareket.IslemTipi == "Giriş"
-                        ? "Stok Girişi Yap"
-                        :"Stok Çıkışı Yap")
+                        <button class="btn @(yeniHareket.IslemTipi == "Giriş" ? "btn-success" : "btn-danger")"
+                                @onclick="Kaydet">
+
+                            @if (yeniHareket.IslemTipi == "Giriş")
+                            {
+                                <span>Stok Girişi Yap</span>
+                            }
+                            else
+                            {
+                                <span>Stok Çıkışı Yap</span>
+                            }
+
                         </button>
 
                     </div>
 
                 </div>
             </div>
+
         </div>
     }
 
+    @if (geriAlModal)
+    {
+        <div class="modal d-block"
+             style="background-color: rgba(0,0,0,0.5);">
+
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Stok Hareketini Geri Al
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                @onclick="GeriAlKapat">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p>
+                            Bu stok hareketini geri almak istediğinize emin misiniz?
+                        </p>
+
+                        <label class="form-label">
+                            Geri Alma Nedeni
+                        </label>
+
+                        <textarea class="form-control"
+                                  rows="3"
+                                  @bind="geriAlmaNedeni"
+                                      placeholder="Geri alma nedenini yazın...">
+                    </textarea>
+                    @if (!string.IsNullOrEmpty(stokUyari))
+                    {
+                        <div class="alert alert-danger mt-2">
+                            @stokUyari
+                        </div>
+                    }
+                </div>
+
+                        <div class="modal-footer">
+
+                            <button class="btn btn-secondary"
+                                    @onclick="GeriAlKapat">
+                                İptal
+                            </button>
+
+                            <button class="btn btn-danger"
+                                    @onclick="GeriAlOnayla">
+                                Geri Al
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        }
 
 @code
 {
@@ -287,19 +366,53 @@ else
     private StokHareket yeniHareket = new();
 
     private bool showModal = false;
+    private bool geriAlModal = false;
+
+    private StokHareket? geriAlinacakHareket;
 
     private string islemTipi = "Giriş";
     private string stokUyari = "";
+    private string stokAramaMetni = "";
+    private string stokIslemFiltresi = "";
+    private string geriAlmaNedeni = "";
 
     protected override void OnInitialized()
     {
         if (!UserSession.IsAdmin && !UserSession.IsDepo)
         {
-            Navigation.NavigateTo("/dashboard"); 
+            Navigation.NavigateTo("/dashboard");
+            return;
         }
+
         VerileriYukle();
     }
 
+    private IEnumerable<StokHareket> FiltrelenmisStokHareketleri
+    {
+        get
+        {
+            var sonuc = stokHareketleri;
+
+            if (stokAramaMetni != "")
+            {
+                string arama = stokAramaMetni.ToLower();
+
+                sonuc = sonuc.Where(x =>
+                    x.Parca != null &&
+                    x.Parca.ParcAdi.ToLower().Contains(arama)
+                ).ToList();
+            }
+
+            if (stokIslemFiltresi != "")
+            {
+                sonuc = sonuc.Where(x =>
+                    x.IslemTipi == stokIslemFiltresi
+                ).ToList();
+            }
+
+            return sonuc;
+        }
+    }
 
     private void VerileriYukle()
     {
@@ -309,41 +422,45 @@ else
         stokHareketleri = StokHareketService.GetAll();
     }
 
-
     private void StokHareketiAc()
     {
         yeniHareket = new StokHareket();
 
         islemTipi = "Giriş";
         yeniHareket.IslemTipi = "Giriş";
+
         stokUyari = "";
         showModal = true;
     }
-
 
     private void ModalKapat()
     {
         showModal = false;
         stokUyari = "";
     }
+
     private void Kaydet()
     {
         stokUyari = "";
+
         if (yeniHareket.ParcaId == 0)
         {
             stokUyari = "Lütfen bir parça seçin.";
             return;
         }
+
         if (yeniHareket.DepoId == 0)
         {
             stokUyari = "Lütfen bir depo seçin.";
             return;
         }
+
         if (yeniHareket.KullaniciId == 0)
         {
             stokUyari = "Lütfen bir kullanıcı seçin.";
             return;
         }
+
         if (yeniHareket.Miktar <= 0)
         {
             stokUyari = "Miktar 0'dan büyük olmalıdır.";
@@ -357,36 +474,108 @@ else
             stokUyari = "Seçilen parça bulunamadı.";
             return;
         }
+
         if (yeniHareket.IslemTipi == "Çıkış")
         {
             if (parca.MevcutStok < yeniHareket.Miktar)
             {
-                stokUyari =
-                    $"Yetersiz stok! Mevcut stok: {parca.MevcutStok}, " +
-                    $"istenen miktar: {yeniHareket.Miktar}.";
-
+                stokUyari = "Yetersiz stok!";
                 return;
             }
 
             parca.MevcutStok -= yeniHareket.Miktar;
         }
-
         else
         {
             parca.MevcutStok += yeniHareket.Miktar;
         }
+
         ParcaService.UpdateParca(parca);
+
         yeniHareket.Tarih = DateTime.Now;
+
         StokHareketService.AddStokHareket(yeniHareket);
+        Log log = new Log();
+
+        log.KullaniciId = UserSession.CurrentUser.Id;
+        log.Tarih = DateTime.Now;
+        log.Islem = "Stok " + yeniHareket.IslemTipi;
+        log.Aciklama = yeniHareket.Miktar + " adet " + parca.ParcAdi;
+
+        LogService.Add(log);
         VerileriYukle();
+
         showModal = false;
         yeniHareket = new StokHareket();
-
         stokUyari = "";
     }
+
     private void IslemTipiDegisti()
     {
         islemTipi = yeniHareket.IslemTipi;
+        stokUyari = "";
+    }
+
+    private void GeriAl(StokHareket hareket)
+    {
+        geriAlinacakHareket = hareket;
+        geriAlmaNedeni = "";
+        geriAlModal = true;
+    }
+
+    private void GeriAlKapat()
+    {
+        geriAlModal = false;
+        geriAlinacakHareket = null;
+        geriAlmaNedeni = "";
+    }
+
+    private void GeriAlOnayla()
+    {
+        if (geriAlinacakHareket == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(geriAlmaNedeni))
+        {
+            stokUyari = "Lütfen geri alma nedenini yazın.";
+            return;
+        }
+        var hareket = geriAlinacakHareket;
+        var parca = ParcaService.GetById(hareket.ParcaId);
+
+        if (parca != null)
+        {
+            if (hareket.IslemTipi == "Giriş")
+            {
+                parca.MevcutStok -= hareket.Miktar;
+            }
+            else
+            {
+                parca.MevcutStok += hareket.Miktar;
+            }
+
+            ParcaService.UpdateParca(parca);
+        }
+
+        Log log = new Log();
+
+        log.KullaniciId = UserSession.CurrentUser.Id;
+        log.Tarih = DateTime.Now;
+        log.Islem = "Stok Hareketi Geri Alma";
+        log.Aciklama = geriAlmaNedeni;
+
+        LogService.Add(log);
+
+        StokHareketService.RemoveStokHareket(hareket
+        );
+
+        VerileriYukle();
+
+        geriAlModal = false;
+        geriAlinacakHareket = null;
+        geriAlmaNedeni = "";
         stokUyari = "";
     }
 }

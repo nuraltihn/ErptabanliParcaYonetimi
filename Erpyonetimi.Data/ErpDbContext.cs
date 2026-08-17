@@ -22,6 +22,7 @@ namespace Erpyonetimi.Context
         public DbSet<Siparis> Siparisler => Set<Siparis>();
         public DbSet<SiparisDetaylari> SiparisDetaylari => Set<SiparisDetaylari>();
         public DbSet<StokHareket> StokHareketleri => Set<StokHareket>();
+        public DbSet<Log> Loglar => Set<Log>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +109,12 @@ namespace Erpyonetimi.Context
                 .HasOne(sd => sd.Parca)
                 .WithMany(p => p.SiparisDetaylari)
                 .HasForeignKey(sd => sd.ParcaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Log>()
+                .HasOne(l => l.Kullanici)
+                .WithMany()
+                .HasForeignKey(l => l.KullaniciId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
