@@ -57,9 +57,10 @@
                 <Button Content="Ekle" Width="100" Margin="5" Command="{Binding SiparisEkleCommand}" Visibility="{Binding CrudVisibility}"/>
                 <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding SiparisGuncelleCommand}" Visibility="{Binding CrudVisibility}"/>
                     <Button Content="Sil" Width="100" Margin="5" Command="{Binding SiparisSilCommand}" Visibility="{Binding CrudVisibility}"/>
-                </StackPanel>
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding SiparisTemizleCommand}" Visibility="{Binding CrudVisibility}"/>
+            </StackPanel>
 
-            <DataGrid Grid.Row="1" ItemsSource="{Binding Siparisler}" SelectedItem="{Binding SeciliSiparis}" AutoGenerateColumns="False"
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Siparisler}" SelectedItem="{Binding SeciliSiparis}" AutoGenerateColumns="False" CanUserAddRows="False"
                      >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Sipariş No"

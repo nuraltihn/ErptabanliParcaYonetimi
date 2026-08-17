@@ -35,7 +35,13 @@ namespace Erpyonetimi.ViewModels
                 }
             }
         }
-
+        private StokHareket _seciliHareket;
+        public StokHareket SeciliHareket
+        {
+            get => _seciliHareket;
+            set { if(value==null) return;
+                _seciliHareket = value; OnPropertyChanged(); }
+        }
         private Musteri? _seciliMusteri;
         public Musteri? SeciliMusteri
         {
@@ -53,11 +59,7 @@ namespace Erpyonetimi.ViewModels
             set
             {
                 _siparisNo = value;
-                if(string.IsNullOrWhiteSpace(SiparisNo))
-                {
-                    MessageBox.Show("Sipariş no hiniz");
-                    return;
-                }
+              
                 OnPropertyChanged();
             }
         }
@@ -109,6 +111,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand SiparisGuncelleCommand { get; }
         public ICommand SiparisSilCommand { get; }
         public ICommand DetayAcCommand { get; }
+        public ICommand SiparisTemizleCommand { get; }
 
         public SiparisViewModel(ISiparisService siparisService, IMusteriService musteriService)
         {
@@ -117,12 +120,13 @@ namespace Erpyonetimi.ViewModels
             _tumSiparisler = _siparisService.GetAll();
             
             Siparisler = new ObservableCollection<Siparis>(_tumSiparisler);
-            Siparisler = new ObservableCollection<Siparis>(_siparisService.GetAll());
+           
             Musteriler = new ObservableCollection<Musteri>(_musteriService.GetAll());
 
             SiparisEkleCommand = new RelayCommand(Ekle);
             SiparisSilCommand = new RelayCommand(Sil);
             SiparisGuncelleCommand = new RelayCommand(Guncelle);
+            SiparisTemizleCommand = new RelayCommand(Temizle);
             DetayAcCommand = new RelayCommand(obj=>
             {
                 if (obj is Siparis siparis)
@@ -178,22 +182,35 @@ namespace Erpyonetimi.ViewModels
         {
             SiparisNo = "";
             ToplamTutar = 0;
-            Durum = "";
+            Durum = null;
             SiparisTarihi = DateTime.Now;
             SeciliMusteri = null;
             SeciliSiparis = null;
         }
         private void Ekle()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(SiparisNo))
             {
                 MessageBox.Show("Sipariş no giriniz.");
                 return;
+            }
                 if (_siparisService.GetByNo(SiparisNo) != null)
                 {
                     MessageBox.Show("bu sipariş numaras zaten kayıtlı.");
                     return;
                 }
+            if (ToplamTutar < 0)
+            {
+                MessageBox.Show("Toplam tutar negatif olamaz");
+                return;
             }
             if (SeciliMusteri == null)
             {
@@ -217,8 +234,29 @@ namespace Erpyonetimi.ViewModels
 
         private void Guncelle()
         {
-            if (SeciliSiparis == null || SeciliMusteri == null)
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
+            }
+
+            if (SiparisTarihi < DateTime.Today)
+            {
+                MessageBox.Show("Geçmiş tarihte bir sipariş oluşturulamaz.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(SiparisNo))
+            {
+                MessageBox.Show("Sipariş no giriniz.");
+                return;
+            }
+            if (SeciliMusteri == null || SeciliSiparis==null)
+            {
+                MessageBox.Show("Müşteri ve sipariş seçiniz.");
+                return;
+            }
             SeciliSiparis.SiparisNo = SiparisNo;
             SeciliSiparis.MusteriId= SeciliMusteri.Id;
             SeciliSiparis.SiparisTarihi = SiparisTarihi;
@@ -233,7 +271,22 @@ namespace Erpyonetimi.ViewModels
         }
         private void Sil()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+
             if (SeciliSiparis == null)
+                return;
+            var cevap = MessageBox.Show(
+                "Seçili siparişi silmek istediğinize mein misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
                 return;
 
             _siparisService.RemoveSiparis(SeciliSiparis);

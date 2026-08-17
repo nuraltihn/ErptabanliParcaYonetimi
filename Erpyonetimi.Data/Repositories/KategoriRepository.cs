@@ -1,12 +1,13 @@
 ﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Linq;
 namespace Erpyonetimi.Data.Repositories
 {
     public class KategoriRepository : IKategoriRepository
@@ -19,7 +20,11 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Kategori> GetAll()
         {
-            return _context.Kategoriler.ToList();
+            if (!DatabaseHelper.IsConnected)
+                return new List<Kategori>();
+
+                return _context.Kategoriler.ToList();
+            
         }
         public Kategori? GetById(int id)
         {

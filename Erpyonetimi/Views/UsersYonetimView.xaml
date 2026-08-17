@@ -57,11 +57,12 @@
                     <Button Content="Ekle" Width="100" Margin="5" Command="{Binding UsersEkleCommand}"/>
                     <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding UsersGuncelCommand}"/>
                     <Button Content="Sil" Width="100" Margin="5" Command="{Binding UsersSilCommand}"/>
+                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding UsersTemizleCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>
         <DataGrid Grid.Row="2" ItemsSource="{Binding Userlist}" SelectedItem="{Binding SelectedUser}"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
                 <DataGridTextColumn Header="Ad Soyad" Binding="{Binding AdSoyad}" Width="200"/>

@@ -64,6 +64,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand DepoEkleCommand { get; }
         public ICommand DepoGuncelleCommand { get; }
         public ICommand DepoSilCommand { get; }
+        public ICommand DepoTemizleCommand { get; }
 
         public DepoViewModel(IDepoService depoService)
         {
@@ -72,22 +73,52 @@ namespace Erpyonetimi.ViewModels
             DepoEkleCommand = new RelayCommand(Ekle);
             DepoGuncelleCommand = new RelayCommand(Guncelle);
             DepoSilCommand = new RelayCommand(Sil);
+            DepoTemizleCommand= new RelayCommand(Temizle);
             _tumdepolar = new List<Depolar>(_depoService.GetAll());
             Depolar = new ObservableCollection<Depolar>(_tumdepolar);
         }
         private void Filtrele()
         {
+            if (string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Depolar = new ObservableCollection<Depolar>(_tumdepolar);
+
+            }
+            else
+            {
+                var arama = AramaMetni.Trim();
+            
+
             var sonuc =_tumdepolar
                 .Where(x => x.Depaadi.ToLower().Contains(AramaMetni.ToLower()) ||
                             x.Konum.ToLower().Contains(AramaMetni.ToLower()))
                 .ToList();
             Depolar = new ObservableCollection<Depolar>(sonuc);
+            }
             OnPropertyChanged(nameof(Depolar));
         }
         private void Ekle()
         {
-            if (Depaadi == null && Konum == null)
+            //if(!Aktifmi && Raflar.Count > 0)
+            // {
+            //     MessageBox.Show("İçinde bulunan depo pasif yapılamaz");
+            //     return;
+            // }
+            if (_depoService.GetByDepoadi(Depaadi) != null )
+            {
+                MessageBox.Show("Bu isimde bir depo zaten mevcut");
                 return;
+            }
+            if (string.IsNullOrWhiteSpace(Depaadi))
+            {
+                MessageBox.Show("Depo adı zorunludur.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Konum))
+            {
+                MessageBox.Show("Konum zorunludur.");
+                return;
+            }
             var depo = new Depolar
             {
                 Depaadi = Depaadi,
@@ -102,6 +133,13 @@ namespace Erpyonetimi.ViewModels
         private void Sil()
         {
             if(SeciliDepo== null) return;
+            var cevap = MessageBox.Show(
+                "Seçili depoyu silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
+                return;
             _depoService.DeleteDepo(SeciliDepo);
            
             MessageBox.Show("Depo silindi");
@@ -111,23 +149,31 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(Depolar));
         }
         private void Guncelle()
+
         {
+        if(string.IsNullOrWhiteSpace(Konum) || string.IsNullOrWhiteSpace(Depaadi))
+            {
+                MessageBox.Show("Depo adı ve konum zorunludur");
+                return;
+            }
             if (SeciliDepo == null)
                 return;
+            
             SeciliDepo.Depaadi = Depaadi;
             SeciliDepo.Konum = Konum;
-            _depoService.UpdateDepo(SeciliDepo);
+           
 
-            Listele();
+          
             MessageBox.Show("Depo Güncellendi");
-            _depoService.UpdateDepo(SeciliDepo);
+            _depoService.UpdateDepo(SeciliDepo);  
             Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
+            Listele();
             OnPropertyChanged(nameof(Depolar));
         }
         private void Listele()
         {
             Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
-            OnPropertyChanged(nameof(Listele));
+            OnPropertyChanged(nameof(Depolar));
         }
 
         private void Temizle()

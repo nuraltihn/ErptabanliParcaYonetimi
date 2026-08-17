@@ -11,8 +11,10 @@
     <Grid>
         <Border Width="350" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="RoyalBlue" CornerRadius="10" BorderThickness="1" >
             <StackPanel>
-                <TextBlock Text="ERP Yönetimi Giriş" FontSize="24" Margin="0 0 0 20" HorizontalAlignment="Center" FontWeight="DemiBold" />
-
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/logo.png" Height="50" Width="50" VerticalAlignment="Top" Margin="10 0 5 10"/>
+                    <TextBlock Text="ERP Yönetimi Giriş" FontWeight="Bold" FontSize="24" Margin="0 0 0 20" HorizontalAlignment="Center" VerticalAlignment="Bottom"  />
+</StackPanel>
                 <TextBlock Text="Kullanıcı Adı"/>
                 <TextBox FontSize="20" Text="{Binding KullaniciAdi,UpdateSourceTrigger=PropertyChanged}"
                          Margin="0 5 0 10" BorderThickness="0"  />

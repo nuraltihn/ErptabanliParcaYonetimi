@@ -1,12 +1,13 @@
 ﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
+using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Erpyonetimi.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Erpyonetimi.Data.Repositories
@@ -22,9 +23,12 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Tedarikci> GetAll()
         {
-            return _context.Tedarikciler
+            if (!DatabaseHelper.IsConnected)
+                return new List<Tedarikci>();
+                return _context.Tedarikciler
                 .AsNoTracking()
                 .ToList();
+           
         }
 
         public void Add(Tedarikci tedarikci)
@@ -48,6 +52,12 @@ namespace Erpyonetimi.Data.Repositories
         public Tedarikci? GetById(int id)
         {
             return _context.Tedarikciler.FirstOrDefault(x => x.Id == id);
+        }
+
+        public Tedarikci? GetByKod(string kod)
+        {
+            return _context.Tedarikciler.FirstOrDefault(x =>
+            x.TedarikciKodu == kod);
         }
     }
 }

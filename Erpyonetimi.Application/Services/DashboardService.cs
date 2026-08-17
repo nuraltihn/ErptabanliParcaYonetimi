@@ -4,6 +4,7 @@ using Erpyonetimi.Application.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Erpyonetimi.Data.Helpers;
 
 namespace Erpyonetimi.Application.Services
 {
@@ -54,7 +55,10 @@ namespace Erpyonetimi.Application.Services
                 .ToList();
         }
         public int GetToplamMusteri()
+           
         {
+            if(!DatabaseHelper.IsConnected)
+                return 0;
             return _context.Musteriler.Count();
         }
         public int GetToplamSiparis()

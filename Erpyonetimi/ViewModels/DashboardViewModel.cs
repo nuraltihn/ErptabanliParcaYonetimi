@@ -4,6 +4,7 @@ using Erpyonetimi.Context;
 using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Helpers;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,22 @@ namespace Erpyonetimi.ViewModels
     public class DashboardViewModel:BaseViewModel
     {
         private readonly IDashboardService _dashboardService;
+       public string Hosgeldinmsj
+        {
+            get
+            {
+                return $"Hoşgeldin {UserSession.CurrentUser?.AdSoyad}!";
+            }
+        }
+        public string Rutbemsj
+        {
+            get
+            {
+                return $"Rütbesi: {UserSession.CurrentUser.Rol?.RolAdi??""}";
+            }
+        }
+
+      
         private int _toplamMusteri;
         public int ToplamMusteri { get => _toplamMusteri; set { _toplamMusteri = value; OnPropertyChanged(); } }
         private int _toplamSiparis;
@@ -32,7 +49,16 @@ namespace Erpyonetimi.ViewModels
         public ObservableCollection<Users> SonKullanicilar { get; set; }
         public ObservableCollection<Parca> SonParcalar { get; set; }
         public ObservableCollection<Siparis> SonSiparisler { get; set; }
-        
+        private string _adSoyad;
+        public string AdSoyad { get => _adSoyad; set { _adSoyad = value; OnPropertyChanged(); } }
+        private string _kulAd;
+        public string KulAd { get => _kulAd; set { _kulAd = value; OnPropertyChanged(); } }
+        private string _siparisNo;
+        public string SiparisNo { get => _siparisNo; set { _siparisNo = value; OnPropertyChanged(); } }
+        private string _parcAdi;
+        public string ParcAdi { get => _parcAdi; set { _parcAdi = value; OnPropertyChanged(); } }
+        private string _parcaKodu;
+        public string ParcaKodu { get => _parcaKodu; set { _parcaKodu = value; OnPropertyChanged(); } }
         public DashboardViewModel( IDashboardService dashboardService)
         {
             _dashboardService = dashboardService;
@@ -46,8 +72,16 @@ namespace Erpyonetimi.ViewModels
 
         private void VeriYukle()
         {
+             DatabaseHelper.CheckConnection();
+                if (!DatabaseHelper.IsConnected)
+                {
+                return;
+        }
+       
             try
             {
+               
+
                 ToplamMusteri = _dashboardService.GetToplamMusteri();
                 ToplamSiparis = _dashboardService.GetToplamSiparis();
                 ToplamKullanici = _dashboardService.GetToplamKullanici();
@@ -65,16 +99,11 @@ namespace Erpyonetimi.ViewModels
                 SonSiparisler = new ObservableCollection<Siparis>(
                     _dashboardService.GetSonSiparisler(10));
 
-                OnPropertyChanged(nameof(ToplamKullanici));
-                OnPropertyChanged(nameof(ToplamParca));
-                OnPropertyChanged(nameof(ToplamKategori));
-                OnPropertyChanged(nameof(ToplamTedarikci));
-                OnPropertyChanged(nameof(KrittikStokSayisi));
+          
                 OnPropertyChanged(nameof(SonKullanicilar));
                 OnPropertyChanged(nameof(SonParcalar));
                 OnPropertyChanged(nameof(SonSiparisler));
-                OnPropertyChanged(nameof(ToplamMusteri));
-                OnPropertyChanged(nameof(ToplamSiparis));
+             
             }
             catch (Exception ex)
             {

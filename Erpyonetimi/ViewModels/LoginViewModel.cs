@@ -22,6 +22,7 @@ namespace Erpyonetimi.ViewModels
     {
         private string _kullaniciAdi = "";
         private readonly IAuthService _authservice;
+       
         public string KullaniciAdi
         {
             get => _kullaniciAdi;
@@ -56,9 +57,31 @@ namespace Erpyonetimi.ViewModels
 
         private void Login(object parameter)
         {
+            DatabaseHelper.CheckConnection();
+            if (!DatabaseHelper.IsConnected)
+            {
+                UserSession.CurrentUser = new Users
+                {
+                    AdSoyad = "Çevrimdışı Kullanıcı",
+                    KulAd = "offline"
+                };
+                MessageBox.Show(
+                    "Veritabanına bağlanılamadı.\n" +
+                    "Çevrimdışı moda geçiliyor",
+                    "Çevrimdışı Mod", MessageBoxButton.OK, MessageBoxImage.Information);
+                _mainViewModel.Kullanicigirisyapti(UserSession.CurrentUser);
+                return;
+            }
+
             if(parameter is PasswordBox passwordBox)
             {
                 var password = passwordBox.Password ?? "";
+
+                var factory = new ErpDbContextFactory();
+                var context = factory.CreateDbContext(Array.Empty<string>());
+
+                IUsersRepository repo = new UsersRepository(context);
+                var authservice = new AuthService(repo);
                 var user = _authservice.Login(KullaniciAdi, password);
 
                 if (user != null)
@@ -67,7 +90,8 @@ namespace Erpyonetimi.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Kullanıcı yada şifre hatalı.");
+                    MessageBox.Show("Kullanıcı yada şifre hatalı.",
+                        "Giriş Hatası",MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
           

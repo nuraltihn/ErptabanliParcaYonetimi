@@ -59,10 +59,12 @@
                 <Button Content="Ekle" Width="100" Margin="5" Command="{Binding StokHEkleCommand}"/>
                 <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding StokGuncelleCommand}"/>
                 <Button Content="Sil" Width="100" Margin="5" Command="{Binding StokSilCommand}"/>
+                <Button Content="Geri al" Width="100" Margin="5" Command="{Binding StokGeriAlCommand}"/>
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding StokTemizleCommand}"/>
             </StackPanel>
             <DataGrid Grid.Row="1" ItemsSource="{Binding Hareketler}"
                       SelectedItem="{Binding SeciliHareket}"
-                      AutoGenerateColumns="False">
+                      AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Parça" Binding="{Binding Parca.ParcAdi}" Width="*"/>
                     <DataGridTextColumn Header="İşlem Tipi" Binding="{Binding IslemTipi}" Width="120"/>

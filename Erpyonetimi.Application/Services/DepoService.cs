@@ -29,6 +29,11 @@ namespace Erpyonetimi.Application.Services
            return  _depoRepository.GetAll();
         }
 
+        public Depolar? GetByDepoadi(string depoadi)
+        {
+            return _depoRepository.GetByDepoadi(depoadi);
+        }
+
         public Depolar? GetById(int id)
         {
             return _depoRepository.GetById(id);

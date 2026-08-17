@@ -10,6 +10,7 @@ namespace Erpyonetimi.Data.Interfaces
     {
         List<Tedarikci> GetAll();
         Tedarikci? GetById(int id);
+        Tedarikci? GetByKod(string kod);
         void Add(Tedarikci tedarikci);
         void Update(Tedarikci tedarikci);
         void Delete(Tedarikci tedarikci);

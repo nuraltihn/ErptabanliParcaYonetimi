@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Context;
+﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 namespace Erpyonetimi.Data.Repositories
 {
     public class MusteriRepository : IMusteriRepository
@@ -34,10 +35,13 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Musteri> GetAll()
         {
+            if (!DatabaseHelper.IsConnected)
+                return new List<Musteri>();
             return _context.Musteriler
-                .AsNoTracking()
-                .ToList();
+            .AsNoTracking()
+            .ToList();
         }
+       
 
         public Musteri? GetById(int id)
         {

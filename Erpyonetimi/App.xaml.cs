@@ -2,6 +2,7 @@
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Context;
 using Erpyonetimi.Data;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Data.Repositories;
 using Erpyonetimi.ViewModels;
@@ -35,7 +36,7 @@ namespace Erpyonetimi
                 ConfigureServices(services,context.Configuration);
             }).Build();
 
-
+         
             //var services = new ServiceCollection();
             //ConfigureServices(services);
             //ServiceProvider = services.BuildServiceProvider();
@@ -63,16 +64,17 @@ namespace Erpyonetimi
 
             services.AddDbContext<ErpDbContext>(options =>
             {
-            try
-            {
-                using var conn = new SqlConnection(sqlConn);
-                conn.Open();
+                try
+                {
+                    using var conn = new SqlConnection(sqlConn);
+                    conn.Open();
 
-                options.UseSqlServer(sqlConn);
-            }
-            catch
-            {
-                options.UseSqlite("Data Source=erp.db");
+                    options.UseSqlServer(sqlConn);
+                }
+                catch
+                {
+                    options.UseSqlServer(sqlConn);
+
                 }
             });
 
@@ -118,6 +120,7 @@ namespace Erpyonetimi
         }
         protected override async void OnStartup(StartupEventArgs e)
         {
+            try { 
             await _host.StartAsync();
             //try
             //{
@@ -133,9 +136,18 @@ namespace Erpyonetimi
             //{
             //    MessageBox.Show(ex.Message);
             //}
+            DatabaseHelper.CheckConnection();
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("veritabanına bağlanılamadı.","Veritabanı Bağlantısı",MessageBoxButton.OK,MessageBoxImage.Warning );
+            }
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
-
+}
+            catch(Exception ex) 
+            {
+                MessageBox.Show(ex.ToString());
+            }
             base.OnStartup(e);
            
             }

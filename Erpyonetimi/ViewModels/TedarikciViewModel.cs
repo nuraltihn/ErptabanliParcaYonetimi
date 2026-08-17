@@ -129,7 +129,9 @@ namespace Erpyonetimi.ViewModels
 
         public ICommand TedarikciEkleCommand { get;}
         public ICommand TedarikciGuncelleCommand { get; }
+        public ICommand TedarikciTemizleCommand { get; }
         public ICommand TedarikciSilCommand { get; }
+
         public ICommand TedarikciListeleCommand { get; }
         private readonly ITedarikciService _tedarikciService;
 
@@ -137,12 +139,12 @@ namespace Erpyonetimi.ViewModels
         {
             _tedarikciService = tedarikciService;
 
-            Tedarikciler = new ObservableCollection<Tedarikci>(
-                _tedarikciService.GetAllTedarikci());
+            
             TedarikciEkleCommand = new RelayCommand(Ekle);
             TedarikciGuncelleCommand = new RelayCommand(Guncelle);
             TedarikciSilCommand = new RelayCommand(Sil);
             TedarikciListeleCommand = new RelayCommand(Listele);
+            TedarikciTemizleCommand = new RelayCommand(Temizle);
             _tumtedarikciler = _tedarikciService.GetAllTedarikci();
             Tedarikciler = new ObservableCollection<Tedarikci>(_tumtedarikciler);
            
@@ -167,8 +169,39 @@ namespace Erpyonetimi.ViewModels
 
         private void Ekle()
         {
-            if (TedarikciKodu == null || FirmaAdi==null|| YetkiliKisi==null)
+            if(_tedarikciService.GetByKod(TedarikciKodu) != null)
+            {
+                MessageBox.Show("Bu tedarikçi kodu zaten kayıtlı");
                 return;
+            }
+            if (string.IsNullOrWhiteSpace(TedarikciKodu))
+            {
+                MessageBox.Show("Tedarikçi kodu boş olamaz.");
+                return;
+            }
+            if(!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(FirmaAdi) || string.IsNullOrWhiteSpace(YetkiliKisi))
+            {
+                MessageBox.Show("lütfen gerekli yerleri doldurunuz.");
+                return;
+ 
+            }
+            if (string.IsNullOrWhiteSpace(TedarikciKodu))
+            {
+                MessageBox.Show("Tedarikçi kodu boş olamaz.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(VergiNo)|| VergiNo.Length != 10)
+            {
+                MessageBox.Show("Vergi numarası 10 haneli olmak zorundadır.");
+                return;
+            }
+            
+                
             if (!UserSession.IsAdmin)
                 return;
 
@@ -188,21 +221,61 @@ namespace Erpyonetimi.ViewModels
 
             Listele();
         }
+        private void Temizle()
+        {
+            TedarikciKodu = "";
+            FirmaAdi = "";
+            YetkiliKisi = "";
+            Tel = "";
+            Email = "";
+            Adres = "";
+            VergiNo = "";
+            Fax = "";
+        }
         private void Sil()
         {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
+                return;
+            }
             if (!UserSession.IsAdmin)
                 return;  
 
 
             if (SeciliTedarikci != null) {
                ;
-            _tedarikciService.DeleteTedarikci(SeciliTedarikci.Id);
+                var cevap = MessageBox.Show(
+                    "Seçili tedarikçiyi silmek istediğinize emin misiniz?",
+                    "Silme Onayı", MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (cevap !=MessageBoxResult.Yes)
+                {
+                    return;
+                }
+                _tedarikciService.DeleteTedarikci(SeciliTedarikci.Id);
                 Listele();
             }
         }
         private void Guncelle()
         {
-            
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
+                return;
+            }
+            if(string.IsNullOrWhiteSpace(VergiNo)|| VergiNo.Length != 10)
+            {
+                MessageBox.Show("Vergi numarası 10 haneli olmak zorundadır");
+                return;
+            }
+            if (TedarikciKodu == null || FirmaAdi == null || YetkiliKisi == null)
+            {
+                MessageBox.Show("lütfen gerekli yerleri doldurunuz.");
+                return;
+
+            }
             if (!UserSession.IsAdmin)
                 return;
 

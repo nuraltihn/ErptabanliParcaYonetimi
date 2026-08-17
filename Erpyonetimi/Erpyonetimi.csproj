@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
@@ -30,6 +34,10 @@
     <ProjectReference Include="..\Erpyonetimi.Application\Erpyonetimi.Application.csproj" />
     <ProjectReference Include="..\Erpyonetimi.Data\Erpyonetimi.Data.csproj" />
     <ProjectReference Include="..\Erpyonetimi.Domain\Erpyonetimi.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="logo.png" />
   </ItemGroup>
 
 </Project>

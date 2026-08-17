@@ -1,18 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Application.Services.Interfaces;
+﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 namespace Erpyonetimi.Application.Services
 {
-    public class MusteriService : IMusteriService
+    public class MusteriService  : IMusteriService
     {
         private readonly IMusteriRepository _musteriRepository;
         public MusteriService(IMusteriRepository musteriRepository)
         {
             _musteriRepository = musteriRepository;
         }
+
+        public List<Musteri> GetAll()
+        {
+            return _musteriRepository.GetAll();
+        }
+
         public void AddMusteri(Musteri musteri)
         {
             _musteriRepository.Add(musteri);
@@ -21,11 +28,6 @@ namespace Erpyonetimi.Application.Services
         public void DeleteMusteri(Musteri musteri)
         {
             _musteriRepository.Delete(musteri);
-        }
-
-        public List<Musteri> GetAll ()
-        {
-            return _musteriRepository.GetAll();
         }
 
         public Musteri? GetById(int id)

@@ -70,6 +70,7 @@ namespace Erpyonetimi.ViewModels
                 _seciliDetay = value;
                 if (value != null)
                 {
+                   
                     Miktar = value.Miktar;
                     BirimFiyat = value.BirimFiyat;
                     ToplamFiyat = value.ToplamFiyat;
@@ -118,6 +119,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand SiparisDetayGuncelleCommand { get; }
         public ICommand SiparisDetaySilCommand { get; }
         public ICommand SiparisDetayListeleCommand { get; }
+        public ICommand SiparisDetayTemizleCommand { get; }
         public SiparisDetayViewModel(ISiparisDetayService siparisDetayService, ISiparisService siparisService, IParcaService parcaService)
         {
            _siparisService = siparisService;
@@ -131,6 +133,7 @@ namespace Erpyonetimi.ViewModels
             SiparisDetayGuncelleCommand = new RelayCommand(Guncelle);
             SiparisDetaySilCommand = new RelayCommand(Sil);
             SiparisDetayListeleCommand = new RelayCommand(Listele);
+            SiparisDetayTemizleCommand = new RelayCommand(Temizle);
             _tumDetaylar= _siparisDetayService.GetAll();    
             Detaylar= new ObservableCollection<SiparisDetaylari>(_tumDetaylar);
 
@@ -147,11 +150,18 @@ namespace Erpyonetimi.ViewModels
 
         private void Filtrele()
         {
+            if (string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Detaylar = new ObservableCollection<SiparisDetaylari>(_tumDetaylar);
+                OnPropertyChanged(nameof(Detaylar));
+                return;
+            }
+            var arama = AramaMetni.ToLower();
             var sonuc = _tumDetaylar
-                .Where(x => x.Parca.ParcAdi.ToLower().Contains(AramaMetni.ToLower()) ||
-                            x.Parca.ParcaKodu.ToLower().Contains(AramaMetni.ToLower()) ||
-                            x.Siparis.Musteri.Ad.ToLower().Contains(AramaMetni.ToLower()) ||
-                            x.Siparis.Musteri.Soyad.ToLower().Contains(AramaMetni.ToLower()))
+                .Where(x => (x.Parca?.ParcAdi?.ToLower().Contains(arama) ?? false) ||
+                            (x.Parca?.ParcaKodu?.ToLower().Contains(arama) ?? false) ||
+                            (x.Siparis?.SiparisNo?.ToLower().Contains(arama) ?? false) ||
+                            (x.Siparis?.Musteri?.Soyad?.ToLower().Contains(arama) ?? false))
                 .ToList();
             Detaylar = new ObservableCollection<SiparisDetaylari>(sonuc);
             OnPropertyChanged(nameof(Detaylar));
@@ -167,7 +177,15 @@ namespace Erpyonetimi.ViewModels
         }
         private void Ekle()
         {
-            if(SeciliSiparis == null)
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+
+            if (SeciliSiparis == null)
             {
                 MessageBox.Show("Sipariş seçiniz.");
                 return;
@@ -213,13 +231,36 @@ namespace Erpyonetimi.ViewModels
                 _siparisService.UpdateSiparis(siparis);
             }
         }
+        private void Temizle()
+        {
+            Miktar = 0;
+            BirimFiyat = 0;
+            ToplamFiyat = 0;
+            SeciliSiparis = null;
+              SeciliParca = null;
 
+
+        }
         private void Guncelle()
         {
-            if(SeciliDetay==null || SeciliParca == null)
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
-            
-            SeciliParca.MevcutStok += SeciliDetay.Miktar;
+            }
+
+            if (SeciliDetay==null || SeciliParca == null)
+                return;
+            var eskiparca = _parcaService.GetById(SeciliDetay.ParcaId);
+            if (eskiparca == null)
+            {
+                MessageBox.Show("Eski parça bulunamadı");
+                return;
+            }
+            eskiparca.MevcutStok += SeciliDetay.Miktar;
+            _parcaService.UpdateParca(eskiparca);
             if(SeciliParca.MevcutStok < Miktar)
             {
                 MessageBox.Show("Yeterli stok yok");
@@ -248,14 +289,29 @@ namespace Erpyonetimi.ViewModels
         }
         private void Sil()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+            var cevap = MessageBox.Show(
+                "Seçili sipariş detayını silmek ister misiniz?",
+                "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
+                return;
             if (SeciliDetay == null||SeciliParca == null)
                 return;
             SeciliParca.MevcutStok += SeciliDetay.Miktar;
             _parcaService.UpdateParca(SeciliParca);
+            
             _siparisDetayService.DeleteDetay(SeciliDetay);
-            Listele();
+       
             MessageBox.Show("Sipariş Hareketi silindi");
-
+            if(SeciliSiparis == null)
+                return;
+            Listele();
             var siparis = _siparisService.GetById(SeciliSiparis.Id);
             if (siparis != null)
             {

@@ -1,5 +1,6 @@
 ﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Commands;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using System;
@@ -23,8 +24,10 @@ namespace Erpyonetimi.ViewModels
                 _seciliKategori = value;
                 if (_seciliKategori != null)
                 {
-                    KategoriAdi = _seciliKategori.KategoriAdi;
-                    Aciklama = _seciliKategori.Aciklama;
+                    KategoriAdi = value.KategoriAdi;
+                    Aciklama = value.Aciklama;
+                    OnPropertyChanged(nameof(KategoriAdi));
+                    OnPropertyChanged(nameof(Aciklama));
                 }
                 OnPropertyChanged();
             }
@@ -53,24 +56,52 @@ namespace Erpyonetimi.ViewModels
         public ICommand KategoriEkleCommand { get; }
         public ICommand KategoriGuncelleCommand { get; }
         public ICommand KategoriSilCommand { get; }
+        public ICommand ListeleKategoriCommand { get; }
+        public ICommand KategoriTemizleCommand { get; }
         private readonly IKategoriService _kategoriService;
         public KategoriViewModel(IKategoriService kategoriService)
         {
+
             _kategoriService = kategoriService;
             Kategoriler = new ObservableCollection<Kategori>(
                 _kategoriService.GetAllKategori());
             KategoriEkleCommand = new RelayCommand(Ekle);
             KategoriGuncelleCommand = new RelayCommand(Guncelle);
             KategoriSilCommand = new RelayCommand(Sil);
-           
+            ListeleKategoriCommand = new RelayCommand(Listele);
+            KategoriTemizleCommand= new RelayCommand(Temizle);
+
         }
 
        
       
         private void Ekle()
         {
-            if (KategoriAdi == null && Aciklama == null)
+          
+
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
                 return;
+            }
+            if (string.IsNullOrWhiteSpace(KategoriAdi))
+            {
+                MessageBox.Show("Kategori adı zorunludur");
+                return;
+            }
+            if(_kategoriService.GetAllKategori()
+                .Any(x=>x.KategoriAdi.Equals(KategoriAdi, StringComparison.OrdinalIgnoreCase)))
+            {
+                MessageBox.Show("Bu kategori zaten mevcut");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Aciklama))
+            {
+                MessageBox.Show("açıklama zorunludur");
+                return;
+            }
             var kategori = new Kategori
             {
                 KategoriAdi = KategoriAdi,
@@ -83,6 +114,21 @@ namespace Erpyonetimi.ViewModels
         }
         private void Guncelle()
         {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(KategoriAdi))
+            {
+                MessageBox.Show("Kategori adı zorunludur");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Aciklama))
+            {
+                MessageBox.Show("açıklama zorunludur");
+                return;
+            }
             if (SeciliKategori == null)
                 return;
 
@@ -94,7 +140,18 @@ namespace Erpyonetimi.ViewModels
         }
         private void Sil()
         {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
+                return;
+            }
             if (SeciliKategori == null)
+                return;
+            var cevap= MessageBox.Show(
+                "Seçili kategoriyi silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
                 return;
             _kategoriService.DeleteKategori(SeciliKategori.Id);
             

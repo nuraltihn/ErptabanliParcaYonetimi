@@ -47,13 +47,14 @@
                     <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding RafGuncelleCommand}"/>
                     <Button Content="Sil" Margin="5" Width="100" Command="{Binding RafSilCommand}"/>
                     <Button Content="Listele" Width="100" Margin="5" Command="{Binding ListeleRafCommand}"/>
+                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding RafTemizleCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>
 
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Raflar}" SelectedItem="{Binding SeciliRaf}"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
                 <DataGridTextColumn Header="Raf Kodu" Binding="{Binding RafKodu}" Width="200"/>

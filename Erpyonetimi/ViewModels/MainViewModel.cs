@@ -9,10 +9,16 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using Erpyonetimi.Application.Services;
 using Erpyonetimi.Application.Services.Interfaces;
+
 namespace Erpyonetimi.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        public Visibility Databasebaglivisibility=>
+            DatabaseHelper.IsConnected
+            ? Visibility.Visible
+            :Visibility.Collapsed;
+
         private object _currentView=null;
         public object CurrentView
         {
@@ -59,6 +65,33 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
+        public string KullaniciAdiSoyadi
+        {
+            get
+            {
+                return UserSession.CurrentUser?.AdSoyad ?? "Kullanıcı";
+            }
+        }
+        public string KullaniciAvatar
+        {
+            get
+            {
+                var adsoyad = UserSession.CurrentUser?.AdSoyad;
+                if (string.IsNullOrWhiteSpace(adsoyad))
+                    return "U";
+                var kelimeler = adsoyad.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+                if (kelimeler.Length == 1)
+                    return kelimeler[0][0].ToString().ToUpper();
+                return $"{kelimeler[0][0]}{kelimeler[^1][0]}".ToUpper();
+            }
+        }
+        public string KullaniciRol
+        {
+            get
+            {
+                return UserSession.CurrentUser?.Rol?.RolAdi ?? "Kullanıcı";
+            }
+        }
       
         public ICommand UserYonCommand { get; }
         public ICommand DashboardCommand { get; }
@@ -72,10 +105,12 @@ namespace Erpyonetimi.ViewModels
         public ICommand MusteriCommand { get; }
         public ICommand SiparisCommand { get; }
         public ICommand SiparisDetayCommand { get; }
+        public ICommand CikisCommand { get; }
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
             ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
             DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel, SiparisViewModel siparisViewModel, SiparisDetayViewModel siparisDetayViewModel)
         {
+           
             _usersYonetimViewModel = usersYonetimViewModel;
             _dashboardViewModel = dashboardViewModel;
             _tedarikciViewModel= tedarikciViewModel;
@@ -99,6 +134,7 @@ namespace Erpyonetimi.ViewModels
             MusteriCommand = new RelayCommand(OpenMusteri);
             SiparisCommand = new RelayCommand(OpenSiparis);
             SiparisDetayCommand = new RelayCommand(OpenSiparisDetay);
+            CikisCommand = new RelayCommand(Cikis);
         }
 
         public void Kullanicigirisyapti(Users users)
@@ -115,11 +151,19 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(AdminVisibility));
             OnPropertyChanged(nameof(DepoVisibility));
             OnPropertyChanged(nameof(SatisVisibility));
+            OnPropertyChanged(nameof(KullaniciAdiSoyadi));
+            OnPropertyChanged(nameof(KullaniciRol));
+            OnPropertyChanged(nameof(KullaniciAvatar));
+        }
+        private void Cikis()
+        {
+            System.Windows.Application.Current.Shutdown();
         }
         private void OpenSiparisDetay()
         {
             CurrentView = _siparisDetayViewModel;
         }
+        
 
         private void OpenSiparis()
         {
@@ -171,7 +215,7 @@ namespace Erpyonetimi.ViewModels
         {
             get
             {
-                return UserSession.IsAdmin
+                return UserSession.IsAdmin && DatabaseHelper.IsConnected
                     ? Visibility.Visible
                     : Visibility.Collapsed;
             }
@@ -186,7 +230,7 @@ namespace Erpyonetimi.ViewModels
             UserSession.CurrentUser?.Rol?.RolAdi == "Depo Personeli"
             ? Visibility.Visible : Visibility.Collapsed;
         public Visibility SatisVisibility=>
-            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi" ||
+            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi"||
             UserSession.CurrentUser?.Rol?.RolAdi == "Satış Personeli"
             ? Visibility.Visible : Visibility.Collapsed;
 

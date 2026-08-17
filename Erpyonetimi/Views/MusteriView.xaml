@@ -76,11 +76,11 @@
             <Button Content="Ekle" Width="100" Margin="5" Command="{Binding MusteriEkleCommand}" />
                   <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding MusteriGuncelleCommand}" />
                   <Button Content="Sil" Width="100" Margin="5" Command="{Binding MusteriSilCommand}" />
-                  <Button Content="Listele" Width="100" Margin="5" Command="{Binding MusteriListeleCommand}" />
+                  <Button Content="Temizle" Width="100" Margin="5" Command="{Binding MusteriTemizleCommand}" />
             </StackPanel>
                   <DataGrid Grid.Row="3" ItemsSource="{Binding Musteriler}"
                             SelectedItem="{Binding SeciliMusteri}"
-                            AutoGenerateColumns="False">
+                            AutoGenerateColumns="False" CanUserAddRows="False">
                       <DataGrid.Columns>
                           <DataGridTextColumn Header="Kod" Binding="{Binding MusteriKodu}" Width="100"/>
                           <DataGridTextColumn Header="Firma" Binding="{Binding FirmaAdi}" Width="100"/>

@@ -12,7 +12,8 @@ namespace Erpyonetimi.Data.Interfaces
             void Add(Users user);
             void Update(Users user);
             void Delete(int id);
-                                                              
-        
+        Users? GetByKulAd(string kulAd);
+
+        Users? GetByAdSoyad(string adSoyad);
     }
 }

@@ -5,6 +5,7 @@ using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 namespace Erpyonetimi.Data.Repositories
 {
     public class ParcaRepository : IParcaRepository
@@ -28,9 +29,12 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Parca> GetAll()
         {
+         if(!DatabaseHelper.IsConnected)
+                return new List<Parca>();
             return _context.Parcalar
                  .Include(x => x.Kategori)
                  .Include(x => x.Tedarikci).ToList();
+            
         }
 
         public Parca? GetById(int id)
