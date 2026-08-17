@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Context;
+﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 namespace Erpyonetimi.Data.Repositories
 {
     public class RafRepository : IRafRepository
@@ -29,7 +30,10 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Raflar> GetAll()
         {
-            return _context.Raflar.Include(r => r.Depo).ToList();
+            if (!DatabaseHelper.IsConnected)
+                return new List<Raflar>();  
+                return _context.Raflar.Include(r => r.Depo).ToList();
+           
         }
 
         public Raflar? GetById(int id)

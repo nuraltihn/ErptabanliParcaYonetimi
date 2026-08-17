@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Context;
+﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 namespace Erpyonetimi.Data.Repositories
 {
     public class StokHareketRepository : IStokHareketRepository
@@ -28,11 +29,14 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<StokHareket> GetAll()
         {
-            return _context.StokHareketleri
+            if (!DatabaseHelper.IsConnected)
+                return new List<StokHareket>();
+                return _context.StokHareketleri
                 .Include(x => x.Parca)
                 .Include(x => x.Kullanici)
                 .Include(x => x.Depo)
                 .ToList();
+            
         }
 
         public StokHareket? GetById(int id)

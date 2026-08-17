@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Domain.Entities;
-
-
-using Erpyonetimi.Application.Services.Interfaces;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Commands;
+using Erpyonetimi.Data.Helpers;
+using Erpyonetimi.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -113,16 +112,18 @@ namespace Erpyonetimi.ViewModels
         public ICommand MusteriEkleCommand { get; }
         public ICommand MusteriGuncelleCommand { get; }
         public ICommand MusteriSilCommand { get; }
-
+        public ICommand MusteriListeleCommand { get; }
+        public ICommand MusteriTemizleCommand { get; }
         public MusteriViewModel(IMusteriService musteriService)
         {
             _musteriService = musteriService;
 
-            Musteriler = new ObservableCollection<Musteri>(_musteriService.GetAll());
 
             MusteriEkleCommand = new RelayCommand(Ekle);
             MusteriGuncelleCommand = new RelayCommand(Guncelle);
             MusteriSilCommand = new RelayCommand(Sil);
+            MusteriListeleCommand = new RelayCommand(Listele);
+            MusteriTemizleCommand= new RelayCommand(Temizle);
             _tumMusteriler = _musteriService.GetAll();
             Musteriler = new ObservableCollection<Musteri>(_tumMusteriler);
         }
@@ -155,17 +156,50 @@ namespace Erpyonetimi.ViewModels
             Email = "";
             VergiNo = "";
             Fax = "";
-
+            YetkiliKisi = "";
             SeciliMusteri = null;
         }
 
         private void Ekle()
         {
-            if (MusteriKodu == null || FirmaAdi == null)
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
                 return;
+            }
+
+            if (string.IsNullOrWhiteSpace(MusteriKodu)|| string.IsNullOrWhiteSpace(FirmaAdi))
+            {
+                MessageBox.Show("Firma adı ve müşteri zorunludur");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Tel)||Tel.Length!=11)
+            {
+                MessageBox.Show("Telefon numaranız 11 haneli olmak zorundadır. ");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Email)|| !Email.Contains("@"))
+            {
+                MessageBox.Show("Geçerli bir email giriniz.");
+                return;
+            }
+           
+               
             if(_musteriService.GetByKod(MusteriKodu) != null)
             {
                 MessageBox.Show("Bu müşteri kodu zaten mevcut");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Ad))
+            {
+                MessageBox.Show("Ad zorunlu.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Soyad))
+            {
+                MessageBox.Show("Soyad zorunlu.");
                 return;
             }
             var musteri = new Musteri
@@ -189,9 +223,46 @@ namespace Erpyonetimi.ViewModels
            
         }
         private void Guncelle()
+
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
+                return;
+            }
+
+
+            if (string.IsNullOrWhiteSpace(Ad))
+            {
+                MessageBox.Show("Ad zorunlu.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Soyad))
+            {
+                MessageBox.Show("Soyad zorunlu.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Tel) || Tel.Length != 11)
+            {
+                MessageBox.Show("Telefon numaranız 11 haneli olmak zorundadır. ");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains("@"))
+            {
+                MessageBox.Show("Geçerli bir email giriniz.");
+                return;
+            }
+
+            if (MusteriKodu == null || FirmaAdi == null)
+            {
+                MessageBox.Show("Firma adı ve müşteri zorunludur");
+                return;
+            }
             if (SeciliMusteri == null)
                 return;
+            
             SeciliMusteri.MusteriKodu = MusteriKodu;
             SeciliMusteri.FirmaAdi= FirmaAdi;
             SeciliMusteri.YetkiliKisi = YetkiliKisi;
@@ -210,7 +281,19 @@ namespace Erpyonetimi.ViewModels
 
         private void Sil()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok.");
+                return;
+            }
             if (SeciliMusteri == null)
+                return;
+            var cevap = MessageBox.Show(
+                "Seçili müşteriyi silmek istediğinize emin misiniz?", "silme onayı", MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
                 return;
             _musteriService.DeleteMusteri(SeciliMusteri);
             Listele();

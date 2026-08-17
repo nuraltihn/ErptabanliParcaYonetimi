@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 namespace Erpyonetimi.Data.Repositories
@@ -31,8 +32,17 @@ namespace Erpyonetimi.Data.Repositories
         }
 
         public List<Depolar> GetAll()
-        {
+        { if(!DatabaseHelper.IsConnected)
+                return new List<Depolar>();
+
+
             return _context.Depolar.ToList();
+           
+        }
+
+        public Depolar? GetByDepoadi(string depoadi)
+        {
+            return _context.Depolar.FirstOrDefault(x=>x.Depaadi==depoadi);
         }
 
         public Depolar? GetById(int id)

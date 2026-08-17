@@ -1,5 +1,6 @@
 ﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Commands;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using System;
@@ -15,6 +16,18 @@ namespace Erpyonetimi.ViewModels
     {
         public ObservableCollection<Raflar> Raflar { get; set; }
         public ObservableCollection<Depolar> Depolar { get; set; }
+        private List<Raflar> _tumRaflar;
+        private string _aramaMetni;
+        public string AramaMetni
+        {
+            get => _aramaMetni;
+            set
+            {
+                _aramaMetni = value;
+                OnPropertyChanged();
+                Filtrele();
+            }
+        }
         private string _rafKodu = "";
         public string RafKodu
         {
@@ -25,7 +38,7 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
-        private string _rafAdi = "";
+       
         
         private Depolar? _seciliDepo;
         public Depolar? SeciliDepo
@@ -63,16 +76,37 @@ namespace Erpyonetimi.ViewModels
         public ICommand RafGuncelleCommand { get; }
         public ICommand RafSilCommand { get; }
         public ICommand ListeleRafCommand { get; }
+        public ICommand RafTemizleCommand { get; }
         public RafViewModel(IRafService rafService, IDepoService depoService)
         {
             _rafService = rafService;
             _depoService = depoService;
-            Raflar = new ObservableCollection<Raflar>(_rafService.GetAll());
+        
             Depolar= new ObservableCollection<Depolar>(_depoService.GetAll());
             RafEkleCommand = new RelayCommand(Ekle);
             RafSilCommand = new RelayCommand(Sil);
             RafGuncelleCommand = new RelayCommand(Guncelle);
             ListeleRafCommand= new RelayCommand(Listele);
+            RafTemizleCommand= new RelayCommand(Temizle);
+            _tumRaflar = new List<Raflar>(_rafService.GetAll());
+            Raflar = new ObservableCollection<Raflar>(_tumRaflar);
+        }
+
+        private void Filtrele()
+        {
+            if (string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Raflar = new ObservableCollection<Raflar>(_tumRaflar);
+            }
+            else
+            {
+                var filtrelenmisRaflar = _tumRaflar
+                    .Where(r => (r.RafKodu?.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (r.Depo?.Depaadi?.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+                Raflar = new ObservableCollection<Raflar>(filtrelenmisRaflar);
+            }
+            OnPropertyChanged(nameof(Raflar));
         }
         private void Listele()
         {
@@ -88,13 +122,29 @@ namespace Erpyonetimi.ViewModels
         }
         private void Ekle()
         {
-            if(SeciliDepo == null)
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+            if (_rafService.GetByKod(RafKodu) != null)
+            {
+                MessageBox.Show("Bu isimde bir raf zaten mevcut.");
+                return;
+            }
+
+            if (SeciliDepo == null)
             {
                 MessageBox.Show("Depo seçiniz");
                 return;
             }
-            if (RafKodu == null)
+            if (string.IsNullOrWhiteSpace(RafKodu)) 
+            {
+                MessageBox.Show("Raf kodu giriniz.");
                 return;
+            }
             var raf = new Raflar
             {
                 RafKodu = RafKodu,
@@ -108,8 +158,21 @@ namespace Erpyonetimi.ViewModels
         }
         private void Guncelle()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(RafKodu))
+            {
+                MessageBox.Show("Raf kodu giriniz");
+                return;
+            }
             if (SeciliRaf == null)
             {
+                MessageBox.Show("Raf seçiniz");
                 return;
             }
             if (SeciliDepo == null)
@@ -126,8 +189,24 @@ namespace Erpyonetimi.ViewModels
        
         private void Sil()
         {
+            DatabaseHelper.CheckConnection();
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+
             if (SeciliRaf == null)
                 return;
+            var cevap = MessageBox.Show(
+                "Seçili rafı silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes){
+                return;
+            }
             _rafService.RemoveRaf(SeciliRaf);
             Listele();
             Temizle();

@@ -8,6 +8,7 @@ namespace Erpyonetimi.Data.Interfaces
     {
         List<Depolar> GetAll();
         Depolar? GetById(int id);
+        Depolar? GetByDepoadi (string depoadi);
         void Add(Depolar depo);
         void Update(Depolar depo);
         void Delete(Depolar depo);

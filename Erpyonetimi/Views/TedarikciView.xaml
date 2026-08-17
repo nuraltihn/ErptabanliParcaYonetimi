@@ -79,11 +79,12 @@
                 <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}" Visibility="{Binding AdminButtonVisibil}" />
                 <Button Content="Sil" Width="100" Margin="5" Command="{Binding TedarikciSilCommand}" Visibility="{Binding AdminButtonVisibil}"/>
                 <Button Content="Listele" Width="100" Margin="5" Command="{Binding TedarikciListeleCommand}"/>
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding TedarikciTemizleCommand}"/>
             </StackPanel>
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding Tedarikciler}"
                       SelectedItem="{Binding SeciliTedarikci}"
-                      AutoGenerateColumns="False">
+                      AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Kod"
                                         Binding="{Binding TedarikciKodu}"/>

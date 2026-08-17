@@ -20,21 +20,46 @@
                 <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="5" Opacity="0.4" Direction="315" />
             </Border.Effect>
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Margin="20 25 20 30" Orientation="Horizontal">
-                    <Border CornerRadius="5" Background="Gold" Width="36" Height="36" Margin="0 0 12 0">
-                    <TextBlock Text="P" FontWeight="bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="PARÇAMERP" Foreground="White" FontWeight="bold" FontSize="20"/>
-                        <TextBlock Text="Parça Yönetim Sistemi" Foreground="white" FontWeight="bold" FontSize="10"/>
-
+                <StackPanel DockPanel.Dock="Top" Margin="0 25 20 30" Orientation="Horizontal">
+                    
+                        <Image Source="/logo.png" Width="36" Height="36" Margin="20 20 11 20"/>
+                   
+                    <StackPanel VerticalAlignment="Center" Margin="0 0 10 0">
+                        <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Özgenç" Foreground="LightBlue" FontWeight="bold" FontSize="20" />
+                            <TextBlock Text="Makina " Foreground="White" FontWeight="bold" FontSize="20" />
+                        </StackPanel>
+                            <TextBlock Text="ERP Parça Yönetim Sistemi" Foreground="white" FontWeight="bold" FontSize="10" />
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="8,5">
+                <StackPanel  DockPanel.Dock="Bottom" Margin="8,5">
                     <Separator Background="Gray" Margin="0 0 0 5"/>
-                    <Button Content="Çıkış Yap" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40"
-                            HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
+                    <StackPanel Orientation="Horizontal">
+                    <Border  Width="45" Height="45" CornerRadius="25" Background="#4F46E5" VerticalAlignment="Center" Margin="10 0 0 0">
+                        <TextBlock Text="{Binding KullaniciAvatar}"
+                                           Foreground="White"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+        </Border>
+                    <StackPanel Margin="10 0 0 0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding KullaniciAdiSoyadi}"
+                                   FontSize="14"
+                                   Foreground="White"
+                                   FontWeight="bold"/>
+                        <TextBlock Text="{Binding KullaniciRol}"
+                                   Foreground="White"
+                                   FontSize="11"
+                                   Opacity="0.6"/></StackPanel>
+
+                    </StackPanel>
+                    <Button Content="Çıkış Yap" Command="{Binding CikisCommand}" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
+               
+                          
+               
+               
                 </StackPanel>
                 <StackPanel>
                   
@@ -44,8 +69,8 @@
                                  GroupName="Sidemenu" 
                                  Command="{Binding DashboardCommand}">
                         <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="h" Margin="0 0 12 0"/>
-                    <TextBlock Text="Dashboard"/>
+                            <TextBlock Text="🏠" FontSize="16" Margin="0 0 10 0"/>
+                            <TextBlock Text="Dashboard"/>
                 </StackPanel>
                 </RadioButton> 
                     
@@ -55,7 +80,7 @@
                 Command="{Binding UserYonCommand}"
                Visibility="{Binding AdminVisibility}" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                           <TextBlock Text="👤" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Kullanıcı Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -64,7 +89,7 @@
          GroupName="Sidemenu"      Command="{Binding KategoriCommand}"
                                  Visibility="{Binding AdminVisibility}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                          <TextBlock Text="📂" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Kategori Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -73,7 +98,7 @@
                         GroupName="Sidemenu"
              Command="{Binding MusteriCommand}" Visibility="{Binding SatisVisibility}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                        <TextBlock Text="🧑‍🤝‍🧑" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Müşteri Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -82,7 +107,7 @@
                             GroupName="Sidemenu"
                                  Command="{Binding TedarikciCommand}" Visibility="{Binding AdminVisibility}" > 
                         <StackPanel Orientation="Horizontal" >
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                            <TextBlock Text="🏭" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Tedarikçi Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -91,7 +116,7 @@
                         GroupName="Sidemenu"
                                  Command="{Binding ParcaCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                          <TextBlock Text="🔧" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Parça Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -101,7 +126,7 @@
                         GroupName="Sidemenu"
                                  Command="{Binding SiparisCommand}"  Visibility="{Binding SatisVisibility}"  >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                        <TextBlock Text="📝" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Sipariş Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -112,7 +137,7 @@
     GroupName="Sidemenu"
              Command="{Binding SiparisDetayCommand}"  >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                         <TextBlock Text="📦" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Sipariş Hareketleri"/>
                         </StackPanel>
                     </RadioButton>
@@ -122,7 +147,7 @@
     GroupName="Sidemenu"
              Command="{Binding DepoCommand}"  Visibility="{Binding DepoVisibility}" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                     <TextBlock Text="🏬" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Depo Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -133,7 +158,7 @@
     GroupName="Sidemenu"
              Command="{Binding RafCommand}"  Visibility="{Binding DepoVisibility}" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                        <TextBlock Text="🗄️" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Raf Yönetimi"/>
                         </StackPanel>
                     </RadioButton>
@@ -142,7 +167,7 @@
     GroupName="Sidemenu"
              Command="{Binding StokHCommand}" Visibility="{Binding DepoVisibility}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="h" Margin="0 0 12 0"/>
+                       <TextBlock Text="📊" FontSize="16" Margin="0 0 10 0"/>
                             <TextBlock Text="Stok Hareketleri"/>
                         </StackPanel>
                     </RadioButton>

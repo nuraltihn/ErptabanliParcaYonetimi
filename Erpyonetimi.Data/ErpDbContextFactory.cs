@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace Erpyonetimi.Context
 {
@@ -16,15 +17,10 @@ namespace Erpyonetimi.Context
             string sqlConn=
                 "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
 
-           try{
-                using var conn = new SqlConnection(sqlConn);
-                conn.Open();
-                optionsBuilder.UseSqlServer(sqlConn);
-            }
-            catch
-            {
-                optionsBuilder.UseSqlite("Data Source=erp.db");
-            }
+                optionsBuilder.UseSqlServer(sqlConn); 
+               
+           
+           
             return new ErpDbContext(optionsBuilder.Options);
         }
     }

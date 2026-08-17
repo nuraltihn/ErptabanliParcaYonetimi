@@ -42,11 +42,12 @@
                 <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding DepoGuncelleCommand}"/>
 
                 <Button Content="Sil" Width="100" Margin="5" Command="{Binding DepoSilCommand}"/>
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding DepoTemizleCommand}"/>
 
             </StackPanel>
         </Grid>
         <DataGrid Grid.Row="2" ItemsSource="{Binding Depolar}" SelectedItem="{Binding SeciliDepo}"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
                 <DataGridTextColumn Header="Depo Adı" Binding="{Binding Depaadi}" Width="*"/>

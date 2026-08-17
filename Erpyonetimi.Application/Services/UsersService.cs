@@ -24,7 +24,6 @@ namespace Erpyonetimi.Application.Services
 
         public void AddUser(Users user)
         {
-            // Yeni kullanıcı eklenirken şifre hash'lensin
             user.Sifre = PasswordHelper.HashPassword(user.Sifre);
 
             _usersRepository.Add(user);
@@ -38,6 +37,11 @@ namespace Erpyonetimi.Application.Services
         public void DeleteUser(int id)
         {
             _usersRepository.Delete(id);
+        }
+
+        public Users? GetByAdSoyad(string adSoyad)
+        {
+            return _usersRepository.GetByAdSoyad(adSoyad);
         }
     }
 }

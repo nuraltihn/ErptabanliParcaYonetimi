@@ -5,6 +5,7 @@ using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -99,6 +100,8 @@ namespace Erpyonetimi.ViewModels
         public ICommand StokListeleCommand { get; }
         public ICommand StokSilCommand { get; }
         public ICommand StokGuncelleCommand { get; }
+        public ICommand StokTemizleCommand { get; }
+        public ICommand StokGeriAlCommand { get; }
         public StokHareketViewModel(IStokHareketService service, IParcaService parcaService, IDepoService depoService)
         {
            _service = service;
@@ -111,7 +114,6 @@ namespace Erpyonetimi.ViewModels
 
             Depolars = new ObservableCollection<Depolar>(_depoService.GetAll());
 
-            StokHEkleCommand = new RelayCommand(Ekle);
             IslemTipleri = new ObservableCollection<string>
             {
                 "Giriş",
@@ -121,9 +123,74 @@ namespace Erpyonetimi.ViewModels
             StokListeleCommand = new RelayCommand(Listele);
             StokGuncelleCommand = new RelayCommand(Guncelle);
             StokSilCommand = new RelayCommand(Sil);
+            StokGeriAlCommand = new RelayCommand(GeriAl);
+            StokTemizleCommand= new RelayCommand(Temizle);
         }
+        private void GeriAl()
+        {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok");
+                return;
+            }
+            if (SeciliHareket == null)
+            {
+                MessageBox.Show("Lütfen geri almak istediğiniz stok hareketini seçiniz");
+                return;
+            }
+            if(SeciliHareket.Aciklama?.Contains("Geri Alındı") == true)
+            {
+                MessageBox.Show("Bu hareket daha önceden geri alımış");
+                return;
+            }
+            var cevap = MessageBox.Show("Seçili hareketi geri almak istediğinize emin misiniz?", "Stok Hareketi Geri Alma",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (cevap != MessageBoxResult.Yes)
+            {
+                return;
+            }
+            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            if (parca == null)
+            {
+                MessageBox.Show("Parça bulunamadı");
+                return;
+            }
+
+            if (SeciliHareket.IslemTipi == "Giriş")
+            {
+                if (parca.MevcutStok < SeciliHareket.Miktar) {
+                    MessageBox.Show("Bu hareket geri alnımaz.mevcut stok miktarı yeterli değil");
+                    return; 
+                }
+            
+            parca.MevcutStok -= SeciliHareket.Miktar;}
+            else if (SeciliHareket.IslemTipi == "Çıkış")
+            {
+                parca.MevcutStok += SeciliHareket.Miktar;
+
+            }
+            _parcaService.UpdateParca(parca);
+            SeciliHareket.Aciklama = $"{SeciliHareket.Aciklama} |Geri Alındı-{DateTime.Now:dd.MM.yyyy HH:mm}";
+            _service.UpdateStokHareket(SeciliHareket);
+            Listele();
+
+            MessageBox.Show("Stok hareketi geri alındı",
+                "Başarılı",
+                MessageBoxButton.OK, MessageBoxImage.Information
+                );
+
+        }
+       
+            
+        
         private void Sil()
         {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
             if (SeciliHareket == null)
                 return;
             var parca = _parcaService.GetById(SeciliHareket.ParcaId);
@@ -136,12 +203,33 @@ namespace Erpyonetimi.ViewModels
 
                 _parcaService.UpdateParca(parca);
             }
+            var cevap = MessageBox.Show("Bu stok hareketini silmek istediğinize emin misiniz?",
+                "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
+                return; 
+
             _service.RemoveStokHareket(SeciliHareket);
             Listele();
             MessageBox.Show("Stok hareketi silindi.");
         }
         private void Guncelle()
         {
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+            if (SeciliDepo == null)
+            {
+                MessageBox.Show("Depo seçiniz");
+                return;
+            }
+            if (SeciliParca == null)
+            {
+                MessageBox.Show("Parça seçiniz");
+                return;
+            }
             if (SeciliHareket == null || SeciliParca == null || SeciliDepo == null)
                 return;
 
@@ -177,11 +265,32 @@ namespace Erpyonetimi.ViewModels
         }
         private void Listele()
         {
+
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
             Hareketler = new ObservableCollection<StokHareket>(_service.GetAll());
             OnPropertyChanged(nameof(Hareketler));
         }
         private void Ekle()
         {
+            if (!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
+                return;
+            }
+            if (Miktar <= 0)
+            {
+                MessageBox.Show("Miktar 0 dan büyük olmamalıdır.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(IslemTipi))
+            {
+                MessageBox.Show("İşlem tipi seçiniz.");
+                return;
+            }
             if (SeciliDepo == null)
             {
                 MessageBox.Show("Depo seçiniz");
@@ -225,6 +334,16 @@ namespace Erpyonetimi.ViewModels
             MessageBox.Show("Stok hareketi eklendi");
             
         }
-
-    }
+        private void Temizle() {
+            SeciliParca = null;
+            SeciliHareket = null;
+            SeciliDepo = null;
+            IslemTipi = null;
+            Miktar = 0;
+            Aciklama = "";
+            
+        
+        
+        
+        }    }
 }

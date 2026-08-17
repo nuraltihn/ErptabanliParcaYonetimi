@@ -106,20 +106,19 @@ namespace Erpyonetimi.ViewModels
 
         public ICommand ListeleCommand { get; }
     
-        public ICommand StokGirisCommand { get; }
-        public ICommand StokCikisCommanet { get; }
+       public ICommand ParcaTemizleCommand { get; }
         public ICommand KritikStoklarCommand { get; }
 
         private readonly IParcaService _parcaService;
         private readonly IKategoriService _kategoriService;
         private readonly ITedarikciService _tedarikciService;
+        
         public ParcaViewModel(IParcaService parcaService, IKategoriService kategoriService, ITedarikciService tedarikciService)
         {
             _parcaService = parcaService;
         _kategoriService = kategoriService;
             _tedarikciService = tedarikciService;
-            Parcalar = new ObservableCollection<Parca>(
-                _parcaService.GetAllParca());
+      
             Kategoriler = new ObservableCollection<Kategori>(_kategoriService.GetAllKategori());
             Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci());
             EkleCommand = new RelayCommand(Ekle);
@@ -127,6 +126,7 @@ namespace Erpyonetimi.ViewModels
             GuncelleCommand = new RelayCommand(Guncelle);
             SilCommand = new RelayCommand(Sil);
             ListeleCommand = new RelayCommand(Listele);
+            ParcaTemizleCommand = new RelayCommand(Temizle);
       
             _tumParcalar = _parcaService.GetAllParca();
             Parcalar = new ObservableCollection<Parca>(_tumParcalar);
@@ -138,7 +138,7 @@ namespace Erpyonetimi.ViewModels
         {
             get
             {
-                return UserSession.IsAdmin
+                return UserSession.IsAdmin && DatabaseHelper.IsConnected
                     ?Visibility.Visible
                     : Visibility.Collapsed;
             }
@@ -148,15 +148,39 @@ namespace Erpyonetimi.ViewModels
         private void Ekle()
             
         {
+            if (string.IsNullOrWhiteSpace(ParcAdi) || string.IsNullOrWhiteSpace(ParcaKodu))
+            {
+                MessageBox.Show("Lütfen gerekli verileri giriniz.");return; 
+            }
+
+            if (AlisFiyat < 0 || SatisFiyat < 0)
+            {
+                MessageBox.Show("Fiyat negatif olamaz");
+                return;
+            }
+            if (MinimumStok > MevcutStok)
+            {
+                MessageBox.Show("Minimum stok mevcut stoktan büyük olamaz.");
+                return;
+            }
+
             if (_parcaService.GetAllParca().Any(p => p.ParcaKodu == ParcaKodu))
             {
                 MessageBox.Show("Bu parça kodu zaten mevcut.");
                 return;
             }
-            if (SeciliParca == null)
+            if (SeciliKategori == null)
+            {
+                MessageBox.Show("Kategori seçiniz ");
                 return;
-            if (ParcAdi == null && ParcaKodu==null)
-                return; 
+            }
+            if (SeciliTedarikci == null)
+            {
+                MessageBox.Show("Tedarikçi seçiniz");
+                return;
+            }
+          
+                
  
             var parca = new Parca
             {
@@ -200,13 +224,33 @@ namespace Erpyonetimi.ViewModels
         }
         private void Guncelle()
         {
-            if (SeciliParca == null)
+            if (string.IsNullOrWhiteSpace(ParcAdi)||string.IsNullOrWhiteSpace(ParcaKodu))
+            {
+                MessageBox.Show("Parça adı ve parça kodu zorunludur."); return;
+            }
+            if (AlisFiyat < 0 || SatisFiyat < 0)
+            {
+                MessageBox.Show("Fiyat negatif olamaz");
                 return;
-            if(SeciliKategori==null|| SeciliTedarikci == null)
+            }
+            if(MevcutStok <0|| MinimumStok < 0)
+            {
+                MessageBox.Show("Stok değerleri negatif  olamaz.");
+                return;
+            }
+            if (MinimumStok > MevcutStok)
+            {
+                MessageBox.Show("Minimum stok mevcut stoktan büyük olamaz.");
+                return;
+            }
+            if (SeciliKategori==null|| SeciliTedarikci == null)
             {
                 MessageBox.Show("Kategori ve tedarikçi seçiniz.");
                 return;
             }
+            if (SeciliParca == null)
+                return;
+            
             SeciliParca.ParcaKodu = ParcaKodu;
             SeciliParca.ParcAdi = ParcAdi;
             SeciliParca.Marka = Marka;
@@ -232,6 +276,15 @@ namespace Erpyonetimi.ViewModels
         {
             if (SeciliParca == null)
                 return;
+            var cevap = MessageBox.Show(
+                "Seçili parçayı silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
+                return;
+
+
             _parcaService.RemoveParca(SeciliParca);
             Parcalar.Remove(SeciliParca);
             MessageBox.Show("Parça silindi");
@@ -244,7 +297,7 @@ namespace Erpyonetimi.ViewModels
 
             Parcalar = new ObservableCollection<Parca>(sonuc);
             OnPropertyChanged(nameof(Parcalar));
-
+            //bu kodu önceki arama için yapmıştım. butonla çalışıyordu
         }
         private void Listele()
         {

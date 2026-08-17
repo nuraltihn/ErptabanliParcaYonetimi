@@ -85,12 +85,13 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-            <Button Content="Ekle" Width="100" Margin="5" Command="{Binding EkleCommand}" Visibility="{Binding CrudVisibility}"/>
-            <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding GuncelleCommand}" Visibility="{Binding CrudVisibility}"/>
-            <Button Content="Sil" Width="100" Margin="5" Command="{Binding SilCommand}" Visibility="{Binding CrudVisibility}"/>
-</StackPanel>
+            <Button Content="Ekle" Width="100" Margin="5" Command="{Binding EkleCommand}" Visibility="{Binding SatisVisibility }"/>
+            <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding GuncelleCommand}" Visibility="{Binding SatisVisibility}"/>
+            <Button Content="Sil" Width="100" Margin="5" Command="{Binding SilCommand}" Visibility="{Binding SatisVisibility}"/>
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding ParcaTemizleCommand}" Visibility="{Binding SatisVisibility}"/>
+            </StackPanel>
             <DataGrid Grid.Row="1" ItemsSource="{Binding Parcalar}" SelectedItem="{Binding SeciliParca}"
-                      AutoGenerateColumns="False">
+                      AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
                 <DataGridTextColumn Header="ParcaKodu" Binding="{Binding ParcaKodu}"/>
                 <DataGridTextColumn Header="ParcAdi" Binding="{Binding ParcAdi}"/>

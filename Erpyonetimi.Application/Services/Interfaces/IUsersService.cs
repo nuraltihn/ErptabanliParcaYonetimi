@@ -10,5 +10,6 @@ namespace Erpyonetimi.Application.Services.Interfaces
         void AddUser(Users user);
         void UpdateUser(Users user);
         void DeleteUser(int id);
+        Users? GetByAdSoyad(string adSoyad);
     }
 }

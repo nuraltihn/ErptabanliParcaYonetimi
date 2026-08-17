@@ -10,6 +10,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="#1F2937" CornerRadius="8" Padding="15" Margin="0 0 0 15">
@@ -17,7 +19,15 @@
            FontSize="22"
            FontWeight="Bold" Foreground="White"/>
         </Border>
-        <Grid Grid.Row="1" >
+        <Grid Grid.Row="1">
+           <Border Background="PaleVioletRed" CornerRadius="5" Margin="5" Height="50" Width="200" HorizontalAlignment="Left" BorderBrush="Aqua">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Hosgeldinmsj}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{Binding Rutbemsj}" FontSize="12" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -53,26 +63,42 @@
                 </StackPanel>
             </Border>
         </Grid>
-        <Grid Grid.Row="2" Margin="0">
+        <Grid Grid.Row="3" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Son Kullanıcılar" Grid.Column="0"  FontSize="15" FontWeight="Bold" Margin="5" Background="LightGray" TextAlignment="Center"/>
+                <TextBlock Text="Son Parçalar" Grid.Column="1" FontSize="15" FontWeight="Bold" Margin="5" Background="LightGray" TextAlignment="Center"/>
+                <TextBlock Text="Son Siparişler" Grid.Column="2" FontSize="15" FontWeight="Bold" Margin="5" Background="LightGray" TextAlignment="Center"/>
+            
+        </Grid>
+        <Grid Grid.Row="4" Margin="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         
-        <DataGrid Grid.Column="0" ItemsSource="{Binding SonKullanicilar}" >
+        <DataGrid Grid.Column="0" ItemsSource="{Binding SonKullanicilar}" CanUserAddRows="False" >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Son Kullanıcılar" Binding="{Binding SonKullanicilar}"/>
+                <DataGridTextColumn Header="Ad Soyad" Binding="{Binding AdSoyad}"/>
+                <DataGridTextColumn Header="Kullanıcı Adı" Binding="{Binding KulAd}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Grid.Column="1" ItemsSource="{Binding SonParcalar}">
+        <DataGrid Grid.Column="1" ItemsSource="{Binding SonParcalar}" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Son Parçalar" Binding="{Binding SonaParcalar}"/>
+                <DataGridTextColumn Header="Parça Adı" Binding="{Binding ParcAdi}"/>
+                <DataGridTextColumn Header="Parça Kodu" Binding="{Binding ParcaKodu}"/>
+                
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid Grid.Column="2" ItemsSource="{Binding SonSiparisler}">
+        <DataGrid Grid.Column="2" ItemsSource="{Binding SonSiparisler}" CanUserAddRows="False"
+                  >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Son Siparişler" Binding="{Binding SonSiparisler}"/>
+                <DataGridTextColumn Header="Sipariş No" Binding="{Binding SiparisNo}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

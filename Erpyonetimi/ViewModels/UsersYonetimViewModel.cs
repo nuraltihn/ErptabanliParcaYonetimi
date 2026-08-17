@@ -11,7 +11,8 @@ using System.Text;
 using System.Windows.Input;
 using Erpyonetimi.Helpers;
 using System.Windows;
-
+using Microsoft.EntityFrameworkCore.Update.Internal;
+using Erpyonetimi.Data.Helpers;
 namespace Erpyonetimi.ViewModels
 {
     public class UsersYonetimViewModel :BaseViewModel
@@ -27,6 +28,8 @@ namespace Erpyonetimi.ViewModels
             get => _selecteduser;
             set
             {
+                if(value == null)
+                    return;
                 _selecteduser = value;
                 if (_selecteduser != null)
                 {
@@ -46,6 +49,7 @@ namespace Erpyonetimi.ViewModels
             get => _aramaMetni;
             set
             {
+               
                 _aramaMetni = value;
                 OnPropertyChanged();
                 Filtrele();
@@ -57,6 +61,8 @@ namespace Erpyonetimi.ViewModels
             get => _adSoyad;
             set
             {
+                if (value == null)
+                    return;
                 _adSoyad = value;
                 OnPropertyChanged();
             }
@@ -68,6 +74,8 @@ namespace Erpyonetimi.ViewModels
             get => _kulAd;
             set
             {
+                if (value == null)
+                    return;
                 _kulAd = value;
                 OnPropertyChanged();
             }
@@ -112,31 +120,64 @@ namespace Erpyonetimi.ViewModels
         public ICommand UsersEkleCommand { get; }
         public ICommand UsersGuncelCommand { get; }
         public ICommand UsersSilCommand { get; }
+        public ICommand UsersTemizleCommand { get; }
         public UsersYonetimViewModel()
         {
-            _context = new ErpDbContextFactory()
-                .CreateDbContext(Array.Empty<string>());
+             UsersEkleCommand = new RelayCommand(UsersEkleme);
+            UsersGuncelCommand = new RelayCommand(UsersGuncelleme);
+            UsersSilCommand = new RelayCommand(UsersSilme);
+            UsersTemizleCommand = new RelayCommand(Temizle);
+             Roller = new ObservableCollection<Roles>();
+             Userlist = new ObservableCollection<Users>();
 
+            DatabaseHelper.CheckConnection();
+            if (!DatabaseHelper.IsConnected)
+                return;
+
+            _context=new ErpDbContextFactory().CreateDbContext(Array.Empty<string>());
+           
             var repo = new UsersRepository(_context);
             _usersService = new UsersService(repo);
 
-           Roller = new ObservableCollection<Roles>(
-                _context.Roles.ToList());
+            Roller = new ObservableCollection<Roles>(_context.Roles.ToList());
 
-           Userlist = new ObservableCollection<Users>(
-                _usersService.GetAllUsers());
-            UsersEkleCommand = new RelayCommand(UsersEkleme);
-            UsersGuncelCommand = new RelayCommand(UsersGuncelleme);
-            UsersSilCommand = new RelayCommand(UsersSilme);
             _tumKullanicilar = _usersService.GetAllUsers();
             Userlist = new ObservableCollection<Users>(_tumKullanicilar);
         }
 
         private void UsersEkleme()
+            
         {
+            if (_usersService.GetByAdSoyad(AdSoyad) != null)
+            {
+                MessageBox.Show("Bu kullanıcı zaten var.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(AdSoyad))
+            {
+                MessageBox.Show("Lütfen gerekli verileri giriniz..");
+                return;
+            }
+         
+            if (Sifre.Length<5)
+            {
+                MessageBox.Show("Şifreniz en az 5 karakter uzunlukta olmalıdır");
+                return;
+            }
+            if(KulAd.Contains(" "))
+            {
+                MessageBox.Show("Kullanıcı adı boşluk içeremez.");
+                return;
+            }
             if (string.IsNullOrWhiteSpace(KulAd))
             {
-                MessageBox.Show("Kullanıcı adı boş olamaz");
+                MessageBox.Show("Kullanıcı adı boş olamaz.");
+                return;
+            }
+            
+            if (SeciliRol == null)
+            {
+                MessageBox.Show("Rol seçiniz");
                 return;
             }
             var user = new Users
@@ -173,9 +214,31 @@ namespace Erpyonetimi.ViewModels
 
         private void UsersGuncelleme()
         {
+            if (string.IsNullOrWhiteSpace(KulAd))
+            {
+                MessageBox.Show("Kullanıcı adı boş olamaz.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(AdSoyad))
+            {
+                MessageBox.Show("Ad Soyad zorunlu.");
+                return;
+            }
+            if (SeciliRol == null)
+            {
+                MessageBox.Show("Rol seçiniz");
+                return;
+            }
             if (SelectedUser == null)
                 return;
-
+            if(SelectedUser.Id != UserSession.CurrentUser?.Id)
+            {
+                if(SelectedUser.Sifre != Sifre)
+                {
+                    MessageBox.Show("Başka kullanıcıların şifresi değiştirilemez.");
+                    return;
+                }
+            }
             SelectedUser.AdSoyad = AdSoyad;
             SelectedUser.KulAd = KulAd;
             SelectedUser.RolId = RolId;
@@ -191,7 +254,10 @@ namespace Erpyonetimi.ViewModels
         {
             if (SelectedUser == null)
                 return;
-
+            var cevap = MessageBox.Show("Seçili kullanıcıyı silmek ister misiniz?",
+                "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
+                return;
             _usersService.DeleteUser(SelectedUser.Id);
             Listele();
             Temizle();

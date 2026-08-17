@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Erpyonetimi.Context;
+﻿using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 namespace Erpyonetimi.Data.Repositories
 {
     public class SiparisRepository : ISiparisRepository
@@ -22,17 +23,23 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Siparis siparis)
         {
+            var mevcut = _context.Siparisler.Find(siparis.Id);
+            if (mevcut == null)
+                return;
             _context.Siparisler.Remove(siparis);
             _context.SaveChanges();
         }
 
         public List<Siparis> GetAll()
         {
-            return _context.Siparisler.Include(s => s.Musteri)
+            if (!DatabaseHelper.IsConnected)
+                return new List<Siparis>();
+                return _context.Siparisler.Include(s => s.Musteri)
                 .Include(s=>s.SiparisDetaylari)
                 .ThenInclude(sd=>sd.Parca)
                 .AsNoTracking()
                 .ToList();
+          
         }
 
         public Siparis? GetById(int id)

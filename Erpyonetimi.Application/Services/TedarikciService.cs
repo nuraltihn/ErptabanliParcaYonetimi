@@ -45,5 +45,10 @@ namespace Erpyonetimi.Application.Services
         {
             _tedarikciRepository.Update(tedarikci);
         }
+
+        public Tedarikci? GetByKod(string kod)
+        {
+            return _tedarikciRepository.GetByKod(kod);
+        }
     }
 }

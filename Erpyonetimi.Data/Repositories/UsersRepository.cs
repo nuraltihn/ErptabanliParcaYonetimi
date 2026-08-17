@@ -1,11 +1,12 @@
 ﻿using Erpyonetimi.Context;
-using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
+using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Erpyonetimi.Helpers;
 namespace Erpyonetimi.Data.Repositories 
 {
     public class UsersRepository : IUsersRepository
@@ -23,9 +24,11 @@ namespace Erpyonetimi.Data.Repositories
                 .FirstOrDefault(u => 
                 u.KulAd == kulAd && u.Sifre == sifre);
         }
+ 
 
         public void Add(Users user)
         {
+
             _context.Users.Add(user);
             _context.SaveChanges();
         }
@@ -56,11 +59,24 @@ namespace Erpyonetimi.Data.Repositories
 
         public List<Users> GetAll()
         {
-            return _context.Users
+            if (!DatabaseHelper.IsConnected)
+                return new List<Users>();
+                return _context.Users
                 .Include(x => x.Rol)
                  .AsNoTracking()
                 .ToList();
+            
         }
 
+        public Users? GetByKulAd(string kulAd)
+        {
+            return _context.Users
+                  .FirstOrDefault(x => x.KulAd == kulAd);
+        }
+
+        public Users? GetByAdSoyad(string adSoyad)
+        {
+            return _context.Users.FirstOrDefault(x => x.AdSoyad == adSoyad);
+        }
     }
 }
