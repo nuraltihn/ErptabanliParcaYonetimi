@@ -1,22 +1,21 @@
 ﻿using Erpyonetimi.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Erpyonetimi.Application.Services;
+using System.Threading.Tasks;
 
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IDashboardService
     {
-        int GetToplamSiparis();
-        int GetToplamMusteri();
-        int GetToplamKullanici();
-        int GetToplamParca();
-        int GetToplamKategori();
-        int GetToplamTedarikci();
-        int GetKritikStokSayisi();
-        List<Users> GetSonKullanicilar(int adet);
-        List<Parca> GetSonParcalar(int adet);
-        List<Siparis> GetSonSiparisler(int adet);
+        Task <int> GetToplamSiparisAsync();
+        Task <int> GetToplamMusteriAsync ();
+        Task <int> GetToplamKullaniciAsync ();
+        Task <int> GetToplamParcaAsync ();
+        Task <int> GetToplamKategoriAsync ();
+        Task <int> GetToplamTedarikciAsync ();
+        Task <int> GetKritikStokSayisiAsync ();
+        Task <List<Users>> GetSonKullanicilarAsync (int adet);
+        Task <List<Parca>> GetSonParcalarAsync (int adet);
+        Task <List<Siparis>> GetSonSiparislerAsync (int adet);
     }
 }

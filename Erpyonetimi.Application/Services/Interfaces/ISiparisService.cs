@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
+using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ISiparisService
     {
-        List<Siparis> GetAll ();
-        Siparis? GetById(int id);
-        Siparis? GetByNo(string siparisNo);
+        Task <List<Siparis>> GetAllAsync ();
+        Task <Siparis?> GetByIdAsync (int id);
+        Task<Siparis?> GetByNoAsync (string siparisNo);
 
-        void AddSiparis(Siparis siparis);
-        void UpdateSiparis(Siparis siparis);
-        void RemoveSiparis(Siparis siparis);
+        Task AddSiparisAsync(Siparis siparis);
+        Task UpdateSiparisAsync (Siparis siparis);
+        Task  RemoveSiparisAsync (Siparis siparis);
     }
 }

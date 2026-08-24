@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
+using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IUsersService
     {
-        List<Users> GetAllUsers();
-        void AddUser(Users user);
-        void UpdateUser(Users user);
-        void DeleteUser(int id);
-        Users? GetByAdSoyad(string adSoyad);
+        Task <List<Users>> GetAllUsersAsync();
+        Task AddUserAsync (Users user);
+        Task UpdateUserAsync (Users user);
+        Task  DeleteUseAsync (int id);
+       Task <Users?> GetByAdSoyadAsync (string adSoyad);
     }
 }

@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
+using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IDepoService
     {
-        List<Depolar> GetAll ();
-        Depolar? GetById(int id);
-        Depolar? GetByDepoadi (string depoadi);
+        Task <List<Depolar>> GetAllAsync();
+        Task <Depolar?> GetByIdAsync(int id);
+        Task  <Depolar?> GetByDepoadiAsync  (string depoadi);
 
-        void AddDepo(Depolar depo);
-        void UpdateDepo(Depolar depo);
-        void DeleteDepo(Depolar depo);
+        Task  AddDepoAsync (Depolar depo);
+        Task UpdateDepoAsync (Depolar depo);
+        Task  DeleteDepoAsync (Depolar depo);
     }
 }

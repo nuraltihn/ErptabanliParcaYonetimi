@@ -1,10 +1,10 @@
 using Erpyonetimi.Domain.Entities;
-
+using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ILogService
     {
-        List<Log> GetAll();
-        void Add(Log log);
+       Task <List<Log>> GetAllAsync  ();
+       Task  AddAsync (Log log);
     }
 }

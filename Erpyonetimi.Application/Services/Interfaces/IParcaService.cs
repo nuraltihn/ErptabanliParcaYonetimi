@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
-using Erpyonetimi.Domain.Entities;
+﻿using Erpyonetimi.Domain.Entities;
+using System.Threading.Tasks;
+
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface IParcaService
     {
-        List<Parca> GetAllParca();
-        Parca? GetById(int id);
-        Parca? GetByKod(string parcakodu);
-        void AddParca(Parca parca);
-        void UpdateParca(Parca parca);
-        void RemoveParca(Parca parca);
+        Task <List<Parca>> GetAllParcaAsync();
+        Task  <Parca?> GetByIdAsync (int id);
+        Task  <Parca?> GetByKodAsync (string parcakodu);
+        Task   AddParcaAsync (Parca parca);
+        Task  UpdateParcaAsync (Parca parca);
+        Task  RemoveParcaAsync (Parca parca);
 
     }
 }

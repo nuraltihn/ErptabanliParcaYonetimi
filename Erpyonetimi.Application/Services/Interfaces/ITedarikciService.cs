@@ -1,17 +1,18 @@
 ﻿using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace Erpyonetimi.Application.Services.Interfaces
 {
     public interface ITedarikciService
     {
-        List<Tedarikci> GetAllTedarikci();
-        Tedarikci? GetById(int id);
-        Tedarikci? GetByKod(string kod);
-        void AddTedarikci(Tedarikci tedarikci);
-        void DeleteTedarikci(int id);
-        void UpdateTedarikci(Tedarikci tedarikci);
+        Task <List<Tedarikci>> GetAllTedarikciAsync();
+       Task  <Tedarikci?> GetByIdAsync (int id);
+        Task  <Tedarikci?> GetByKodAsync (string kod);
+        Task  AddTedarikciAsync (Tedarikci tedarikci);
+        Task  DeleteTedarikciAsync (int id);
+        Task UpdateTedarikciAsync (Tedarikci tedarikci);
     }
 }
