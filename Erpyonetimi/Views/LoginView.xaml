@@ -20,7 +20,7 @@
                          Margin="0 5 0 10" BorderThickness="0"  />
 
                 <TextBlock Text="Şifre"/>
-                <PasswordBox  x:Name="txtPassword"
+                <PasswordBox  FontSize="20" x:Name="txtPassword"
                               
                              Margin=" 0 5 0 20" BorderThickness="0">
                     <PasswordBox.InputBindings>

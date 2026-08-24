@@ -16,8 +16,8 @@ namespace Erpyonetimi.ViewModels
     {
         public Visibility Databasebaglivisibility=>
             DatabaseHelper.IsConnected
-            ? Visibility.Visible
-            :Visibility.Collapsed;
+            ? Visibility.Collapsed
+            :Visibility.Visible;
 
         private object _currentView=null;
         public object CurrentView
@@ -106,6 +106,7 @@ namespace Erpyonetimi.ViewModels
         public ICommand SiparisCommand { get; }
         public ICommand SiparisDetayCommand { get; }
         public ICommand CikisCommand { get; }
+        public ICommand     YenidenbaglanCommand { get; }
         public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
             ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
             DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel, SiparisViewModel siparisViewModel, SiparisDetayViewModel siparisDetayViewModel)
@@ -135,6 +136,7 @@ namespace Erpyonetimi.ViewModels
             SiparisCommand = new RelayCommand(OpenSiparis);
             SiparisDetayCommand = new RelayCommand(OpenSiparisDetay);
             CikisCommand = new RelayCommand(Cikis);
+            YenidenbaglanCommand = new RelayCommand(YenidenBaglan);
         }
 
         public void Kullanicigirisyapti(Users users)
@@ -157,7 +159,30 @@ namespace Erpyonetimi.ViewModels
         }
         private void Cikis()
         {
-            System.Windows.Application.Current.Shutdown();
+            UserSession.CurrentUser = null;
+            CurrentView = new LoginViewModel(this);
+            OnPropertyChanged(nameof(UserPanelgor));
+            OnPropertyChanged(nameof(UserPanelVisibility));
+            OnPropertyChanged(nameof(AdminVisibility));
+            OnPropertyChanged(nameof(DepoVisibility));
+            OnPropertyChanged(nameof(SatisVisibility));
+            OnPropertyChanged(nameof(KullaniciAdiSoyadi));
+            OnPropertyChanged(nameof(KullaniciRol));
+            OnPropertyChanged(nameof(KullaniciAvatar));
+        }
+        private void YenidenBaglan()
+        {
+            DatabaseHelper.CheckConnection();
+            OnPropertyChanged(nameof(Databasebaglivisibility));
+            OnPropertyChanged(nameof(UserPanelVisibility));
+            if (DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı başarılı.");
+            }
+            else
+            {
+                MessageBox.Show("Veritabanına bağlanılamadı.");
+            }
         }
         private void OpenSiparisDetay()
         {

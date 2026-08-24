@@ -2,6 +2,7 @@
 using Erpyonetimi.Commands;
 using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -146,21 +147,8 @@ namespace Erpyonetimi.ViewModels
         {
             if (siparis == null)
                 return;
-            string detaylar =
-                $"Sipariş No: {siparis.SiparisNo}\n" +
-                $"Müşteri: {siparis.Musteri?.FirmaAdi}\n" +
-                $"Durum: {siparis.Durum}\n" +
-                $"Tarih: {siparis.SiparisTarihi:d}\n" +
-                $"Toplam Tutar: {siparis.ToplamTutar}\n\n";
-            detaylar+="----- Sipariş Detayları -----\n\n";
-            foreach (var item in siparis.SiparisDetaylari)
-            {
-                detaylar += $"Parca: {item.Parca?.ParcAdi}\n" +
-                           $"Miktar: {item.Miktar}\n" +
-                           $"Birim Fiyat: {item.BirimFiyat}\n"+
-                           $"Toplam: {item.ToplamFiyat}\n\n";
-            }
-            MessageBox.Show(detaylar, $"Sipariş {siparis.SiparisNo}");
+           var pencere = new DetayView(siparis);
+            pencere.ShowDialog();
         }
         private void Filtrele()
         {

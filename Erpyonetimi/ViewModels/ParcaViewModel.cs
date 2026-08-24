@@ -8,6 +8,9 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
+using System.IO;
+using System.Linq;
 
 namespace Erpyonetimi.ViewModels
 {
@@ -36,6 +39,8 @@ namespace Erpyonetimi.ViewModels
         public int MinimumStok { get => _minimumStok; set { _minimumStok = value; OnPropertyChanged(); } }
         private string _aciklama = string.Empty;
         public string Aciklama { get => _aciklama; set { _aciklama = value; OnPropertyChanged(); } }
+        private string? _resimyolu;
+   
         private Kategori? _secilikategori;
         public Kategori? SeciliKategori
         {
@@ -108,6 +113,7 @@ namespace Erpyonetimi.ViewModels
     
        public ICommand ParcaTemizleCommand { get; }
         public ICommand KritikStoklarCommand { get; }
+        public ICommand ResimSecCommand { get; }
 
         private readonly IParcaService _parcaService;
         private readonly IKategoriService _kategoriService;
@@ -127,6 +133,7 @@ namespace Erpyonetimi.ViewModels
             SilCommand = new RelayCommand(Sil);
             ListeleCommand = new RelayCommand(Listele);
             ParcaTemizleCommand = new RelayCommand(Temizle);
+          
       
             _tumParcalar = _parcaService.GetAllParca();
             Parcalar = new ObservableCollection<Parca>(_tumParcalar);
@@ -144,6 +151,10 @@ namespace Erpyonetimi.ViewModels
             }
         }
 
+        public Visibility SatisVisibility =>
+         UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi" ||
+         UserSession.CurrentUser?.Rol?.RolAdi == "Satış Personeli"
+         ? Visibility.Visible : Visibility.Collapsed;
         
         private void Ekle()
             
@@ -196,6 +207,7 @@ namespace Erpyonetimi.ViewModels
                 MevcutStok = MevcutStok,
                 MinimumStok = MinimumStok,
                 Aciklama = Aciklama
+                
             };
 
             try

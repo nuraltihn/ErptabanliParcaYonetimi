@@ -27,8 +27,9 @@ namespace Erpyonetimi.ViewModels
         {
             get
             {
-                return $"Rütbesi: {UserSession.CurrentUser.Rol?.RolAdi??""}";
+                return $"Rolü: {UserSession.CurrentUser.Rol?.RolAdi??""}";
             }
+
         }
 
       

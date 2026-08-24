@@ -55,11 +55,13 @@
                                    Opacity="0.6"/></StackPanel>
 
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                     <Button Content="Çıkış Yap" Command="{Binding CikisCommand}" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="20 0" Cursor="Hand" />
-               
-                          
-               
-               
+                    <Button Content="Yeniden Bağlan" Command="{Binding YenidenbaglanCommand}" Visibility="{Binding Databasebaglivisibility}" Background="Transparent" Foreground="#EF4444" BorderThickness="0" Height="40"/>
+</StackPanel>
+
+
+
                 </StackPanel>
                 <StackPanel>
                   
