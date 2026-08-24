@@ -7,13 +7,13 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IUsersRepository
     {
-        Users? Logindenal(string kulAd, string sifre);
-         List<Users> GetAll();
-            void Add(Users user);
-            void Update(Users user);
-            void Delete(int id);
-        Users? GetByKulAd(string kulAd);
+        Task<Users?> LoginAsync(string kulAd, string sifre);
+         Task<List<Users>> GetAllAsync();
+            Task AddAsync(Users user);
+            Task UpdateAsync(Users user);
+            Task DeleteAsync(int id);
+        Task<Users?> GetByKulAdAsync(string kulAd);
 
-        Users? GetByAdSoyad(string adSoyad);
+        Task<Users?> GetByAdSoyadAsync(string adSoyad);
     }
 }

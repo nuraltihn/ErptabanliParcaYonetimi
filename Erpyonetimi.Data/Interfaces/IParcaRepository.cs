@@ -7,12 +7,12 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IParcaRepository
     {
-        List<Parca> GetAll();
-        Parca? GetById(int id);
-        Parca? GetByKod(string parcaKodu);
-        void Add(Parca parca);
-        void Update(Parca parca);
-        void Delete(Parca parca);
+        Task<List<Parca>> GetAllAsync();
+        Task<Parca?> GetByIdAsync(int id);
+        Task<Parca?> GetByKodAsync(string parcaKodu);
+        Task AddAsync(Parca parca);
+        Task UpdateAsync(Parca parca);
+        Task DeleteAsync(Parca parca);
 
     }
 }

@@ -7,11 +7,11 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IRafRepository
     {
-        List<Raflar> GetAll();
-        Raflar? GetById(int id);
-        Raflar? GetByKod(string rafkodu);
-        void Add(Raflar raf);
-        void Update(Raflar raf);
-        void Delete(Raflar raf);
+        Task<List<Raflar>> GetAllAsync();
+        Task<Raflar?> GetByIdAsync(int id);
+        Task<Raflar?> GetByKodAsync(string rafkodu);
+        Task AddAsync(Raflar raf);
+        Task UpdateAsync(Raflar raf);
+        Task DeleteAsync(Raflar raf);
     }
 }

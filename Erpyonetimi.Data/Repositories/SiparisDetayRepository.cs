@@ -15,46 +15,46 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public void Add(SiparisDetaylari detay)
+        public async Task AddAsync(SiparisDetaylari detay)
         {
-            _context.SiparisDetaylari.Add(detay);
-            _context.SaveChanges();
+          await  _context.SiparisDetaylari.AddAsync(detay);
+           await _context.SaveChangesAsync();
         }
 
-        public void Delete(SiparisDetaylari detay)
+        public async Task DeleteAsync(SiparisDetaylari detay)
         {
-            var mevcut = _context.SiparisDetaylari.FirstOrDefault(x => x.Id == detay.Id);
+            var mevcut = await _context.SiparisDetaylari.FirstOrDefaultAsync(x => x.Id == detay.Id);
             if (mevcut != null)
             {
                 _context.SiparisDetaylari.Remove(mevcut);
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
                 
         }
 
-        public List<SiparisDetaylari> GetAll()
+        public async Task<List<SiparisDetaylari>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<SiparisDetaylari>();
-                return _context.SiparisDetaylari
+                return await _context.SiparisDetaylari
                 .Include(x => x.Siparis)
                 .Include(x => x.Parca)
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
           
         }
 
-        public SiparisDetaylari? GetById(int id)
+        public async Task< SiparisDetaylari?> GetByIdAsync(int id)
         {
-            return _context.SiparisDetaylari
+            return await _context.SiparisDetaylari
                 .Include(x => x.Parca)
                 .Include(x => x.Siparis)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public void Update(SiparisDetaylari detay)
+        public async Task UpdateAsync(SiparisDetaylari detay)
         {
-            var mevcut = _context.SiparisDetaylari.Find(detay.Id);
+            var mevcut = await _context.SiparisDetaylari.FindAsync(detay.Id);
             if (mevcut != null)
             {
                 mevcut.SiparisId = detay.SiparisId;
@@ -62,7 +62,7 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.Miktar = detay.Miktar;
                 mevcut.BirimFiyat = detay.BirimFiyat;
                 mevcut.ToplamFiyat = detay.ToplamFiyat;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

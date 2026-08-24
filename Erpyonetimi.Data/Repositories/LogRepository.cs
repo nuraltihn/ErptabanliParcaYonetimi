@@ -14,28 +14,28 @@ namespace Erpyonetimi.Data.Repositories
             _context = context;
         }
 
-        public void Add(Log log)
+        public async Task AddAsync(Log log)
         {
             if(log.KullaniciId.HasValue)
             {
-                var kullanici = _context.Users
-                    .FirstOrDefault(x => x.Id == log.KullaniciId.Value);
+                var kullanici = await _context.Users
+                    .FirstOrDefaultAsync(x => x.Id == log.KullaniciId.Value);
 
                 if (kullanici!= null)
                 {
                     log.KullaniciAdSoyad = kullanici.AdSoyad;
                 }
             }
-            _context.Loglar.Add(log);
-            _context.SaveChanges();
+           await _context.Loglar.AddAsync(log);
+            await _context.SaveChangesAsync();
         }
 
-        public List<Log> GetAll()
+        public async Task<List<Log>> GetAllAsync()
         {
-            return _context.Loglar
+            return await _context.Loglar
                 .Include(x => x.Kullanici)
                 .OrderByDescending(x => x.Tarih)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

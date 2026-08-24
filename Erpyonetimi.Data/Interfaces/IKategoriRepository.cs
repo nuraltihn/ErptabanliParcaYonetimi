@@ -5,11 +5,11 @@ using Erpyonetimi.Domain.Entities;
 namespace Erpyonetimi.Data.Interfaces
 {
     public interface IKategoriRepository
-    {List<Kategori> GetAll ();
-        Kategori? GetById(int id);
-        void Add (Kategori kategori);
-        void Update (Kategori kategori);
-        void Delete (Kategori kategori);
+    {Task<List<Kategori>> GetAllAsync ();
+        Task<Kategori?> GetByIdAsync(int id);
+        Task AddAsync (Kategori kategori);
+        Task UpdateAsync (Kategori kategori);
+        Task DeleteAsync (Kategori kategori);
 
     }
 }

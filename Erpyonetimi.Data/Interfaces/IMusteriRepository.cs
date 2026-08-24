@@ -6,12 +6,12 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IMusteriRepository
     {
-        List<Musteri> GetAll();
-        Musteri? GetById(int id);
-        Musteri? GetByKod(string musteriKodu);
+        Task<List<Musteri>> GetAllAsync();
+        Task<Musteri?> GetByIdAsync(int id);
+        Task<Musteri?> GetByKodAsync(string musteriKodu);
 
-        void Add(Musteri musteri);
-        void Update(Musteri musteri);
-        void Delete(Musteri musteri);
+        Task AddAsync(Musteri musteri);
+        Task UpdateAsync(Musteri musteri);
+        Task DeleteAsync(Musteri musteri);
     }
 }

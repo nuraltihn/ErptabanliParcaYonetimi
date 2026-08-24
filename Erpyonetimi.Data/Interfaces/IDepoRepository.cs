@@ -6,11 +6,11 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IDepoRepository
     {
-        List<Depolar> GetAll();
-        Depolar? GetById(int id);
-        Depolar? GetByDepoadi (string depoadi);
-        void Add(Depolar depo);
-        void Update(Depolar depo);
-        void Delete(Depolar depo);
+        Task<List<Depolar>> GetAllAsync();
+        Task<Depolar?> GetByIdAsync(int id);
+        Task<Depolar?> GetByDepoadiAsync (string depoadi);
+        Task AddAsync(Depolar depo);
+        Task UpdateAsync(Depolar depo);
+        Task DeleteAsync(Depolar depo);
     }
 }

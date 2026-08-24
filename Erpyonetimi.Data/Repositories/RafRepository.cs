@@ -16,17 +16,17 @@ namespace Erpyonetimi.Data.Repositories
             _context=context;
         }
 
-        public void Add(Raflar raf)
+        public async Task AddAsync(Raflar raf)
         {
-            _context.Raflar.Add(raf);
-            _context.SaveChanges();
+          await  _context.Raflar.AddAsync(raf);
+          await  _context.SaveChangesAsync();
         }
 
-        public void Delete(Raflar raf)
+        public async Task DeleteAsync(Raflar raf)
         {
-            var dbRaf=_context.Raflar
+            var dbRaf= await _context.Raflar
             .Include(r=> r.Parcalar)
-            .FirstOrDefault(r => r.Id == raf.Id);
+            .FirstOrDefaultAsync(r => r.Id == raf.Id);
             if (dbRaf== null)
             {
                 throw new Exception("Raf bulunamadı.");
@@ -38,36 +38,36 @@ namespace Erpyonetimi.Data.Repositories
             }
 
             _context.Raflar.Remove(dbRaf);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
 
-        public List<Raflar> GetAll()
+        public async Task<List<Raflar>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Raflar>();  
-                return _context.Raflar.Include(r => r.Depo).ToList();
+                return await _context.Raflar.Include(r => r.Depo).ToListAsync();
            
         }
 
-        public Raflar? GetById(int id)
+        public async Task<Raflar?> GetByIdAsync(int id)
         {
-            return _context.Raflar.FirstOrDefault(r => r.Id == id);
+            return await _context.Raflar.FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public Raflar? GetByKod(string rafkodu)
+        public async Task<Raflar?> GetByKodAsync(string rafkodu)
         {
-            return _context.Raflar.FirstOrDefault(r => r.RafKodu == rafkodu);
+            return await _context.Raflar.FirstOrDefaultAsync(r => r.RafKodu == rafkodu);
         }
 
-        public void Update(Raflar raf)
+        public async Task UpdateAsync(Raflar raf)
         {
-            var mevcut = _context.Raflar
-                .FirstOrDefault(x => x.Id == raf.Id);
+            var mevcut = await _context.Raflar
+                .FirstOrDefaultAsync(x => x.Id == raf.Id);
             if (mevcut != null)
             {
                 mevcut.DepoId = raf.DepoId;
                 mevcut.RafKodu = raf.RafKodu;
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
     }

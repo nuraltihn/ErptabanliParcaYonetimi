@@ -6,11 +6,11 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface IStokHareketRepository
     {
-        List<StokHareket> GetAll();
-        StokHareket? GetById(int id);
+        Task<List<StokHareket>> GetAllAsync();
+        Task<StokHareket?> GetByIdAsync(int id);
 
-        void Add(StokHareket stokHareket);
-        void Update(StokHareket stokHareket);
-        void Delete(StokHareket stokHareket);
+        Task AddAsync(StokHareket stokHareket);
+        Task UpdateAsync(StokHareket stokHareket);
+        Task DeleteAsync(StokHareket stokHareket);
     }
 }

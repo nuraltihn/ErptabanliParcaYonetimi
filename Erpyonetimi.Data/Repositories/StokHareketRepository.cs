@@ -15,39 +15,39 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public void Add(StokHareket stokHareket)
+        public async Task AddAsync(StokHareket stokHareket)
         {
-            _context.StokHareketleri.Add(stokHareket);
-            _context.SaveChanges();
+          await  _context.StokHareketleri.AddAsync(stokHareket);
+           await _context.SaveChangesAsync();
         }
 
-        public void Delete(StokHareket stokHareket)
+        public async Task DeleteAsync(StokHareket stokHareket)
         {
             _context.StokHareketleri.Remove(stokHareket);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<StokHareket> GetAll()
+        public async Task<List<StokHareket>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<StokHareket>();
-                return _context.StokHareketleri
+                return await _context.StokHareketleri
                 .Include(x => x.Parca)
                 .Include(x => x.Kullanici)
                 .Include(x => x.Depo)
-                .ToList();
+                .ToListAsync();
             
         }
 
-        public StokHareket? GetById(int id)
+        public async Task<StokHareket?> GetByIdAsync(int id)
         {
-            return _context.StokHareketleri.FirstOrDefault(x => x.Id == id);
+            return await _context.StokHareketleri.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public void Update(StokHareket stokHareket)
+        public async Task UpdateAsync(StokHareket stokHareket)
         {
-            var mevcut = _context.StokHareketleri
-                .FirstOrDefault(x => x.Id == stokHareket.Id);
+            var mevcut = await _context.StokHareketleri
+                .FirstOrDefaultAsync(x => x.Id == stokHareket.Id);
 
             if (mevcut != null)
             {
@@ -59,7 +59,7 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.Tarih = stokHareket.Tarih;
                 mevcut.Aciklama = stokHareket.Aciklama;
 
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
     }
