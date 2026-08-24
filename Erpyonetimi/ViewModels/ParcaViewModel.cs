@@ -125,8 +125,6 @@ namespace Erpyonetimi.ViewModels
         _kategoriService = kategoriService;
             _tedarikciService = tedarikciService;
       
-            Kategoriler = new ObservableCollection<Kategori>(_kategoriService.GetAllKategori());
-            Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci());
             EkleCommand = new RelayCommand(Ekle);
             KritikStoklarCommand = new RelayCommand(KritikStoklariGetir);
             GuncelleCommand = new RelayCommand(Guncelle);
@@ -134,13 +132,22 @@ namespace Erpyonetimi.ViewModels
             ListeleCommand = new RelayCommand(Listele);
             ParcaTemizleCommand = new RelayCommand(Temizle);
           
-      
-            _tumParcalar = _parcaService.GetAllParca();
-            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
             OnPropertyChanged(nameof(CrudVisibility));
+            _ = Yukle();
     
         }
-
+        private async Task Yukle()
+        {
+            Kategoriler = new ObservableCollection<Kategori>(
+                await _kategoriService.GetAllKategoriAsync());
+            Tedarikciler = new ObservableCollection<Tedarikci>(
+                await _tedarikciService.GetAllTedarikciAsync());
+            _tumParcalar = await _parcaService.GetAllParcaAsync();
+            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
+            OnPropertyChanged(nameof(Kategoriler));
+            OnPropertyChanged(nameof(Tedarikciler));
+            OnPropertyChanged(nameof(Parcalar));
+        }
         public Visibility CrudVisibility
         {
             get
@@ -156,7 +163,7 @@ namespace Erpyonetimi.ViewModels
          UserSession.CurrentUser?.Rol?.RolAdi == "Satış Personeli"
          ? Visibility.Visible : Visibility.Collapsed;
         
-        private void Ekle()
+        private async Task Ekle()
             
         {
             if (string.IsNullOrWhiteSpace(ParcAdi) || string.IsNullOrWhiteSpace(ParcaKodu))
@@ -174,8 +181,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Minimum stok mevcut stoktan büyük olamaz.");
                 return;
             }
-
-            if (_parcaService.GetAllParca().Any(p => p.ParcaKodu == ParcaKodu))
+            var mevcut = await _parcaService.GetByKodAsync(ParcaKodu);
+            if (mevcut !=null)
             {
                 MessageBox.Show("Bu parça kodu zaten mevcut.");
                 return;
@@ -212,7 +219,7 @@ namespace Erpyonetimi.ViewModels
 
             try
             {
-                _parcaService.AddParca(parca);
+              await  _parcaService.AddParcaAsync(parca);
                 Parcalar.Add(parca);
                 MessageBox.Show("Parça eklendi.");
             }
@@ -234,7 +241,7 @@ namespace Erpyonetimi.ViewModels
             Parcalar = new ObservableCollection<Parca>(sonuc);
             OnPropertyChanged(nameof(Parcalar));
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
             if (string.IsNullOrWhiteSpace(ParcAdi)||string.IsNullOrWhiteSpace(ParcaKodu))
             {
@@ -275,16 +282,16 @@ namespace Erpyonetimi.ViewModels
             SeciliParca.MinimumStok = MinimumStok;
             SeciliParca.Aciklama= Aciklama;
 
-            _parcaService.UpdateParca(SeciliParca);
-            
-            Parcalar = new ObservableCollection<Parca>(
-                _parcaService.GetAllParca());
-            OnPropertyChanged(nameof(Parcalar));
+            await _parcaService.UpdateParcaAsync(SeciliParca);
+            _tumParcalar = await _parcaService.GetAllParcaAsync();
+            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
+            await Listele();
+          
             MessageBox.Show("Parça güncellendi");
 
         }
 
-        private void Sil()
+        private async Task Sil()
         {
             if (SeciliParca == null)
                 return;
@@ -297,29 +304,23 @@ namespace Erpyonetimi.ViewModels
                 return;
 
 
-            _parcaService.RemoveParca(SeciliParca);
+            _parcaService.RemoveParcaAsync(SeciliParca);
             Parcalar.Remove(SeciliParca);
             MessageBox.Show("Parça silindi");
         }
 
-        private void Ara()
+       
+        private async Task Listele()
         {
-            var sonuc = _parcaService.GetAllParca()
-                .Where(x => x.ParcAdi.Contains(AramaMetni));
-
-            Parcalar = new ObservableCollection<Parca>(sonuc);
-            OnPropertyChanged(nameof(Parcalar));
-            //bu kodu önceki arama için yapmıştım. butonla çalışıyordu
-        }
-        private void Listele()
-        {
-            Parcalar = new ObservableCollection<Parca>(
-                _parcaService.GetAllParca());
+            _tumParcalar = await _parcaService.GetAllParcaAsync();
+            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
             OnPropertyChanged(nameof(Parcalar));
         }
-        private void KritikStoklariGetir()
+        private async Task KritikStoklariGetir()
         {
-            var kritikler = _parcaService.GetAllParca()
+            var parcalar = await _parcaService.GetAllParcaAsync();
+            
+            var kritikler = parcalar
                 .Where(x => x.MevcutStok < x.MinimumStok);
             Parcalar = new ObservableCollection<Parca>(kritikler);
             OnPropertyChanged(nameof(Parcalar));

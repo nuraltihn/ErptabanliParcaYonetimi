@@ -118,11 +118,11 @@ namespace Erpyonetimi.ViewModels
         {
             _siparisService = siparisService;
             _musteriService = musteriService;
-            _tumSiparisler = _siparisService.GetAll();
+          
             
-            Siparisler = new ObservableCollection<Siparis>(_tumSiparisler);
+            Siparisler = new ObservableCollection<Siparis>();
            
-            Musteriler = new ObservableCollection<Musteri>(_musteriService.GetAll());
+            Musteriler = new ObservableCollection<Musteri>();
 
             SiparisEkleCommand = new RelayCommand(Ekle);
             SiparisSilCommand = new RelayCommand(Sil);
@@ -133,6 +133,8 @@ namespace Erpyonetimi.ViewModels
                 if (obj is Siparis siparis)
                     DetayAc(siparis);
             });
+            _ = Listele();
+           
         }
         public Visibility CrudVisibility
         {
@@ -160,9 +162,11 @@ namespace Erpyonetimi.ViewModels
             Siparisler = new ObservableCollection<Siparis>(sonuc);
             OnPropertyChanged(nameof(Siparisler));
         }
-        private void Listele()
+        private async Task Listele()
         {
-            Siparisler = new ObservableCollection<Siparis>(_siparisService.GetAll());
+            var siparisler = await _siparisService.GetAllAsync();
+            _tumSiparisler = siparisler;
+            Siparisler = new ObservableCollection<Siparis>(siparisler);
             OnPropertyChanged(nameof(Siparisler));
 
         }
@@ -175,7 +179,7 @@ namespace Erpyonetimi.ViewModels
             SeciliMusteri = null;
             SeciliSiparis = null;
         }
-        private void Ekle()
+        private async Task Ekle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -190,7 +194,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Sipariş no giriniz.");
                 return;
             }
-                if (_siparisService.GetByNo(SiparisNo) != null)
+            var mevcut = await _siparisService.GetByNoAsync(SiparisNo);
+                if (mevcut != null)
                 {
                     MessageBox.Show("bu sipariş numaras zaten kayıtlı.");
                     return;
@@ -213,14 +218,14 @@ namespace Erpyonetimi.ViewModels
                 ToplamTutar = ToplamTutar,
                 Durum = Durum
             };
-            _siparisService.AddSiparis(siparis);
-            Listele();
+            await _siparisService.AddSiparisAsync(siparis);
+            await Listele();
             Temizle();
 
             MessageBox.Show("Sipariş eklendi.");
         }
 
-        private void Guncelle()
+        private async Task Guncelle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -251,13 +256,13 @@ namespace Erpyonetimi.ViewModels
             SeciliSiparis.ToplamTutar = ToplamTutar;
             SeciliSiparis.Durum = Durum;
 
-            _siparisService.UpdateSiparis(SeciliSiparis);
+            await _siparisService.UpdateSiparisAsync(SeciliSiparis);
 
-            Listele();
+            await Listele();
             MessageBox.Show("Sipariş güncellendi");
 
         }
-        private void Sil()
+        private async Task Sil()
         {
             DatabaseHelper.CheckConnection();
 
@@ -277,8 +282,8 @@ namespace Erpyonetimi.ViewModels
             if (cevap != MessageBoxResult.Yes)
                 return;
 
-            _siparisService.RemoveSiparis(SeciliSiparis);
-            Listele();
+            await _siparisService.RemoveSiparisAsync(SeciliSiparis);
+            await Listele();
             Temizle();
             MessageBox.Show("Sipariş silindi");
         }

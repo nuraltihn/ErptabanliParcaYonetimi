@@ -139,37 +139,41 @@ namespace Erpyonetimi.ViewModels
         {
             _tedarikciService = tedarikciService;
 
-            
+               Tedarikciler = new ObservableCollection<Tedarikci>();
             TedarikciEkleCommand = new RelayCommand(Ekle);
             TedarikciGuncelleCommand = new RelayCommand(Guncelle);
             TedarikciSilCommand = new RelayCommand(Sil);
             TedarikciListeleCommand = new RelayCommand(Listele);
             TedarikciTemizleCommand = new RelayCommand(Temizle);
-            _tumtedarikciler = _tedarikciService.GetAllTedarikci();
-            Tedarikciler = new ObservableCollection<Tedarikci>(_tumtedarikciler);
-           
+         
+            _ = Listele();
         }
         private void Filtrele()
         {
-            Tedarikciler = new ObservableCollection<Tedarikci>(_tedarikciService.GetAllTedarikci()
+            if(_tumtedarikciler ==null)
+                return;
+          var sonuc= _tumtedarikciler
                 .Where(x => string.IsNullOrWhiteSpace(AramaMetni)
                     || x.FirmaAdi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
                     || x.TedarikciKodu?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
                     || x.YetkiliKisi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true));
+            Tedarikciler = new ObservableCollection<Tedarikci>(sonuc);
             OnPropertyChanged(nameof(Tedarikciler));
         }
 
-        private void Listele()
+        private async Task Listele()
         {
-            Tedarikciler = new ObservableCollection<Tedarikci>(
-                _tedarikciService.GetAllTedarikci());
+            var tedarikciler = await _tedarikciService.GetAllTedarikciAsync();
+            _tumtedarikciler = tedarikciler;
+            Tedarikciler = new ObservableCollection<Tedarikci>(_tumtedarikciler);
 
             OnPropertyChanged(nameof(Tedarikciler));
         }
 
-        private void Ekle()
+        private async Task Ekle()
         {
-            if(_tedarikciService.GetByKod(TedarikciKodu) != null)
+            var mevcut = await _tedarikciService.GetByKodAsync(TedarikciKodu);
+            if(mevcut != null)
             {
                 MessageBox.Show("Bu tedarikçi kodu zaten kayıtlı");
                 return;
@@ -205,7 +209,7 @@ namespace Erpyonetimi.ViewModels
             if (!UserSession.IsAdmin)
                 return;
 
-            _tedarikciService.AddTedarikci(
+            await _tedarikciService.AddTedarikciAsync(
                 new Tedarikci
                 {
                     TedarikciKodu = TedarikciKodu,
@@ -219,7 +223,7 @@ namespace Erpyonetimi.ViewModels
                     
                 });
 
-            Listele();
+            await Listele();
         }
         private void Temizle()
         {
@@ -232,7 +236,7 @@ namespace Erpyonetimi.ViewModels
             VergiNo = "";
             Fax = "";
         }
-        private void Sil()
+        private async Task Sil()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -254,11 +258,11 @@ namespace Erpyonetimi.ViewModels
                 {
                     return;
                 }
-                _tedarikciService.DeleteTedarikci(SeciliTedarikci.Id);
-                Listele();
+               await _tedarikciService.DeleteTedarikciAsync(SeciliTedarikci.Id);
+                await Listele();
             }
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -292,8 +296,8 @@ namespace Erpyonetimi.ViewModels
             SeciliTedarikci.Fax = Fax;
 
 
-            _tedarikciService.UpdateTedarikci(SeciliTedarikci);
-            Listele();
+           await  _tedarikciService.UpdateTedarikciAsync(SeciliTedarikci);
+            await Listele();
            
         }
 

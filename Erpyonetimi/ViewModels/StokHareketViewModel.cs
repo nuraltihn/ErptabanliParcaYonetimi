@@ -108,11 +108,11 @@ namespace Erpyonetimi.ViewModels
             _parcaService = parcaService;
             _depoService = depoService;
 
-            Hareketler = new ObservableCollection<StokHareket>(_service.GetAll());
+            Hareketler = new ObservableCollection<StokHareket>();
 
-            Parcalar = new ObservableCollection<Parca>(_parcaService.GetAllParca());
+            Parcalar = new ObservableCollection<Parca>();
 
-            Depolars = new ObservableCollection<Depolar>(_depoService.GetAll());
+            Depolars = new ObservableCollection<Depolar>();
 
             IslemTipleri = new ObservableCollection<string>
             {
@@ -125,8 +125,27 @@ namespace Erpyonetimi.ViewModels
             StokSilCommand = new RelayCommand(Sil);
             StokGeriAlCommand = new RelayCommand(GeriAl);
             StokTemizleCommand= new RelayCommand(Temizle);
+            _ = Yukle();
         }
-        private void GeriAl()
+        private async Task Yukle()
+        {
+            if(!DatabaseHelper.IsConnected)
+            {
+                MessageBox.Show("Veritabanı bağlantısı yok");
+                return;
+            }
+            Hareketler = new ObservableCollection<StokHareket>(
+                await _service.GetAllAsync());
+            Parcalar = new ObservableCollection<Parca>(
+                await _parcaService.GetAllParcaAsync());
+            Depolars = new ObservableCollection<Depolar>(
+                await _depoService.GetAllAsync());
+            OnPropertyChanged(nameof(Hareketler));
+            OnPropertyChanged(nameof(Parcalar));
+            OnPropertyChanged(nameof(Depolars));
+
+        }
+        private async Task GeriAl()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -150,7 +169,7 @@ namespace Erpyonetimi.ViewModels
             {
                 return;
             }
-            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
             if (parca == null)
             {
                 MessageBox.Show("Parça bulunamadı");
@@ -170,10 +189,10 @@ namespace Erpyonetimi.ViewModels
                 parca.MevcutStok += SeciliHareket.Miktar;
 
             }
-            _parcaService.UpdateParca(parca);
+            await _parcaService.UpdateParcaAsync(parca);
             SeciliHareket.Aciklama = $"{SeciliHareket.Aciklama} |Geri Alındı-{DateTime.Now:dd.MM.yyyy HH:mm}";
-            _service.UpdateStokHareket(SeciliHareket);
-            Listele();
+            await _service.UpdateStokHareketAsync(SeciliHareket);
+            await Listele();
 
             MessageBox.Show("Stok hareketi geri alındı",
                 "Başarılı",
@@ -184,7 +203,7 @@ namespace Erpyonetimi.ViewModels
        
             
         
-        private void Sil()
+        private async Task Sil()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -193,7 +212,7 @@ namespace Erpyonetimi.ViewModels
             }
             if (SeciliHareket == null)
                 return;
-            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
             if (parca != null)
             {
                 if (SeciliHareket.IslemTipi == "Giriş")
@@ -201,18 +220,18 @@ namespace Erpyonetimi.ViewModels
                 else
                     parca.MevcutStok += SeciliHareket.Miktar;
 
-                _parcaService.UpdateParca(parca);
+               await _parcaService.UpdateParcaAsync(parca);
             }
             var cevap = MessageBox.Show("Bu stok hareketini silmek istediğinize emin misiniz?",
                 "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return; 
 
-            _service.RemoveStokHareket(SeciliHareket);
-            Listele();
+           await  _service.RemoveStokHareketAsync(SeciliHareket);
+           await Listele();
             MessageBox.Show("Stok hareketi silindi.");
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
 
             if (!DatabaseHelper.IsConnected)
@@ -233,7 +252,7 @@ namespace Erpyonetimi.ViewModels
             if (SeciliHareket == null || SeciliParca == null || SeciliDepo == null)
                 return;
 
-            var parca = _parcaService.GetById(SeciliHareket.ParcaId);
+            var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
             if (parca == null)
                 return;
             if (SeciliHareket.IslemTipi == "Giriş")
@@ -252,18 +271,18 @@ namespace Erpyonetimi.ViewModels
                 }
                 parca.MevcutStok -= Miktar;
             }
-            _parcaService.UpdateParca(parca);
+           await _parcaService.UpdateParcaAsync(parca);
             SeciliHareket.ParcaId = SeciliParca.Id;
             SeciliHareket.DepoId = SeciliDepo.Id;
             SeciliHareket.Miktar = Miktar;
             SeciliHareket.Aciklama = Aciklama;
             SeciliHareket.IslemTipi = IslemTipi;
 
-            _service.UpdateStokHareket(SeciliHareket);
-            Listele();
+           await _service.UpdateStokHareketAsync(SeciliHareket);
+           await Listele();
             MessageBox.Show("Stok hareketi güncellendi.");
         }
-        private void Listele()
+        private async Task Listele()
         {
 
             if (!DatabaseHelper.IsConnected)
@@ -271,10 +290,11 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
             }
-            Hareketler = new ObservableCollection<StokHareket>(_service.GetAll());
+            var hareketler = await _service.GetAllAsync();
+            Hareketler = new ObservableCollection<StokHareket>(hareketler);
             OnPropertyChanged(nameof(Hareketler));
         }
-        private void Ekle()
+        private async Task Ekle()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -328,8 +348,8 @@ namespace Erpyonetimi.ViewModels
                 }
                 SeciliParca.MevcutStok -= Miktar;
             }
-            _parcaService.UpdateParca(SeciliParca);
-            _service.AddStokHareket(hareket);
+           await _parcaService.UpdateParcaAsync(SeciliParca);
+            await _service.AddStokHareketAsync(hareket);
             Hareketler.Add(hareket);
             MessageBox.Show("Stok hareketi eklendi");
             

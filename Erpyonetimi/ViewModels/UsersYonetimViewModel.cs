@@ -141,14 +141,14 @@ namespace Erpyonetimi.ViewModels
 
             Roller = new ObservableCollection<Roles>(_context.Roles.ToList());
 
-            _tumKullanicilar = _usersService.GetAllUsers();
-            Userlist = new ObservableCollection<Users>(_tumKullanicilar);
+            _ = Listele();
         }
 
-        private void UsersEkleme()
+        private async Task UsersEkleme()
             
         {
-            if (_usersService.GetByAdSoyad(AdSoyad) != null)
+            var mevcut = _usersService.GetByAdSoyadAsync(AdSoyad);
+            if (mevcut != null)
             {
                 MessageBox.Show("Bu kullanıcı zaten var.");
                 return;
@@ -188,8 +188,8 @@ namespace Erpyonetimi.ViewModels
                 RolId= RolId
             };
 
-            _usersService.AddUser(user);
-            Listele();
+            await _usersService.AddUserAsync(user);
+            await Listele();
             Temizle();
             MessageBox.Show("Kullanıcı eklendi.");
         }
@@ -204,15 +204,15 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(Userlist));
         }
 
-        private void Listele()
+        private async Task Listele()
         {
             Userlist = new ObservableCollection<Users>(
-                _usersService.GetAllUsers());
+              await  _usersService.GetAllUsersAsync());
             OnPropertyChanged(nameof(Userlist));
         }
 
 
-        private void UsersGuncelleme()
+        private async Task UsersGuncelleme()
         {
             if (string.IsNullOrWhiteSpace(KulAd))
             {
@@ -246,11 +246,11 @@ namespace Erpyonetimi.ViewModels
             {
                 SelectedUser.Sifre = PasswordHelper.HashPassword(Sifre);
             }
-                _usersService.UpdateUser(SelectedUser);
-            Listele();
+               await _usersService.UpdateUserAsync(SelectedUser);
+            await Listele();
 
         }
-        private void UsersSilme()
+        private async Task UsersSilme()
         {
             if (SelectedUser == null)
                 return;
@@ -258,8 +258,8 @@ namespace Erpyonetimi.ViewModels
                 "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-            _usersService.DeleteUser(SelectedUser.Id);
-            Listele();
+           await _usersService.DeleteUseAsync(SelectedUser.Id);
+           await Listele();
             Temizle();
         }
         private void Temizle()

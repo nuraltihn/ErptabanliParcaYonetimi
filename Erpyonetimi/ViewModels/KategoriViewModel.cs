@@ -63,8 +63,7 @@ namespace Erpyonetimi.ViewModels
         {
 
             _kategoriService = kategoriService;
-            Kategoriler = new ObservableCollection<Kategori>(
-                _kategoriService.GetAllKategori());
+            Kategoriler = new ObservableCollection<Kategori>();
             KategoriEkleCommand = new RelayCommand(Ekle);
             KategoriGuncelleCommand = new RelayCommand(Guncelle);
             KategoriSilCommand = new RelayCommand(Sil);
@@ -75,7 +74,7 @@ namespace Erpyonetimi.ViewModels
 
        
       
-        private void Ekle()
+        private async Task Ekle()
         {
           
 
@@ -91,7 +90,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Kategori adı zorunludur");
                 return;
             }
-            if(_kategoriService.GetAllKategori()
+            var kategoriler = await _kategoriService.GetAllKategoriAsync();
+            if(kategoriler
                 .Any(x=>x.KategoriAdi.Equals(KategoriAdi, StringComparison.OrdinalIgnoreCase)))
             {
                 MessageBox.Show("Bu kategori zaten mevcut");
@@ -107,12 +107,12 @@ namespace Erpyonetimi.ViewModels
                 KategoriAdi = KategoriAdi,
                 Aciklama = Aciklama
             };
-            _kategoriService.AddKategori(kategori);
-            Listele();
+            await _kategoriService.AddKategoriAsync(kategori);
+            await Listele();
             Temizle();
 
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -135,10 +135,10 @@ namespace Erpyonetimi.ViewModels
             SeciliKategori.KategoriAdi = KategoriAdi;
             SeciliKategori.Aciklama = Aciklama;
 
-            _kategoriService.UpdateKategori(SeciliKategori);
-            Listele();
+            await _kategoriService.UpdateKategoriAsync(SeciliKategori);
+            await Listele();
         }
-        private void Sil()
+        private async Task Sil()
         {
             if (!DatabaseHelper.IsConnected)
             {
@@ -153,14 +153,14 @@ namespace Erpyonetimi.ViewModels
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-            _kategoriService.DeleteKategori(SeciliKategori.Id);
+            await _kategoriService.DeleteKategoriAsync(SeciliKategori.Id);
             
-            Listele();
+           await Listele();
         }
-        private void Listele()
+        private async Task Listele()
         {
             Kategoriler = new ObservableCollection<Kategori>(
-                _kategoriService.GetAllKategori());
+                await _kategoriService.GetAllKategoriAsync());
             OnPropertyChanged(nameof(Kategoriler));
         }
         private void Temizle()

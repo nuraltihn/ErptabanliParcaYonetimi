@@ -82,16 +82,27 @@ namespace Erpyonetimi.ViewModels
             _rafService = rafService;
             _depoService = depoService;
         
-            Depolar= new ObservableCollection<Depolar>(_depoService.GetAll());
+            Depolar= new ObservableCollection<Depolar>(); 
+            Raflar = new ObservableCollection<Raflar>();
+            _tumRaflar = new List<Raflar>();
             RafEkleCommand = new RelayCommand(Ekle);
             RafSilCommand = new RelayCommand(Sil);
             RafGuncelleCommand = new RelayCommand(Guncelle);
             ListeleRafCommand= new RelayCommand(Listele);
             RafTemizleCommand= new RelayCommand(Temizle);
-            _tumRaflar = new List<Raflar>(_rafService.GetAll());
-            Raflar = new ObservableCollection<Raflar>(_tumRaflar);
+            _ = YukleAsync();
+           
         }
-
+        private async Task YukleAsync()
+        {
+            var depolar = await _depoService.GetAllAsync();
+            Depolar = new ObservableCollection<Depolar>(depolar);
+            var raflar = await _rafService.GetAllAsync();
+            _tumRaflar = raflar;
+            Raflar = new ObservableCollection<Raflar>(raflar);
+            OnPropertyChanged(nameof(Depolar));
+            OnPropertyChanged(nameof(Raflar));
+        }
         private void Filtrele()
         {
             if (string.IsNullOrWhiteSpace(AramaMetni))
@@ -108,9 +119,11 @@ namespace Erpyonetimi.ViewModels
             }
             OnPropertyChanged(nameof(Raflar));
         }
-        private void Listele()
+        private async Task Listele()
         {
-            Raflar = new ObservableCollection<Raflar>(_rafService.GetAll());
+            var raflar = await _rafService.GetAllAsync();
+            _tumRaflar = raflar;
+            Raflar = new ObservableCollection<Raflar>(raflar);
 
             OnPropertyChanged(nameof(Raflar));
         }
@@ -120,7 +133,7 @@ namespace Erpyonetimi.ViewModels
             SeciliDepo = null;
             SeciliRaf = null;
         }
-        private void Ekle()
+        private async Task Ekle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -129,7 +142,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
             }
-            if (_rafService.GetByKod(RafKodu) != null)
+            var mevcut = await _rafService.GetByKodAsync(RafKodu);
+            if (mevcut != null)
             {
                 MessageBox.Show("Bu isimde bir raf zaten mevcut.");
                 return;
@@ -151,12 +165,12 @@ namespace Erpyonetimi.ViewModels
                 DepoId = SeciliDepo.Id
 
             };
-            _rafService.AddRaf(raf);
-            Listele();
+            await _rafService.AddRafAsync(raf);
+            await Listele();
             Temizle();
             MessageBox.Show("Raf eklendi.");
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -182,12 +196,12 @@ namespace Erpyonetimi.ViewModels
             }
             SeciliRaf.RafKodu = RafKodu;
             SeciliRaf.DepoId = SeciliDepo.Id;
-            _rafService.UpdateRaf(SeciliRaf);
-            Listele();
+            await _rafService.UpdateRafAsync(SeciliRaf);
+            await Listele();
             MessageBox.Show("Raf güncellendi");
         }
        
-        private void Sil()
+        private async Task Sil()
         {
             DatabaseHelper.CheckConnection();
 
@@ -207,8 +221,8 @@ namespace Erpyonetimi.ViewModels
             if (cevap != MessageBoxResult.Yes){
                 return;
             }
-            _rafService.RemoveRaf(SeciliRaf);
-            Listele();
+            await _rafService.RemoveRafAsync(SeciliRaf);
+            await Listele();
             Temizle();
             MessageBox.Show("Raf silindi.");
         }

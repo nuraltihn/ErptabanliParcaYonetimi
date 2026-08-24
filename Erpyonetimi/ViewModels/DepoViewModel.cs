@@ -69,13 +69,13 @@ namespace Erpyonetimi.ViewModels
         public DepoViewModel(IDepoService depoService)
         {
             _depoService = depoService;
-            Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
+            Depolar = new ObservableCollection<Depolar>();
             DepoEkleCommand = new RelayCommand(Ekle);
             DepoGuncelleCommand = new RelayCommand(Guncelle);
             DepoSilCommand = new RelayCommand(Sil);
             DepoTemizleCommand= new RelayCommand(Temizle);
-            _tumdepolar = new List<Depolar>(_depoService.GetAll());
-            Depolar = new ObservableCollection<Depolar>(_tumdepolar);
+          
+           
         }
         private void Filtrele()
         {
@@ -97,14 +97,15 @@ namespace Erpyonetimi.ViewModels
             }
             OnPropertyChanged(nameof(Depolar));
         }
-        private void Ekle()
+        private async Task Ekle()
         {
             //if(!Aktifmi && Raflar.Count > 0)
             // {
             //     MessageBox.Show("İçinde bulunan depo pasif yapılamaz");
             //     return;
             // }
-            if (_depoService.GetByDepoadi(Depaadi) != null )
+            var mevcut = await _depoService.GetByDepoadiAsync(Depaadi);
+            if (mevcut != null )
             {
                 MessageBox.Show("Bu isimde bir depo zaten mevcut");
                 return;
@@ -124,13 +125,13 @@ namespace Erpyonetimi.ViewModels
                 Depaadi = Depaadi,
                 Konum= Konum
             };
-            _depoService.AddDepo(depo);
-            Depolar.Add(depo);
+            await _depoService.AddDepoAsync(depo);
+          
             MessageBox.Show("Depo eklendi");
             Temizle();
             
         }
-        private void Sil()
+        private async Task Sil()
         {
             if(SeciliDepo== null) return;
             var cevap = MessageBox.Show(
@@ -140,15 +141,15 @@ namespace Erpyonetimi.ViewModels
                 MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-            _depoService.DeleteDepo(SeciliDepo);
+            await _depoService.DeleteDepoAsync(SeciliDepo);
            
             MessageBox.Show("Depo silindi");
             Temizle();
-           
-            Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
+
+            await Listele();
             OnPropertyChanged(nameof(Depolar));
         }
-        private void Guncelle()
+        private async Task Guncelle()
 
         {
         if(string.IsNullOrWhiteSpace(Konum) || string.IsNullOrWhiteSpace(Depaadi))
@@ -163,16 +164,19 @@ namespace Erpyonetimi.ViewModels
             SeciliDepo.Konum = Konum;
            
 
-          
+           await _depoService.UpdateDepoAsync(SeciliDepo);  
             MessageBox.Show("Depo Güncellendi");
-            _depoService.UpdateDepo(SeciliDepo);  
-            Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
-            Listele();
-            OnPropertyChanged(nameof(Depolar));
+           
+           
+            await Listele();
+        
         }
-        private void Listele()
+        private async Task Listele()
         {
-            Depolar = new ObservableCollection<Depolar>(_depoService.GetAll());
+            var depolar = await _depoService.GetAllAsync();
+            _tumdepolar = depolar;
+
+            Depolar = new ObservableCollection<Depolar>(depolar);
             OnPropertyChanged(nameof(Depolar));
         }
 

@@ -109,7 +109,7 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
                 if (value != null)
                 {
-                    Listele();
+                    _=Listele();
                 }
             }
         }
@@ -126,17 +126,28 @@ namespace Erpyonetimi.ViewModels
             _siparisDetayService = siparisDetayService;
             _parcaService = parcaService;
             Detaylar = new ObservableCollection<SiparisDetaylari>();
-            Parcalar = new ObservableCollection<Parca>(
-                _parcaService.GetAllParca());
-            Siparisler = new ObservableCollection<Siparis>(_siparisService.GetAll());
+            Parcalar = new ObservableCollection<Parca>();
+            Siparisler = new ObservableCollection<Siparis>();
             SiparisDetayEkleCommand = new RelayCommand(Ekle);
             SiparisDetayGuncelleCommand = new RelayCommand(Guncelle);
             SiparisDetaySilCommand = new RelayCommand(Sil);
             SiparisDetayListeleCommand = new RelayCommand(Listele);
             SiparisDetayTemizleCommand = new RelayCommand(Temizle);
-            _tumDetaylar= _siparisDetayService.GetAll();    
-            Detaylar= new ObservableCollection<SiparisDetaylari>(_tumDetaylar);
 
+            _ = Yukle();
+
+        }
+        private async Task Yukle()
+        {
+            Parcalar = new ObservableCollection<Parca>(
+                await _parcaService.GetAllParcaAsync());
+            Siparisler = new ObservableCollection<Siparis>(
+               await _siparisService.GetAllAsync());
+            _tumDetaylar = await _siparisDetayService.GetAllAsync();
+            Detaylar = new ObservableCollection<SiparisDetaylari>(_tumDetaylar);
+            OnPropertyChanged(nameof(Parcalar));
+            OnPropertyChanged(nameof(Siparisler));
+            OnPropertyChanged(nameof(Detaylar));
         }
         public Visibility CrudVisibility
         {
@@ -166,16 +177,17 @@ namespace Erpyonetimi.ViewModels
             Detaylar = new ObservableCollection<SiparisDetaylari>(sonuc);
             OnPropertyChanged(nameof(Detaylar));
         }
-        private void Listele()
+        private async Task Listele()
         {
             if(SeciliSiparis==null)
                 return;
-            Detaylar = new ObservableCollection<SiparisDetaylari>(_siparisDetayService.GetAll()
+            _tumDetaylar = await _siparisDetayService.GetAllAsync();
+            Detaylar = new ObservableCollection<SiparisDetaylari>(_tumDetaylar
                 .Where(x=>x.SiparisId == SeciliSiparis.Id));
 
             OnPropertyChanged(nameof(Detaylar));
         }
-        private void Ekle()
+        private async Task Ekle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -214,22 +226,23 @@ namespace Erpyonetimi.ViewModels
                 BirimFiyat = SeciliParca.SatisFiyat,
                 ToplamFiyat = Miktar * SeciliParca.SatisFiyat
             };
-            _siparisDetayService.AddDetay(detay);
+            await _siparisDetayService.AddDetayAsync(detay);
 
             SeciliParca.MevcutStok -= Miktar;
-            _parcaService.UpdateParca(SeciliParca);
-            Listele();
-            MessageBox.Show("Sipariş Hareketi eklendi");
+            await _parcaService.UpdateParcaAsync(SeciliParca);
+            await Listele();
+           
 
-            var siparis = _siparisService.GetById(SeciliSiparis.Id);
+            var siparis = await _siparisService.GetByIdAsync(SeciliSiparis.Id);
             if(siparis != null)
             {
-                siparis.ToplamTutar = _siparisDetayService
-                    .GetAll()
+                var detaylar = await _siparisDetayService.GetAllAsync();
+                siparis.ToplamTutar = detaylar
                     .Where(x => x.SiparisId == siparis.Id)
                     .Sum(x => x.ToplamFiyat);
-                _siparisService.UpdateSiparis(siparis);
+                await _siparisService.UpdateSiparisAsync(siparis);
             }
+            MessageBox.Show("Sipariş Hareketi eklendi");
         }
         private void Temizle()
         {
@@ -241,7 +254,7 @@ namespace Erpyonetimi.ViewModels
 
 
         }
-        private void Guncelle()
+        private async Task Guncelle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -253,14 +266,14 @@ namespace Erpyonetimi.ViewModels
 
             if (SeciliDetay==null || SeciliParca == null)
                 return;
-            var eskiparca = _parcaService.GetById(SeciliDetay.ParcaId);
+            var eskiparca = await _parcaService.GetByIdAsync(SeciliDetay.ParcaId);
             if (eskiparca == null)
             {
                 MessageBox.Show("Eski parça bulunamadı");
                 return;
             }
             eskiparca.MevcutStok += SeciliDetay.Miktar;
-            _parcaService.UpdateParca(eskiparca);
+            await _parcaService.UpdateParcaAsync(eskiparca);
             if(SeciliParca.MevcutStok < Miktar)
             {
                 MessageBox.Show("Yeterli stok yok");
@@ -268,26 +281,26 @@ namespace Erpyonetimi.ViewModels
             }
 
             SeciliParca.MevcutStok -= Miktar;
-            _parcaService.UpdateParca(SeciliParca);
+           await _parcaService.UpdateParcaAsync(SeciliParca);
             SeciliDetay.ParcaId = SeciliParca.Id;
             SeciliDetay.Miktar = Miktar;
             SeciliDetay.BirimFiyat= BirimFiyat;
             SeciliDetay.ToplamFiyat = Miktar * BirimFiyat;
-            _siparisDetayService.UpdateDetay(SeciliDetay);
-            Listele();
-            MessageBox.Show("Sipariş detayı güncellendi");
-            var siparis = _siparisService.GetById(SeciliSiparis.Id);
+           await _siparisDetayService.UpdateDetayAsync(SeciliDetay);
+            await Listele();
+            var siparis = await _siparisService.GetByIdAsync(SeciliSiparis.Id);
             if (siparis != null)
             {
-                siparis.ToplamTutar = _siparisDetayService
-                    .GetAll()
+                var detaylar = await _siparisDetayService.GetAllAsync();
+                siparis.ToplamTutar = detaylar
                     .Where(x => x.SiparisId == siparis.Id)
                     .Sum(x => x.ToplamFiyat);
-                _siparisService.UpdateSiparis(siparis);
+               await _siparisService.UpdateSiparisAsync(siparis);
             }
+            MessageBox.Show("Sipariş detayı güncellendi");
 
         }
-        private void Sil()
+        private async Task Sil()
         {
             DatabaseHelper.CheckConnection();
 
@@ -304,23 +317,25 @@ namespace Erpyonetimi.ViewModels
             if (SeciliDetay == null||SeciliParca == null)
                 return;
             SeciliParca.MevcutStok += SeciliDetay.Miktar;
-            _parcaService.UpdateParca(SeciliParca);
+            await _parcaService.UpdateParcaAsync(SeciliParca);
             
-            _siparisDetayService.DeleteDetay(SeciliDetay);
+            await _siparisDetayService.DeleteDetayAsync(SeciliDetay);
        
-            MessageBox.Show("Sipariş Hareketi silindi");
+            
             if(SeciliSiparis == null)
                 return;
-            Listele();
-            var siparis = _siparisService.GetById(SeciliSiparis.Id);
+            await Listele();
+            var siparis = await _siparisService.GetByIdAsync(SeciliSiparis.Id);
             if (siparis != null)
             {
-                siparis.ToplamTutar = _siparisDetayService
-                    .GetAll()
+                var detaylar = await _siparisDetayService.GetAllAsync();
+                siparis.ToplamTutar =detaylar
                     .Where(x => x.SiparisId == siparis.Id)
                     .Sum(x => x.ToplamFiyat);
-                _siparisService.UpdateSiparis(siparis);
+               await _siparisService.UpdateSiparisAsync(siparis);
             }
+            await Listele();
+            MessageBox.Show("Sipariş Hareketi silindi");
         }
 
        

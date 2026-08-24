@@ -55,7 +55,7 @@ namespace Erpyonetimi.ViewModels
             GirisCommand = new RelayCommand(Login);
         }
 
-        private void Login(object parameter)
+        private async Task Login(object parameter)
         {
             DatabaseHelper.CheckConnection();
             if (!DatabaseHelper.IsConnected)
@@ -82,7 +82,7 @@ namespace Erpyonetimi.ViewModels
 
                 IUsersRepository repo = new UsersRepository(context);
                 var authservice = new AuthService(repo);
-                var user = _authservice.Login(KullaniciAdi, password);
+                var user = await _authservice.LoginAsync(KullaniciAdi, password);
 
                 if (user != null)
                 {
