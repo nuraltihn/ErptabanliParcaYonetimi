@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
+@using System.Threading.Tasks
 @using Erpyonetimi.Data.Helpers
 
 @inject ILogService LogService
@@ -13,7 +14,7 @@
 <table class="table table-striped">
 	<thead>
 		<tr>
-			<th>Tarih</th>q
+			<th>Tarih</th>
 			<th>Kullanıcı</th>
 			<th>İşlem</th>
 			<th>Açıklama</th>
@@ -35,13 +36,13 @@
 @code
 {
 	private List<Log> loglar = new();
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		if (!UserSession.IsAdmin)
 		{
 			Navigation.NavigateTo("/dashboard");
 			return;
 		}
-		loglar = LogService.GetAll();
+		loglar = await LogService.GetAllAsync();
 	}
 }

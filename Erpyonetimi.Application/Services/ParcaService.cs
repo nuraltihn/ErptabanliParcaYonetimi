@@ -1,53 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
+
 namespace Erpyonetimi.Application.Services
 {
     public class ParcaService : IParcaService
     {
         private readonly IParcaRepository _parcaRepository;
+
         public ParcaService(IParcaRepository parcaRepository)
         {
             _parcaRepository = parcaRepository;
         }
-        public void AddParca(Parca parca)
+
+        public async Task AddParcaAsync(Parca parca)
         {
-            var mevcutParca = _parcaRepository
-                .GetAll()
-                .FirstOrDefault(x=>x.ParcaKodu == parca.ParcaKodu);
+            var parcalar = await _parcaRepository.GetAllAsync();
+
+            var mevcutParca = parcalar
+                .FirstOrDefault(x => x.ParcaKodu == parca.ParcaKodu);
+
             if (mevcutParca != null)
             {
-                throw new InvalidOperationException("Bu parça kodu zaten mevcut.");
+                throw new InvalidOperationException(
+                    "Bu parça kodu zaten mevcut.");
             }
-            _parcaRepository.Add(parca);
+
+            await _parcaRepository.AddAsync(parca);
         }
 
-        public List<Parca> GetAllParca()
+        public async Task<List<Parca>> GetAllParcaAsync()
         {
-            return _parcaRepository.GetAll();
+            return await _parcaRepository.GetAllAsync();
         }
 
-        public Parca? GetById(int id)
+        public async Task<Parca?> GetByIdAsync(int id)
         {
-            return _parcaRepository.GetById(id);
+            return await _parcaRepository.GetByIdAsync(id);
         }
 
-        public Parca? GetByKod(string parcakodu)
+        public async Task<Parca?> GetByKodAsync(string parcakodu)
         {
-            return _parcaRepository.GetByKod(parcakodu);
+            return await _parcaRepository.GetByKodAsync(parcakodu);
         }
 
-        public void RemoveParca(Parca parca)
+        public async Task RemoveParcaAsync(Parca parca)
         {
-            _parcaRepository.Delete(parca);
+            await _parcaRepository.DeleteAsync(parca);
         }
 
-        public void UpdateParca(Parca parca)
+        public async Task UpdateParcaAsync(Parca parca)
         {
-            _parcaRepository.Update(parca);
+            await _parcaRepository.UpdateAsync(parca);
         }
     }
 }

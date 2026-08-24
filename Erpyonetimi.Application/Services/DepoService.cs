@@ -1,6 +1,7 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
@@ -14,34 +15,34 @@ namespace Erpyonetimi.Application.Services
             _depoRepository = depoRepository;
         }
 
-        public void AddDepo(Depolar depo)
+        public async Task AddDepoAsync (Depolar depo)
         {
-            _depoRepository.Add(depo);
+           await  _depoRepository.AddAsync(depo);
         }
 
-        public void DeleteDepo(Depolar depo)
+        public async Task  DeleteDepoAsync (Depolar depo)
         {
-            _depoRepository.Delete(depo);
+            await _depoRepository.DeleteAsync (depo);
         }
 
-        public List<Depolar> GetAll ()
+        public async Task <List<Depolar>> GetAllAsync ()
         {
-           return  _depoRepository.GetAll();
+           return await  _depoRepository.GetAllAsync ();
         }
 
-        public Depolar? GetByDepoadi(string depoadi)
+        public async Task <Depolar?> GetByDepoadiAsync (string depoadi)
         {
-            return _depoRepository.GetByDepoadi(depoadi);
+            return await  _depoRepository.GetByDepoadiAsync (depoadi);
         }
 
-        public Depolar? GetById(int id)
+        public async Task<Depolar?> GetByIdAsync (int id)
         {
-            return _depoRepository.GetById(id);
+            return await  _depoRepository.GetByIdAsync (id);
         }
 
-        public void UpdateDepo(Depolar depo)
+        public async Task UpdateDepoAsync (Depolar depo)
         {
-            _depoRepository.Update(depo);
+           await _depoRepository.UpdateAsync (depo);
         }
     }
 }

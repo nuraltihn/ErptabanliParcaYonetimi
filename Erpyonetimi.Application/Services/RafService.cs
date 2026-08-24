@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
@@ -13,34 +14,34 @@ namespace Erpyonetimi.Application.Services
         {
             _rafRepository = rafRepository;
         }
-        public void AddRaf(Raflar raf)
+        public async Task  AddRafAsync (Raflar raf)
         {
-            _rafRepository.Add(raf);
+          await   _rafRepository.AddAsync(raf);
         }
 
-        public List<Raflar> GetAll ()
+        public async Task <List<Raflar>> GetAllAsync()
         {
-            return _rafRepository.GetAll();
+            return await _rafRepository.GetAllAsync();
         }
 
-        public Raflar? GetById(int id)
+        public async Task <Raflar?> GetByIdAsync(int id)
         {
-            return _rafRepository.GetById(id);
+            return await _rafRepository.GetByIdAsync (id);
         }
 
-        public Raflar? GetByKod(string rafkodu)
+        public async Task <Raflar?> GetByKodAsync (string rafkodu)
         {
-            return _rafRepository.GetByKod(rafkodu);
+            return await  _rafRepository.GetByKodAsync (rafkodu);
         }
 
-        public void RemoveRaf(Raflar raf)
+        public async Task  RemoveRafAsync (Raflar raf)
         {
-            _rafRepository.Delete(raf);
+             await _rafRepository.DeleteAsync (raf);
         }
 
-        public void UpdateRaf(Raflar raf)
+        public async Task UpdateRafAsync (Raflar raf)
         {
-            _rafRepository.Update(raf);
+           await  _rafRepository.UpdateAsync (raf);
         }
     }
 }

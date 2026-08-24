@@ -3,6 +3,7 @@ using Erpyonetimi.Domain.Entities;
 using Erpyonetimi.Application.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 
 namespace Erpyonetimi.Application.Services
@@ -15,24 +16,25 @@ namespace Erpyonetimi.Application.Services
             _kategoriRepository = kategoriRepository;
         }
 
-        public List<Kategori> GetAllKategori()
+        public async Task <List<Kategori>> GetAllKategoriAsync()
         {
-            return _kategoriRepository.GetAll();
+            return await _kategoriRepository.GetAllAsync();
         }
-        public void AddKategori(Kategori kategori)
+        public async Task  AddKategoriAsync(Kategori kategori)
         {
-            _kategoriRepository.Add(kategori);
+          await  _kategoriRepository.AddAsync (kategori);
         }
-        public void UpdateKategori(Kategori kategori)
+        public async Task UpdateKategoriAsync (Kategori kategori)
         {
-            _kategoriRepository.Update(kategori);
+          await   _kategoriRepository.UpdateAsync (kategori);
         }
-        public void DeleteKategori(int id)
+        public async Task  DeleteKategoriAsync (int id)
         {
-            var kategori = _kategoriRepository.GetById(id);
+            var kategori = await _kategoriRepository.GetByIdAsync(id);
+
             if (kategori != null)
             {
-                _kategoriRepository.Delete(kategori);
+              await  _kategoriRepository.DeleteAsync(kategori);
             }
         }
     }

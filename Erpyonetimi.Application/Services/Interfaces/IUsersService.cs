@@ -10,7 +10,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
         Task <List<Users>> GetAllUsersAsync();
         Task AddUserAsync (Users user);
         Task UpdateUserAsync (Users user);
-        Task  DeleteUseAsync (int id);
+        Task  DeleteUserAsync (int id);
        Task <Users?> GetByAdSoyadAsync (string adSoyad);
     }
 }

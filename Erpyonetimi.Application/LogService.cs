@@ -1,6 +1,7 @@
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services
 {
     public class LogService : ILogService
@@ -10,13 +11,13 @@ namespace Erpyonetimi.Application.Services
         {
             _logRepository = logRepository;
         }
-        public List<Log> GetAll()
+        public async Task  <List<Log>> GetAllAsync()
         {
-            return _logRepository.GetAll();
+            return await _logRepository.GetAllAsync();
         }
-        public void Add(Log log)
+        public async Task AddAsync(Log log)
         {
-            _logRepository.Add(log);
+          await  _logRepository.AddAsync(log);
         }
     }
 }

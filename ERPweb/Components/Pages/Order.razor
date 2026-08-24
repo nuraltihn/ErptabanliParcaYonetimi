@@ -325,7 +325,7 @@
 	private bool detayModal = false;
 
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		if (!UserSession.IsAdmin && !UserSession.IsSatis)
 		{
@@ -333,9 +333,9 @@
 			return;
 		}
 
-		siparisler = SiparisService.GetAll();
-		musteriler = MusteriService.GetAll();
-		parcalar = ParcaService.GetAllParca();
+		siparisler = await SiparisService.GetAllAsync();
+		musteriler = await MusteriService.GetAllAsync();
+		parcalar = await ParcaService.GetAllParcaAsync ();
 	}
 	private IEnumerable<Siparis> FiltrelenmisSiparisler
 	{
@@ -374,7 +374,7 @@
 		showModal = false;
 	}
 
-	private void Kaydet()
+	private async Task Kaydet()
 	{
 		hataMesaji = "";
 
@@ -384,12 +384,15 @@
 			return;
 		}
 
+		var mevcutSiparisler = await SiparisService.GetAllAsync();
+
 		if (!duzenlemeModu &&
-	     SiparisService.GetAll().Any(x => x.SiparisNo == yeniSiparis.SiparisNo))
+			mevcutSiparisler.Any(x => x.SiparisNo == yeniSiparis.SiparisNo))
 		{
 			hataMesaji = "Bu sipariş numarası zaten kullanılıyor.";
 			return;
 		}
+		
 		if (yeniSiparis.MusteriId == 0)
 		{
 			hataMesaji = "Lütfen müşteri seçiniz.";
@@ -404,27 +407,27 @@
 
 		if (duzenlemeModu)
 		{
-			SiparisService.UpdateSiparis(yeniSiparis);
+			await SiparisService.UpdateSiparisAsync(yeniSiparis);
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Sipariş Düzenleme";
 			log.Aciklama = yeniSiparis.SiparisNo + " numaralı sipariş düzenlendi";
-			LogService.Add(log);
+			 await LogService.AddAsync (log);
 		}
 		else
 		{
-			SiparisService.AddSiparis(yeniSiparis);
+			await SiparisService.AddSiparisAsync (yeniSiparis);
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Sipariş Ekleme";
 			log.Aciklama = yeniSiparis.SiparisNo + " numaralı sipariş oluşturuldu";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 		}
 
-		siparisler = SiparisService.GetAll();
+		siparisler = await SiparisService.GetAllAsync ();
 
 		showModal = false;
 		duzenlemeModu = false;
@@ -464,14 +467,14 @@
     silinecekSiparis = null;
     hataMesaji = "";
    }
-   private void SilmeyiOnayla()
+   private async Task SilmeyiOnayla()
 {
     if (silinecekSiparis == null)
         return;
 
     try
     {
-        SiparisService.RemoveSiparis(silinecekSiparis);
+       await SiparisService.RemoveSiparisAsync (silinecekSiparis);
 
         Log log = new Log();
         log.KullaniciId = UserSession.CurrentUser.Id;
@@ -479,9 +482,9 @@
         log.Islem = "Sipariş Silme";
         log.Aciklama = silinecekSiparis.SiparisNo
             + " numaralı sipariş silindi";
-        LogService.Add(log);
+        await LogService.AddAsync (log);
 
-        siparisler = SiparisService.GetAll();
+        siparisler = await SiparisService.GetAllAsync ();
 
         hataMesaji = "";
         silmeModal = false;
@@ -492,17 +495,18 @@
         hataMesaji = ex.Message;
     }
 }
-	private void DetayGoster(Siparis siparis)
+	private async Task DetayGoster(Siparis siparis)
 	{
 		seciliSiparis = siparis;
-		siparisDetaylari = SiparisDetayService
-			.GetAll()
+		var detaylar = await SiparisDetayService.GetAllAsync();
+
+		siparisDetaylari = detaylar
 			.Where(x => x.SiparisId == siparis.Id)
 			.ToList();
 		yeniDetay = new SiparisDetaylari();
 		detayModal = true;
 	}
-	private void DetayKaydet()
+	private async Task DetayKaydet()
 	{
 		if (seciliSiparis == null)
 			return;
@@ -529,20 +533,21 @@
 
 		if (detayDuzenlemeModu)
 		{
-			SiparisDetayService.UpdateDetay(yeniDetay);
+			await SiparisDetayService.UpdateDetayAsync (yeniDetay);
 		}
 		else
 		{
 			yeniDetay.Id = 0;
-			SiparisDetayService.AddDetay(yeniDetay);
+			await SiparisDetayService.AddDetayAsync(yeniDetay);
 		}
+		var detaylar = await SiparisDetayService.GetAllAsync();
 
-		siparisDetaylari = SiparisDetayService
-			.GetAll()
+		siparisDetaylari = detaylar
 			.Where(x => x.SiparisId == seciliSiparis.Id)
 			.ToList();
 
-		SiparisToplaminiGuncelle();
+		await SiparisToplaminiGuncelle();
+	
 		yeniDetay = new SiparisDetaylari();
 		detayDuzenlemeModu = false;
 	}
@@ -554,16 +559,18 @@
 		siparisDetaylari = new List<SiparisDetaylari>();
 	}
 
-	private void DetaySil(SiparisDetaylari detay)
+	private async Task DetaySil(SiparisDetaylari detay)
 	{
-		SiparisDetayService.DeleteDetay(detay);
+		await SiparisDetayService.DeleteDetayAsync (detay);
 		if (seciliSiparis != null)
 		{
-			siparisDetaylari = SiparisDetayService
-			.GetAll()
+			var detaylar = await SiparisDetayService.GetAllAsync();
+
+			siparisDetaylari = detaylar
 				.Where(x => x.SiparisId == seciliSiparis.Id)
 				.ToList();
-			SiparisToplaminiGuncelle();
+
+			await SiparisToplaminiGuncelle();
 		}
 	}
 	private void DetayDuzenle(SiparisDetaylari detay)
@@ -581,14 +588,14 @@
 		detayDuzenlemeModu = true;
 	}
 
-	private void SiparisToplaminiGuncelle()
+	private async Task SiparisToplaminiGuncelle()
 	{
 		if (seciliSiparis == null)
 			return;
 		seciliSiparis.ToplamTutar = siparisDetaylari
 		.Sum(x => x.ToplamFiyat);
-		SiparisService.UpdateSiparis(seciliSiparis);
-		siparisler = SiparisService.GetAll();
+		await SiparisService.UpdateSiparisAsync (seciliSiparis);
+		siparisler = await SiparisService.GetAllAsync ();
 	}
 }
 

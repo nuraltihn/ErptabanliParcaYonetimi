@@ -3,6 +3,7 @@
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
+@using System.Threading.Tasks
 @inject IParcaService ParcaService
 @inject IDepoService DepoService
 @inject IUsersService UserService
@@ -376,7 +377,7 @@ else
     private string stokIslemFiltresi = "";
     private string geriAlmaNedeni = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsAdmin && !UserSession.IsDepo)
         {
@@ -384,7 +385,7 @@ else
             return;
         }
 
-        VerileriYukle();
+        await VerileriYukleAsync();
     }
 
     private IEnumerable<StokHareket> FiltrelenmisStokHareketleri
@@ -414,12 +415,12 @@ else
         }
     }
 
-    private void VerileriYukle()
+    private async Task VerileriYukleAsync()
     {
-        parcalar = ParcaService.GetAllParca();
-        depolar = DepoService.GetAll();
-        users = UserService.GetAllUsers();
-        stokHareketleri = StokHareketService.GetAll();
+        parcalar = await ParcaService.GetAllParcaAsync();
+        depolar = await DepoService.GetAllAsync();
+        users = await UserService.GetAllUsersAsync();
+        stokHareketleri = await StokHareketService.GetAllAsync();
     }
 
     private void StokHareketiAc()
@@ -439,7 +440,7 @@ else
         stokUyari = "";
     }
 
-    private void Kaydet()
+    private async Task Kaydet()
     {
         stokUyari = "";
 
@@ -467,7 +468,7 @@ else
             return;
         }
 
-        var parca = ParcaService.GetById(yeniHareket.ParcaId);
+        var parca = await ParcaService.GetByIdAsync(yeniHareket.ParcaId);
 
         if (parca == null)
         {
@@ -490,11 +491,11 @@ else
             parca.MevcutStok += yeniHareket.Miktar;
         }
 
-        ParcaService.UpdateParca(parca);
+        await ParcaService.UpdateParcaAsync(parca);
 
         yeniHareket.Tarih = DateTime.Now;
 
-        StokHareketService.AddStokHareket(yeniHareket);
+       await  StokHareketService.AddStokHareketAsync(yeniHareket);
         Log log = new Log();
 
         log.KullaniciId = UserSession.CurrentUser.Id;
@@ -502,8 +503,8 @@ else
         log.Islem = "Stok " + yeniHareket.IslemTipi;
         log.Aciklama = yeniHareket.Miktar + " adet " + parca.ParcAdi;
 
-        LogService.Add(log);
-        VerileriYukle();
+        await LogService.AddAsync(log);
+        await VerileriYukleAsync();
 
         showModal = false;
         yeniHareket = new StokHareket();
@@ -530,7 +531,7 @@ else
         geriAlmaNedeni = "";
     }
 
-    private void GeriAlOnayla()
+    private async Task GeriAlOnayla()
     {
         if (geriAlinacakHareket == null)
         {
@@ -543,7 +544,7 @@ else
             return;
         }
         var hareket = geriAlinacakHareket;
-        var parca = ParcaService.GetById(hareket.ParcaId);
+        var parca = await ParcaService.GetByIdAsync(hareket.ParcaId);
 
         if (parca != null)
         {
@@ -556,7 +557,7 @@ else
                 parca.MevcutStok += hareket.Miktar;
             }
 
-            ParcaService.UpdateParca(parca);
+          await  ParcaService.UpdateParcaAsync(parca);
         }
 
         Log log = new Log();
@@ -566,12 +567,11 @@ else
         log.Islem = "Stok Hareketi Geri Alma";
         log.Aciklama = geriAlmaNedeni;
 
-        LogService.Add(log);
+        await LogService.AddAsync(log);
 
-        StokHareketService.RemoveStokHareket(hareket
+       await StokHareketService.RemoveStokHareketAsync(hareket
         );
-
-        VerileriYukle();
+        await VerileriYukleAsync();
 
         geriAlModal = false;
         geriAlinacakHareket = null;

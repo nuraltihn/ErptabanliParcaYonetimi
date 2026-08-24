@@ -123,7 +123,7 @@
     private int toplamParcaSayisi = 0;
     private int toplamKategoriSayisi = 0;
     private int toplamKullaniciSayisi = 0;
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (UserSession.CurrentUser != null)
         {
@@ -142,8 +142,8 @@
                 rolAdi = "Satış";
             }
         }
-        toplamParcaSayisi = DashboardService.GetToplamParca();
-        toplamKategoriSayisi = DashboardService.GetToplamKategori();
-        toplamKullaniciSayisi = DashboardService.GetToplamKullanici();
+        toplamParcaSayisi = await DashboardService.GetToplamParcaAsync();
+        toplamKategoriSayisi = await DashboardService.GetToplamKategoriAsync();
+        toplamKullaniciSayisi = await DashboardService.GetToplamKullaniciAsync();
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/suppliers"
 @rendermode InteractiveServer
 @using Erpyonetimi.Domain.Entities
+@using System.Threading.Tasks
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
 @inject ITedarikciService TedarikciService
@@ -293,14 +294,14 @@
     private Tedarikci yeniTedarikci = new();
     private string aramaMetni = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsAdmin)
         {
             Navigation.NavigateTo("/dashboard");
             return;
         }
-        tedarikciler = TedarikciService.GetAllTedarikci();
+        tedarikciler = await TedarikciService.GetAllTedarikciAsync();
     }
 
 
@@ -348,7 +349,7 @@
     }
 
 
-    private void Kaydet()
+    private async Task Kaydet()
     {
         hataMesaji = "";
         if (string.IsNullOrWhiteSpace(yeniTedarikci.TedarikciKodu))
@@ -391,7 +392,7 @@
         }
         if (duzenlemeModu)
         {
-            TedarikciService.UpdateTedarikci(yeniTedarikci);
+            await TedarikciService.UpdateTedarikciAsync(yeniTedarikci);
 
             Log log = new Log();
             log.KullaniciId =
@@ -403,11 +404,11 @@
                 yeniTedarikci.FirmaAdi +
                 " adlı tedarikçi düzenlendi";
 
-            LogService.Add(log);
+           await LogService.AddAsync(log);
         }
         else
         {
-            TedarikciService.AddTedarikci(yeniTedarikci);
+            await TedarikciService.AddTedarikciAsync(yeniTedarikci);
             Log log = new Log();
             log.KullaniciId =
                 UserSession.CurrentUser.Id;
@@ -418,10 +419,9 @@
             log.Aciklama =
                 yeniTedarikci.FirmaAdi +
                 " adlı tedarikçi eklendi";
-
-            LogService.Add(log);
+            await LogService.AddAsync(log);
         }
-        tedarikciler =TedarikciService.GetAllTedarikci();
+        tedarikciler =await TedarikciService.GetAllTedarikciAsync();
         showModal = false;
         duzenlemeModu = false;
         yeniTedarikci = new Tedarikci();
@@ -468,22 +468,22 @@
     }
 
 
-    private void SilmeyiOnayla()
+    private async Task SilmeyiOnayla()
     {
         if (silinecekTedarikci == null)
             return;
         {
             try
             {
-                TedarikciService.DeleteTedarikci(silinecekTedarikci.Id);
+                await TedarikciService.DeleteTedarikciAsync(silinecekTedarikci.Id);
                 Log log = new Log();
                 log.KullaniciId = UserSession.CurrentUser.Id;
                 log.Tarih = DateTime.Now;
                 log.Islem = "Tedarikçi Silme";
                 log.Aciklama = silinecekTedarikci.FirmaAdi +
                     " adlı tedarikçi silindi";
-                LogService.Add(log);
-                tedarikciler = TedarikciService.GetAllTedarikci();
+               await LogService.AddAsync(log);
+                tedarikciler = await TedarikciService.GetAllTedarikciAsync();
                 hataMesaji = "";
                 silmeModal = false;
                 silinecekTedarikci = null;

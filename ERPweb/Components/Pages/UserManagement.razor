@@ -1,6 +1,7 @@
 ﻿@page "/users"
 @rendermode InteractiveServer
 @using Erpyonetimi.Domain.Entities
+@using System.Threading.Tasks
 @using Erpyonetimi.Application.Services.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
 @using Erpyonetimi.Data.Helpers
@@ -244,7 +245,7 @@
     private List<Users> users = new();
     private Users yeniUser = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsAdmin)
         {
@@ -252,7 +253,7 @@
             return;
         }
 
-        users = UserService.GetAllUsers();
+        users = await UserService.GetAllUsersAsync();
     }
 
     private void YeniKullanici()
@@ -270,7 +271,7 @@
         yeniUser = new Users();
     }
 
-    private void Kaydet()
+    private async Task Kaydet()
     {
         hataMesaji = "";
 
@@ -306,8 +307,7 @@
 
         if (duzenlemeModu)
         {
-            UserService.UpdateUser(yeniUser);
-
+            await UserService.UpdateUserAsync(yeniUser);
             Log log = new Log();
 
             log.KullaniciId = UserSession.CurrentUser.Id;
@@ -315,11 +315,11 @@
             log.Islem = "Kullanıcı Düzenleme";
             log.Aciklama = yeniUser.AdSoyad + " adlı kullanıcı düzenlendi";
 
-            LogService.Add(log);
+            await LogService.AddAsync(log);
         }
         else
         {
-            UserService.AddUser(yeniUser);
+            await UserService.AddUserAsync(yeniUser);
 
             Log log = new Log();
 
@@ -328,10 +328,10 @@
             log.Islem = "Kullanıcı Ekleme";
             log.Aciklama = yeniUser.AdSoyad + " adlı kullanıcı eklendi";
 
-            LogService.Add(log);
+            await LogService.AddAsync(log);
         }
 
-        users = UserService.GetAllUsers();
+        users = await UserService.GetAllUsersAsync();
         showModal = false;
         duzenlemeModu = false;
         yeniUser = new Users();
@@ -351,14 +351,14 @@
         silinecekUser = null;
     }
 
-    private void SilmeyiOnayla()
+    private async Task SilmeyiOnayla()
     {
         if (silinecekUser == null)
             return;
 
         try
         {
-            UserService.DeleteUser(silinecekUser.Id);
+            await UserService.DeleteUserAsync(silinecekUser.Id);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
@@ -366,8 +366,8 @@
             log.Islem = "Kullanıcı Silme";
             log.Aciklama = silinecekUser.AdSoyad + " adlı kullanıcı silindi";
 
-            LogService.Add(log);
-            users = UserService.GetAllUsers();
+            await LogService.AddAsync(log);
+            users = await UserService.GetAllUsersAsync();
             silmeModal = false;
             silinecekUser = null;
         }

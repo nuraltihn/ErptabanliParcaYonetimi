@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
@@ -14,29 +15,29 @@ namespace Erpyonetimi.Application.Services
         {
             _stokHareketRepository = stokHareketRepository;
         }
-        public void AddStokHareket(StokHareket stokHareket)
+        public async Task AddStokHareketAsync (StokHareket stokHareket)
         {
-            _stokHareketRepository.Add(stokHareket);
+            await _stokHareketRepository.AddAsync (stokHareket);
         }
 
-        public List<StokHareket> GetAll ()
+        public async Task <List<StokHareket>> GetAllAsync ()
         {
-           return _stokHareketRepository.GetAll();
+           return await _stokHareketRepository.GetAllAsync ();
         }
 
-        public StokHareket? GetById(int id)
+        public async Task <StokHareket?> GetByIdAsync(int id)
         {
-            return _stokHareketRepository.GetById(id);
+            return await _stokHareketRepository.GetByIdAsync (id);
         }
 
-        public void RemoveStokHareket(StokHareket stokHareket)
+        public async Task RemoveStokHareketAsync (StokHareket stokHareket)
         {
-            _stokHareketRepository.Delete(stokHareket);
+           await _stokHareketRepository.DeleteAsync (stokHareket);
         }
 
-        public void UpdateStokHareket(StokHareket stokHareket)
+        public async Task  UpdateStokHareketAsync (StokHareket stokHareket)
         {
-            _stokHareketRepository.Update(stokHareket);
+           await _stokHareketRepository.UpdateAsync (stokHareket);
         }
     }
 }

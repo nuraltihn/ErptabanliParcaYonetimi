@@ -1,6 +1,6 @@
 ﻿@page "/categories"
 @rendermode InteractiveServer
-
+@using System.Threading.Tasks
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
@@ -185,23 +185,23 @@
 		silinecekKategori = null;
 
 	}
-	private void SilmeyiOnayla()
+	private async Task SilmeyiOnayla()
 	{
 		if (silinecekKategori == null)
 			return;
 
 		try
 		{
-			KategoriService.DeleteKategori(silinecekKategori.Id);
+			await KategoriService.DeleteKategoriAsync(silinecekKategori.Id);
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Kategori Silme";
 			log.Aciklama = silinecekKategori.KategoriAdi + " adlı kategori silindi";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 
-			kategoriler = KategoriService.GetAllKategori();
+			kategoriler = await KategoriService.GetAllKategoriAsync();
 
 			silmeModal = false;
 			silinecekKategori = null;
@@ -217,15 +217,14 @@
 	}
 	
 	
-
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		if (!UserSession.IsAdmin)
 		{
 			Navigation.NavigateTo("/dashboard");
 			return;
 		}
-		kategoriler = KategoriService.GetAllKategori();
+		kategoriler = await KategoriService.GetAllKategoriAsync();
 	}
 	private void YeniKategori()
 	{
@@ -238,7 +237,7 @@
 	{
 		showModal = false;
 	}
-	private void Kaydet ()
+	private async Task Kaydet ()
 	{ 
 		hataMesaji ="";
 		if(string.IsNullOrWhiteSpace(yeniKategori.KategoriAdi))
@@ -248,25 +247,25 @@
 		}
 		if(duzenlemeModu)
 		{
-			KategoriService.UpdateKategori(yeniKategori);
+			await KategoriService.UpdateKategoriAsync(yeniKategori);
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Kategori Düzenleme";
 			log.Aciklama = yeniKategori.KategoriAdi + " adlı kategori düzenlendi";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 		}
 		else
 		{
-			KategoriService.AddKategori(yeniKategori);
+			await KategoriService.AddKategoriAsync(yeniKategori);
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Kategori Ekleme";
 			log.Aciklama = yeniKategori.KategoriAdi + " adlı kategori eklendi";
-			LogService.Add(log);
+			await LogService.AddAsync (log);
 		}
-		kategoriler = KategoriService.GetAllKategori();
+		await KategoriService.AddKategoriAsync(yeniKategori);
 		showModal = false;
 		duzenlemeModu = false;
 		yeniKategori = new Kategori();

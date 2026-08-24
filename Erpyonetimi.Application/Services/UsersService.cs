@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
@@ -17,31 +18,31 @@ namespace Erpyonetimi.Application.Services
             _usersRepository = usersRepository;
         }
 
-        public List<Users> GetAllUsers()
+        public async Task <List<Users>> GetAllUsersAsync ()
         {
-            return _usersRepository.GetAll();
+            return await _usersRepository.GetAllAsync ();
         }
 
-        public void AddUser(Users user)
+        public async Task AddUserAsync(Users user)
         {
             user.Sifre = PasswordHelper.HashPassword(user.Sifre);
 
-            _usersRepository.Add(user);
+           await  _usersRepository.AddAsync(user);
         }
 
-        public void UpdateUser(Users user)
+        public async Task UpdateUserAsync (Users user)
         {
-            _usersRepository.Update(user);
+           await  _usersRepository.UpdateAsync (user);
         }
 
-        public void DeleteUser(int id)
+        public async Task DeleteUserAsync (int id)
         {
-            _usersRepository.Delete(id);
+            await _usersRepository.DeleteAsync (id);
         }
 
-        public Users? GetByAdSoyad(string adSoyad)
+        public async Task  <Users?> GetByAdSoyadAsync (string adSoyad)
         {
-            return _usersRepository.GetByAdSoyad(adSoyad);
+            return await _usersRepository.GetByAdSoyadAsync(adSoyad);
         }
     }
 }

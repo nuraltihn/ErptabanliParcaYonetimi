@@ -6,6 +6,7 @@ using Erpyonetimi.Application.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using Erpyonetimi.Data.Interfaces;
 namespace Erpyonetimi.Application.Services
@@ -17,10 +18,10 @@ namespace Erpyonetimi.Application.Services
         {
             _usersRepository = usersRepository;
         }
-        public Users? Login(string kulAd, string sifre)
+        public async Task <Users?> LoginAsync (string kulAd, string sifre)
         {
             string hash = PasswordHelper.HashPassword(sifre);
-            return _usersRepository.Logindenal(kulAd, hash);
+            return await  _usersRepository.LoginAsync (kulAd, hash);
         }
     }
 }

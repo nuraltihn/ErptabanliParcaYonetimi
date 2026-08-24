@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+
 namespace Erpyonetimi.Application.Services
 {
     public class SiparisService : ISiparisService
@@ -14,34 +16,34 @@ namespace Erpyonetimi.Application.Services
            _siparisRepository = siparisRepository; 
         }
 
-        public void AddSiparis(Siparis siparis)
+        public async Task  AddSiparisAsync(Siparis siparis)
         {
-            _siparisRepository.Add(siparis);
+            await _siparisRepository.AddAsync(siparis);
         }
 
-        public List<Siparis> GetAll ()
+        public async Task  <List<Siparis>> GetAllAsync ()
         {
-            return _siparisRepository.GetAll();
+            return await _siparisRepository.GetAllAsync();
         }
 
-        public Siparis? GetById(int id)
+        public async Task<Siparis?> GetByIdAsync (int id)
         {
-            return _siparisRepository.GetById(id);
+            return await _siparisRepository.GetByIdAsync (id);
         }
 
-        public Siparis? GetByNo(string siparisNo)
+        public async Task <Siparis?> GetByNoAsync (string siparisNo)
         {
-            return _siparisRepository.GetByNo(siparisNo);
+            return await _siparisRepository.GetByNoAsync(siparisNo);
         }
 
-        public void RemoveSiparis(Siparis siparis)
+        public async Task  RemoveSiparisAsync(Siparis siparis)
         {
-            _siparisRepository.Delete(siparis);
+            await _siparisRepository.DeleteAsync(siparis);
         }
 
-        public void UpdateSiparis(Siparis siparis)
+        public async Task  UpdateSiparisAsync (Siparis siparis)
         {
-            _siparisRepository.Update(siparis);
+            await _siparisRepository.UpdateAsync(siparis);
         }
     }
 }

@@ -4,6 +4,7 @@
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
+@using System.Threading.Tasks
 @inject IParcaService ParcaService
 @inject IKategoriService KategoriService
 @inject ITedarikciService TedarikciService
@@ -324,18 +325,18 @@
             return sonuc;
         }
     }
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsAdmin && !UserSession.IsSatis)
         {
             Navigation.NavigateTo("/dashboard");
             return;
         }
-        parcalar = ParcaService.GetAllParca();
-        kategoriler = KategoriService.GetAllKategori();
-        tedarikciler = TedarikciService.GetAllTedarikci();
-        raflar = RafService.GetAll();
-        depolar = DepoService.GetAll();
+        parcalar = await ParcaService.GetAllParcaAsync();
+        kategoriler = await KategoriService.GetAllKategoriAsync();
+        tedarikciler = await TedarikciService.GetAllTedarikciAsync();
+        raflar = await RafService.GetAllAsync();
+        depolar = await DepoService.GetAllAsync();
     }
 
     private void YeniParca()
@@ -351,7 +352,7 @@
     {
         showModal = false;
     }
-    private void Kaydet()
+    private async Task  Kaydet()
     {
         hataMesaji = "";
 
@@ -421,25 +422,26 @@
         }
         if(duzenlemeModu)
         {
-            ParcaService.UpdateParca(yeniParca);
+           await ParcaService.UpdateParcaAsync (yeniParca);
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Parça Düzenleme";
             log.Aciklama = yeniParca.ParcAdi + "adlı parça düzenlendi";
-            LogService.Add(log);
+            await LogService.AddAsync(log);
+          
         }
         else
         {
-            ParcaService.AddParca(yeniParca);
+            await ParcaService.AddParcaAsync (yeniParca);
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Parça Ekleme";
             log.Aciklama = yeniParca.ParcAdi + "adlı parça eklendi";
-            LogService.Add(log);
+            await LogService.AddAsync(log);
         }
-        parcalar = ParcaService.GetAllParca();
+        parcalar = await ParcaService.GetAllParcaAsync ();
         showModal = false;
         duzenlemeModu = false;
         yeniParca = new Parca();
@@ -485,10 +487,10 @@
         hataMesaji = "";
         showModal = true;
     }
-    private void Sil(int id)
+    private async Task Sil(int id)
     {
         hataMesaji = "";
-        silinecekParca = ParcaService.GetById(id);
+        silinecekParca = await ParcaService.GetByIdAsync (id);
 
         if (silinecekParca != null)
         {
@@ -500,23 +502,23 @@
         silmeModal= false;
         silinecekParca = null;
     }
-    private void SilmeyiOnayla()
+    private async Task SilmeyiOnayla()
     {
         if (silinecekParca == null)
             return;
 
         try
         {
-            ParcaService.RemoveParca(silinecekParca);
+            await ParcaService.RemoveParcaAsync (silinecekParca);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Parça Silme";
             log.Aciklama = silinecekParca.ParcAdi + " adlı parça silindi";
-            LogService.Add(log);
+          await  LogService.AddAsync(log);
 
-            parcalar = ParcaService.GetAllParca();
+            parcalar = await ParcaService.GetAllParcaAsync();
 
             hataMesaji = "";
             silmeModal = false;

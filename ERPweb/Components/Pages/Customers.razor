@@ -3,6 +3,7 @@
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
+@using System.Threading.Tasks
 @inject IMusteriService MusteriService
 @inject ISiparisDetayService SiparisDetayService
 @inject ILogService LogService
@@ -225,9 +226,6 @@
 
 }
 
-
-
-
 @code
 {
     private bool showModal = false;
@@ -242,7 +240,7 @@
     private Musteri yeniMusteri = new();
     private string aramaMetni = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!UserSession.IsAdmin && !UserSession.IsSatis)
         {
@@ -250,7 +248,7 @@
             return;
         }
 
-        musteriler = MusteriService.GetAll();
+        musteriler = await MusteriService.GetAllAsync ();
     }
 
     private IEnumerable<Musteri> FiltrelenmisMusteriler
@@ -288,7 +286,7 @@
         hataMesaji = "";
     }
 
-    private void Kaydet()
+    private async Task Kaydet()
     {
         hataMesaji = "";
 
@@ -348,28 +346,28 @@
 
         if (duzenlemeModu)
         {
-            MusteriService.UpdateMusteri(yeniMusteri);
+           await MusteriService.UpdateMusteriAsync (yeniMusteri);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Müşteri Düzenleme";
             log.Aciklama = yeniMusteri.FirmaAdi + " adlı müşteri düzenlendi";
-            LogService.Add(log);
+           await  LogService.AddAsync (log);
         }
         else
         {
-            MusteriService.AddMusteri(yeniMusteri);
+            await MusteriService.AddMusteriAsync (yeniMusteri);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Müşteri Ekleme";
             log.Aciklama = yeniMusteri.FirmaAdi + " adlı müşteri eklendi";
-            LogService.Add(log);
+            await LogService.AddAsync (log);
         }
 
-        musteriler = MusteriService.GetAll();
+        musteriler = await MusteriService.GetAllAsync();
 
         showModal = false;
         duzenlemeModu = false;
@@ -377,9 +375,9 @@
         yeniMusteri = new Musteri();
     }
 
-    private void Sil(int id)
+    private async Task Sil(int id)
     {
-        silinecekMusteri = MusteriService.GetById(id);
+        silinecekMusteri = await MusteriService.GetByIdAsync(id);
 
         if (silinecekMusteri != null)
         {
@@ -393,20 +391,20 @@
         silinecekMusteri = null;
     }
 
-    private void SilmeyiOnayla()
+    private async Task SilmeyiOnayla()
     {
         if (silinecekMusteri != null)
         {
-            MusteriService.DeleteMusteri(silinecekMusteri);
+            await MusteriService.DeleteMusteriAsync(silinecekMusteri);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Müşteri Silme";
             log.Aciklama = silinecekMusteri.FirmaAdi + " adlı müşteri silindi";
-            LogService.Add(log);
+            await LogService.AddAsync (log);
 
-            musteriler = MusteriService.GetAll();
+            musteriler = await MusteriService.GetAllAsync();
         }
 
         silmeModal = false;

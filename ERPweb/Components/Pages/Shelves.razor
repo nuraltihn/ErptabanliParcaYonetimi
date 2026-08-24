@@ -1,6 +1,6 @@
 ﻿@page "/shelves"
 @rendermode InteractiveServer
-
+@using System.Threading.Tasks
 @using Erpyonetimi.Domain.Entities
 @using Erpyonetimi.Data.Helpers
 @using Erpyonetimi.Application.Services.Interfaces
@@ -186,7 +186,7 @@ Kaydet
 	private List<Depolar> depolar = new();
 	private Raflar yeniRaf = new();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		if (!UserSession.IsAdmin && !UserSession.IsDepo)
 		{
@@ -194,8 +194,8 @@ Kaydet
 			return;
 		}
 
-		raflar = RafService.GetAll();
-		depolar = DepoService.GetAll();
+		raflar = await RafService.GetAllAsync();
+		depolar = await DepoService.GetAllAsync();
 	}
 	private void YeniRaf()
 	{
@@ -210,7 +210,7 @@ Kaydet
 		hataMesaji = "";
 	}
 
-	private void Kaydet()
+	private async Task Kaydet()
 	{
 		hataMesaji = "";
 		if(yeniRaf.DepoId == 0)
@@ -226,28 +226,28 @@ Kaydet
 
 		if (duzenlemeModu)
 		{
-			RafService.UpdateRaf(yeniRaf);
+			 await RafService.UpdateRafAsync (yeniRaf);
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Raf Düzenleme";
 			log.Aciklama = yeniRaf.RafKodu + " adlı raf düzenlendi";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 		}
 		else
 		{
-			RafService.AddRaf(yeniRaf);
+			
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Raf Ekleme";
 			log.Aciklama = yeniRaf.RafKodu + " adlı raf eklendi";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 		}
 
-		raflar = RafService.GetAll();
+		raflar = await RafService.GetAllAsync();
 		showModal = false;
 		duzenlemeModu = false;
 		yeniRaf = new Raflar();
@@ -280,23 +280,23 @@ Kaydet
 		silinecekRaf= null;
 		hataMesaji = "";
 	}
-	private void SilmeyiOnayla()
+	private async Task SilmeyiOnayla()
 	{
 		if (silinecekRaf == null)
 			return;
 
 		try
 		{
-			RafService.RemoveRaf(silinecekRaf);
+			await RafService.RemoveRafAsync(silinecekRaf);
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Raf Silme";
 			log.Aciklama = silinecekRaf.RafKodu + " adlı raf silindi";
-			LogService.Add(log);
+			await LogService.AddAsync(log);
 
-			raflar = RafService.GetAll();
+			raflar = await RafService.GetAllAsync();
 
 			hataMesaji = "";
 			silmeModal = false;

@@ -2,6 +2,7 @@
 @using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
 @using Erpyonetimi.Domain.Entities
+@using System.Threading.Tasks
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
 @inject ILogService LogService
@@ -38,7 +39,7 @@
     private string sifre = "";
     private string hataMesaji = "";
 
-    private void GirisYap()
+    private async Task GirisYap()
     {
         if (string.IsNullOrWhiteSpace(kullaniciAdi) || string.IsNullOrWhiteSpace(sifre))
         {
@@ -49,7 +50,7 @@
         try
         {
 
-            var user = AuthService.Login(kullaniciAdi, sifre);
+            var user = await AuthService.LoginAsync(kullaniciAdi, sifre);
 
             if (user != null)
             {
@@ -60,7 +61,7 @@
                 log.Tarih = DateTime.Now;
                 log.Islem = "Kullanıcı Girişi";
                 log.Aciklama = "Sisteme giriş yaptı";
-                LogService.Add(log);
+                await LogService.AddAsync(log);
 
               Navigation.NavigateTo("/dashboard",true);
             }

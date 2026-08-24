@@ -21,7 +21,7 @@ namespace Erpyonetimi.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Siparis siparis)
+        public async Task DeleteAsync (Siparis siparis)
         {
             var mevcut = await _context.Siparisler
                 .Include(s => s.SiparisDetaylari)

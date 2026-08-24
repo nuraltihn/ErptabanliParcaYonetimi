@@ -1,54 +1,46 @@
-﻿using Erpyonetimi.Application.Services.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 
 namespace Erpyonetimi.Application.Services
 {
     public class TedarikciService : ITedarikciService
     {
         private readonly ITedarikciRepository _tedarikciRepository;
-
         public TedarikciService(ITedarikciRepository tedarikciRepository)
         {
             _tedarikciRepository = tedarikciRepository;
         }
-
-        public List<Tedarikci> GetAllTedarikci()
+        public async Task<List<Tedarikci>> GetAllTedarikciAsync()
         {
-            return _tedarikciRepository.GetAll();
+            return await _tedarikciRepository.GetAllAsync();
         }
-
-        public void AddTedarikci(Tedarikci tedarikci)
+        public async Task AddTedarikciAsync(Tedarikci tedarikci)
         {
-            _tedarikciRepository.Add(tedarikci);
+            await _tedarikciRepository.AddAsync(tedarikci);
         }
-
-        public Tedarikci? GetById(int id)
+        public async Task<Tedarikci?> GetByIdAsync(int id)
         {
-            return _tedarikciRepository.GetById(id);
+            return await _tedarikciRepository.GetByIdAsync(id);
         }
-
-        public void DeleteTedarikci(int id)
+        public async Task DeleteTedarikciAsync(int id)
         {
-            var tedarikci = _tedarikciRepository.GetById(id);
+            var tedarikci = await _tedarikciRepository.GetByIdAsync(id);
+
             if (tedarikci != null)
             {
-                _tedarikciRepository.Delete(tedarikci);
+                await _tedarikciRepository.DeleteAsync(tedarikci);
             }
         }
-
-        public void UpdateTedarikci(Tedarikci tedarikci)
+        public async Task UpdateTedarikciAsync(Tedarikci tedarikci)
         {
-            _tedarikciRepository.Update(tedarikci);
+            await _tedarikciRepository.UpdateAsync(tedarikci);
         }
-
-        public Tedarikci? GetByKod(string kod)
+        public async Task<Tedarikci?> GetByKodAsync(string kod)
         {
-            return _tedarikciRepository.GetByKod(kod);
+            return await _tedarikciRepository.GetByKodAsync(kod);
         }
     }
 }

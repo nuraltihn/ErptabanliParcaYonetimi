@@ -4,6 +4,7 @@ using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 namespace Erpyonetimi.Application.Services
 {
@@ -15,34 +16,34 @@ namespace Erpyonetimi.Application.Services
             _musteriRepository = musteriRepository;
         }
 
-        public List<Musteri> GetAll()
+        public async Task<List<Musteri>> GetAllAsync()
         {
-            return _musteriRepository.GetAll();
+            return await  _musteriRepository.GetAllAsync ();
         }
 
-        public void AddMusteri(Musteri musteri)
+        public async Task  AddMusteriAsync (Musteri musteri)
         {
-            _musteriRepository.Add(musteri);
+            await _musteriRepository.AddAsync (musteri);
         }
 
-        public void DeleteMusteri(Musteri musteri)
+        public async Task DeleteMusteriAsync (Musteri musteri)
         {
-            _musteriRepository.Delete(musteri);
+             await _musteriRepository.DeleteAsync (musteri);
         }
 
-        public Musteri? GetById(int id)
+        public async Task <Musteri?> GetByIdAsync (int id)
         {
-            return _musteriRepository.GetById(id);
+            return await  _musteriRepository.GetByIdAsync (id);
         }
 
-        public Musteri? GetByKod(string musteriKodu)
+        public async Task <Musteri?> GetByKodAsync (string musteriKodu)
         {
-            return _musteriRepository.GetByKod(musteriKodu);
+            return await  _musteriRepository.GetByKodAsync (musteriKodu);
         }
 
-        public void UpdateMusteri(Musteri musteri)
+        public async Task UpdateMusteriAsync (Musteri musteri)
         {
-            _musteriRepository.Update(musteri);
+            await _musteriRepository.UpdateAsync (musteri);
         }
     }
 }
