@@ -15,17 +15,17 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public void Add(Musteri musteri)
+        public async Task AddAsync(Musteri musteri)
         {
-            _context.Musteriler.Add(musteri);
-            _context.SaveChanges();
+            await _context.Musteriler.AddAsync(musteri);
+           await  _context.SaveChangesAsync();
         }
 
-        public void Delete(Musteri musteri)
+        public async Task DeleteAsync(Musteri musteri)
         {
-            var dbMusteri = _context.Musteriler
+            var dbMusteri = await _context.Musteriler
                 .Include(m => m.Siparisler)
-                .FirstOrDefault(m => m.Id == musteri.Id);
+                .FirstOrDefaultAsync(m => m.Id == musteri.Id);
 
             if (dbMusteri == null)
             {
@@ -39,32 +39,32 @@ namespace Erpyonetimi.Data.Repositories
             }
 
             _context.Musteriler.Remove(dbMusteri);
-            _context.SaveChanges();
+          await  _context.SaveChangesAsync();
         }
 
-        public List<Musteri> GetAll()
+        public async Task< List<Musteri>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Musteri>();
-            return _context.Musteriler
+            return await _context.Musteriler
             .AsNoTracking()
-            .ToList();
+            .ToListAsync();
         }
        
 
-        public Musteri? GetById(int id)
+        public async Task< Musteri?> GetByIdAsync(int id)
         {
-            return _context.Musteriler.FirstOrDefault(m=>m.Id == id);
+            return await _context.Musteriler.FirstOrDefaultAsync(m=>m.Id == id);
         }
 
-        public Musteri? GetByKod(string musteriKodu)
+        public async Task<Musteri?> GetByKodAsync(string musteriKodu)
         {
-            return _context.Musteriler.FirstOrDefault(m=>m.MusteriKodu == musteriKodu);
+            return await _context.Musteriler.FirstOrDefaultAsync(m=>m.MusteriKodu == musteriKodu);
         }
 
-        public void Update(Musteri musteri)
+        public async Task UpdateAsync(Musteri musteri)
         {
-            var mevcut = _context.Musteriler.FirstOrDefault(x => x.Id == musteri.Id);
+            var mevcut = await _context.Musteriler.FirstOrDefaultAsync(x => x.Id == musteri.Id);
             if (mevcut == null)
                 return;
 
@@ -79,7 +79,7 @@ namespace Erpyonetimi.Data.Repositories
             mevcut.Email = musteri.Email;
             mevcut.VergiNo = musteri.VergiNo;
             mevcut.Fax = musteri.Fax;
-            _context.SaveChanges();
+          await  _context.SaveChangesAsync();
         }
     }
 }

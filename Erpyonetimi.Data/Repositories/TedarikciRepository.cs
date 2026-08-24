@@ -21,25 +21,25 @@ namespace Erpyonetimi.Data.Repositories
             _context = context;
         }
 
-        public List<Tedarikci> GetAll()
+        public async Task<List<Tedarikci>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Tedarikci>();
-                return _context.Tedarikciler
+                return await _context.Tedarikciler
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
            
         }
 
-        public void Add(Tedarikci tedarikci)
+        public async Task AddAsync(Tedarikci tedarikci)
         {
-            _context.Tedarikciler.Add(tedarikci);
-            _context.SaveChanges();
+            await _context.Tedarikciler.AddAsync(tedarikci);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Tedarikci tedarikci)
+        public async Task UpdateAsync(Tedarikci tedarikci)
         {
-            var mevcut = _context.Tedarikciler.FirstOrDefault(x => x.Id == tedarikci.Id);
+            var mevcut = await _context.Tedarikciler.FirstOrDefaultAsync(x => x.Id == tedarikci.Id);
 
             if (mevcut != null)
             {
@@ -52,17 +52,17 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.Fax = tedarikci.Fax;
                 mevcut.VergiNo = tedarikci.VergiNo;
 
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
-        public void Delete(Tedarikci tedarikci)
+        public async Task DeleteAsync(Tedarikci tedarikci)
         {
-            var dbTedarikci = _context.Tedarikciler
+            var dbTedarikci = await _context.Tedarikciler
                 .Include(t => t.Parcalar)
                 .ThenInclude(p=> p.StokHareketleri)
                 .Include(t=>t.Parcalar)
                 .ThenInclude(p =>p.SiparisDetaylari)
-               .FirstOrDefault(t => t.Id == tedarikci.Id);
+               .FirstOrDefaultAsync(t => t.Id == tedarikci.Id);
 
             if(dbTedarikci == null)
             {
@@ -79,19 +79,19 @@ namespace Erpyonetimi.Data.Repositories
                 throw new Exception(
                     "Bu tedarikçi silinemez. Tedarikçiye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
             }
-            _context.Tedarikciler.Remove(tedarikci);
+            _context.Tedarikciler.Remove(dbTedarikci);
 
-            _context.SaveChanges();
+           await  _context.SaveChangesAsync();
         }
 
-        public Tedarikci? GetById(int id)
+        public async Task<Tedarikci?> GetByIdAsync(int id)
         {
-            return _context.Tedarikciler.FirstOrDefault(x => x.Id == id);
+            return await _context.Tedarikciler.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Tedarikci? GetByKod(string kod)
+        public async Task<Tedarikci?> GetByKodAsync(string kod)
         {
-            return _context.Tedarikciler.FirstOrDefault(x =>
+            return await _context.Tedarikciler.FirstOrDefaultAsync(x =>
             x.TedarikciKodu == kod);
         }
     }

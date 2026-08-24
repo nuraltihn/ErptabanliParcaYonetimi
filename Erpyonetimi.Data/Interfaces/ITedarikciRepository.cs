@@ -8,11 +8,11 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface ITedarikciRepository
     {
-        List<Tedarikci> GetAll();
-        Tedarikci? GetById(int id);
-        Tedarikci? GetByKod(string kod);
-        void Add(Tedarikci tedarikci);
-        void Update(Tedarikci tedarikci);
-        void Delete(Tedarikci tedarikci);
+        Task<List<Tedarikci>> GetAllAsync();
+        Task<Tedarikci?> GetByIdAsync(int id);
+        Task<Tedarikci?> GetByKodAsync(string kod);
+        Task AddAsync(Tedarikci tedarikci);
+        Task UpdateAsync(Tedarikci tedarikci);
+        Task DeleteAsync(Tedarikci tedarikci);
     }
 }

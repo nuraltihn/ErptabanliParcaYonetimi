@@ -16,22 +16,22 @@ namespace Erpyonetimi.Data.Repositories
             _context = context;
         }
 
-        public void Add(Depolar depo)
+        public async Task AddAsync(Depolar depo)
         {
-            _context.Depolar.Add(depo);
-            _context.SaveChanges();
+            await _context.Depolar.AddAsync(depo);
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Depolar depo)
+        public async Task DeleteAsync(Depolar depo)
         {
-            var dbDepo = _context.Depolar
+            var dbDepo = await _context.Depolar
                 .Include(d => d.Raflar)
                 .ThenInclude(r => r.Parcalar)
                 .ThenInclude(p => p.StokHareketleri)
                 .Include(d => d.Raflar)
                 .ThenInclude(r => r.Parcalar)
                 .ThenInclude(p => p.SiparisDetaylari)
-                .FirstOrDefault(d => d.Id == depo.Id);
+                .FirstOrDefaultAsync(d => d.Id == depo.Id);
 
             if (dbDepo == null)
             {
@@ -63,36 +63,36 @@ namespace Erpyonetimi.Data.Repositories
             }
 
             _context.Depolar.Remove(dbDepo);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
 
-        public List<Depolar> GetAll()
+        public async Task<List<Depolar>> GetAllAsync()
         { if(!DatabaseHelper.IsConnected)
                 return new List<Depolar>();
 
 
-            return _context.Depolar.ToList();
+            return await _context.Depolar.ToListAsync();
            
         }
 
-        public Depolar? GetByDepoadi(string depoadi)
+        public async Task< Depolar?> GetByDepoadiAsync(string depoadi)
         {
-            return _context.Depolar.FirstOrDefault(x=>x.Depaadi==depoadi);
+            return await _context.Depolar.FirstOrDefaultAsync(x=>x.Depaadi==depoadi);
         }
 
-        public Depolar? GetById(int id)
+        public async Task<Depolar?> GetByIdAsync(int id)
         {
-            return _context.Depolar.FirstOrDefault(d => d.Id == id);
+            return await _context.Depolar.FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public void Update(Depolar depo)
+        public async Task UpdateAsync(Depolar depo)
         {
-            var guncelleme =_context.Depolar.FirstOrDefault(x=>x.Id == depo.Id);
+            var guncelleme =await _context.Depolar.FirstOrDefaultAsync(x=>x.Id == depo.Id);
             if (guncelleme != null) 
             {
                 guncelleme.Depaadi = depo.Depaadi;
                 guncelleme.Konum = depo.Konum;
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
     }

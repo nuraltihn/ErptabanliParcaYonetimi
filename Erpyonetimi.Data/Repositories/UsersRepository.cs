@@ -17,24 +17,24 @@ namespace Erpyonetimi.Data.Repositories
             _context = context;
         }
 
-        public Users? Logindenal(string kulAd, string sifre)
+        public async Task<Users?> LoginAsync(string kulAd, string sifre)
         {
-            return _context.Users
+            return await _context.Users
                 .Include(u => u.Rol)
-                .FirstOrDefault(u => 
+                .FirstOrDefaultAsync(u => 
                 u.KulAd == kulAd && u.Sifre == sifre);
         }
  
-        public void Add(Users user)
+        public async Task AddAsync(Users user)
         {
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+           await _context.Users.AddAsync(user);
+           await _context.SaveChangesAsync();
         }
 
-        public void Update(Users user)
+        public async Task UpdateAsync(Users user)
         {
-            var mevcut = _context.Users.Find(user.Id);
+            var mevcut = await _context.Users.FindAsync(user.Id);
             if (mevcut != null)
             {
                 mevcut.AdSoyad = user.AdSoyad;
@@ -44,41 +44,41 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.Tel = user.Tel;
                 mevcut.Email = user.Email;
 
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
             
         }
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user != null)
             {
                
                 _context.Users.Remove(user);
 
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
-        public List<Users> GetAll()
+        public async Task< List<Users>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Users>();
-                return _context.Users
+                return await _context.Users
                 .Include(x => x.Rol)
                  .AsNoTracking()
-                .ToList();
+                .ToListAsync();
             
         }
-        public Users? GetByKulAd(string kulAd)
+        public async Task<Users?> GetByKulAdAsync (string kulAd)
         {
-            return _context.Users
-                  .FirstOrDefault(x => x.KulAd == kulAd);
+            return await _context.Users
+                  .FirstOrDefaultAsync(x => x.KulAd == kulAd);
         }
 
-        public Users? GetByAdSoyad(string adSoyad)
+        public async Task<Users?> GetByAdSoyadAsync(string adSoyad)
         {
-            return _context.Users.FirstOrDefault(x => x.AdSoyad == adSoyad);
+            return await _context.Users.FirstOrDefaultAsync(x => x.AdSoyad == adSoyad);
         }
     }
 }

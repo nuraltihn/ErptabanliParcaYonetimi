@@ -6,11 +6,11 @@ namespace Erpyonetimi.Data.Interfaces
 {
     public interface ISiparisDetayRepository
     {
-        List<SiparisDetaylari> GetAll();
-        SiparisDetaylari? GetById(int id);
+        Task<List<SiparisDetaylari>> GetAllAsync();
+        Task<SiparisDetaylari?> GetByIdAsync(int id);
 
-        void Add(SiparisDetaylari detay);
-        void Update(SiparisDetaylari detay);
-        void Delete(SiparisDetaylari detay);
+        Task AddAsync(SiparisDetaylari detay);
+        Task UpdateAsync(SiparisDetaylari detay);
+        Task DeleteAsync(SiparisDetaylari detay);
     }
 }

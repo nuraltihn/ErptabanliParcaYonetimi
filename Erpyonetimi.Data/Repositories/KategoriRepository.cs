@@ -18,46 +18,46 @@ namespace Erpyonetimi.Data.Repositories
             _context = context;
         }
 
-        public List<Kategori> GetAll()
+        public async Task< List<Kategori>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Kategori>();
 
-            return _context.Kategoriler.ToList();
+            return await _context.Kategoriler.ToListAsync();
 
         }
-        public Kategori? GetById(int id)
+        public async Task<Kategori?> GetByIdAsync(int id)
         {
-            return _context.Kategoriler.FirstOrDefault(k => k.Id == id);
+            return await _context.Kategoriler.FirstOrDefaultAsync(k => k.Id == id);
         }
-        public void Add(Kategori kategori)
+        public async Task AddAsync(Kategori kategori)
         {
-            _context.Kategoriler.Add(kategori);
-            _context.SaveChanges();
+            await _context.Kategoriler.AddAsync(kategori);
+            await _context.SaveChangesAsync();
         }
 
-        public void Update(Kategori kategori)
+        public async Task UpdateAsync(Kategori kategori)
         {
-            var eskiKategori = _context.Kategoriler.FirstOrDefault(k => k.Id == kategori.Id);
+            var eskiKategori = await _context.Kategoriler.FirstOrDefaultAsync(k => k.Id == kategori.Id);
             if (eskiKategori != null)
             {
                 eskiKategori.KategoriAdi = kategori.KategoriAdi;
                 eskiKategori.Aciklama = kategori.Aciklama;
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
             else
             {
                 throw new Exception("Kategori bulunamadı.");
             }
         }
-        public void Delete(Kategori kategori)
+        public async Task DeleteAsync(Kategori kategori)
         {
-            var dbKategori = _context.Kategoriler
+            var dbKategori = await _context.Kategoriler
                 .Include(k => k.Parcalar)
                     .ThenInclude(p => p.StokHareketleri)
                 .Include(k => k.Parcalar)
                     .ThenInclude(p => p.SiparisDetaylari)
-                .FirstOrDefault(k => k.Id == kategori.Id);
+                .FirstOrDefaultAsync(k => k.Id == kategori.Id);
 
             if (dbKategori == null)
             {
@@ -77,7 +77,7 @@ namespace Erpyonetimi.Data.Repositories
             
             _context.Kategoriler.Remove(dbKategori);
 
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
     }
 }

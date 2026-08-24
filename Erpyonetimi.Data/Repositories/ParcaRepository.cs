@@ -15,18 +15,18 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public void Add(Parca parca)
+        public async Task AddAsync(Parca parca)
         {
-            _context.Parcalar.Add(parca);
-            _context.SaveChanges();
+           await _context.Parcalar.AddAsync(parca);
+           await _context.SaveChangesAsync();
         }
 
-        public void Delete(Parca parca)
+        public async Task DeleteAsync(Parca parca)
         {
-            var dbParca = _context.Parcalar
+            var dbParca = await _context.Parcalar
                 .Include(p => p.StokHareketleri)
                 .Include(p => p.SiparisDetaylari)
-                .FirstOrDefault(p => p.Id == parca.Id);
+                .FirstOrDefaultAsync(p => p.Id == parca.Id);
 
             if (dbParca == null)
             {
@@ -45,34 +45,34 @@ namespace Erpyonetimi.Data.Repositories
                     "Bu parça silinemez. Parçaya bağlı sipariş detayları bulunmaktadır.");
             }
             _context.Parcalar.Remove(dbParca);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
-        public List<Parca> GetAll()
+        public async Task< List<Parca>> GetAllAsync()
         {
          if(!DatabaseHelper.IsConnected)
                 return new List<Parca>();
-            return _context.Parcalar
+            return await _context.Parcalar
                  .Include(x => x.Kategori)
                  .Include(x => x.Tedarikci)
                  .Include(x => x.Raf)
-                 .ToList();
+                 .ToListAsync();
             
         }
 
-        public Parca? GetById(int id)
+        public async Task<Parca?> GetByIdAsync(int id)
         {
-            return _context.Parcalar.FirstOrDefault(x => x.Id == id);
+            return await _context.Parcalar.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Parca? GetByKod(string parcaKodu)
+        public async Task<Parca?> GetByKodAsync(string parcaKodu)
         {
-            return _context.Parcalar.FirstOrDefault(x => x.ParcaKodu == parcaKodu);
+            return await _context.Parcalar.FirstOrDefaultAsync(x => x.ParcaKodu == parcaKodu);
         }
 
-        public void Update(Parca parca)
+        public async Task UpdateAsync(Parca parca)
         {
-            var eskiParca = _context.Parcalar
-                .FirstOrDefault(x => x.Id == parca.Id);
+            var eskiParca = await _context.Parcalar
+                .FirstOrDefaultAsync(x => x.Id == parca.Id);
 
             if (eskiParca != null)
             {
@@ -96,7 +96,7 @@ namespace Erpyonetimi.Data.Repositories
                 eskiParca.RafId = parca.RafId;
                 eskiParca.Aciklama = parca.Aciklama;
 
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
         }
     }

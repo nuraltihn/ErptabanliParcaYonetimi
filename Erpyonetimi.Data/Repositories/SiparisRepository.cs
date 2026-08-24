@@ -15,17 +15,17 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-        public void Add(Siparis siparis)
+        public async Task AddAsync(Siparis siparis)
         {
-            _context.Siparisler.Add(siparis);
-            _context.SaveChanges();
+            await _context.Siparisler.AddAsync(siparis);
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Siparis siparis)
+        public async Task Delete(Siparis siparis)
         {
-            var mevcut = _context.Siparisler
+            var mevcut = await _context.Siparisler
                 .Include(s => s.SiparisDetaylari)
-                .FirstOrDefault(s => s.Id == siparis.Id);
+                .FirstOrDefaultAsync(s => s.Id == siparis.Id);
 
             if (mevcut == null)
             {
@@ -45,36 +45,36 @@ namespace Erpyonetimi.Data.Repositories
             }
 
             _context.Siparisler.Remove(mevcut);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<Siparis> GetAll()
+        public async Task<List<Siparis>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Siparis>();
-                return _context.Siparisler.Include(s => s.Musteri)
+                return await _context.Siparisler.Include(s => s.Musteri)
                 .Include(s=>s.SiparisDetaylari)
                 .ThenInclude(sd=>sd.Parca)
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
           
         }
 
-        public Siparis? GetById(int id)
+        public async Task<Siparis?> GetByIdAsync(int id)
         {
-            return _context.Siparisler
-                .FirstOrDefault(x=>x.Id == id);
+            return await _context.Siparisler
+                .FirstOrDefaultAsync(x=>x.Id == id);
         }
 
-        public Siparis? GetByNo(string siparisNo)
+        public async Task<Siparis?> GetByNoAsync(string siparisNo)
         {
-            return _context.Siparisler
-                .FirstOrDefault(x=>x.SiparisNo == siparisNo);
+            return await _context.Siparisler
+                .FirstOrDefaultAsync(x=>x.SiparisNo == siparisNo);
         }
 
-        public void Update(Siparis siparis)
+        public async Task UpdateAsync(Siparis siparis)
         {
-            var mevcut = _context.Siparisler.Find(siparis.Id);
+            var mevcut = await _context.Siparisler.FindAsync(siparis.Id);
             if (mevcut !=null)
             {
                 mevcut.SiparisNo = siparis.SiparisNo;
@@ -83,7 +83,7 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.ToplamTutar = siparis.ToplamTutar;
                 mevcut.Durum = siparis.Durum;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }
