@@ -1,0 +1,68 @@
+﻿<Window x:Class="Erpyonetimi.Views.DetayView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Erpyonetimi.Views"
+        mc:Ignorable="d"
+        Title="DetayView" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#1F2937" CornerRadius="8" Padding="15" Margin="0 0 0 15">
+            <TextBlock Text="Sipariş Detayı" FontSize="22" FontWeight="Bold"
+ Foreground="White"/>
+            
+        </Border>
+        <Grid Grid.Row="1" Margin="0 0 0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="105"/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="105"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Sipariş No:" Grid.Row="0" Margin="5"/>
+            <TextBlock Text="{Binding SiparisNo}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+            <TextBlock Text="Müşteri:" Grid.Row="0" Grid.Column="2" Margin="5"/>
+            <TextBlock Text="{Binding Musteri.FirmaAdi}" Grid.Row="0" Grid.Column="3" Margin="5"/>
+
+            <TextBlock Text="Durum:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+            <TextBlock Text="{Binding Durum}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+            <TextBlock Text="Tarih:" Grid.Row="1" Grid.Column="2" Margin="5"/>
+            <TextBlock Text="{Binding SiparisTarihi, StringFormat={}{0:dd.MM.yyyy}}" Grid.Row="1" Grid.Column="3" Margin="5"/>
+        </Grid>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding SiparisDetaylari }" AutoGenerateColumns="False"
+                  CanUserAddRows="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Parça"
+                                    Binding="{Binding Parca.ParcAdi}"
+                                    Width="*"/>
+                <DataGridTextColumn Header="Miktar"
+                       Binding="{Binding Miktar}"
+                       Width="*"/>
+
+                <DataGridTextColumn Header="BirimFiyat"
+                       Binding="{Binding BirimFiyat}"
+                       Width="*"/>
+
+                <DataGridTextColumn Header="Toplam"
+                       Binding="{Binding ToplamFiyat}"
+                       Width="*"/>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
