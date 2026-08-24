@@ -23,10 +23,28 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Siparis siparis)
         {
-            var mevcut = _context.Siparisler.Find(siparis.Id);
+            var mevcut = _context.Siparisler
+                .Include(s => s.SiparisDetaylari)
+                .FirstOrDefault(s => s.Id == siparis.Id);
+
             if (mevcut == null)
-                return;
-            _context.Siparisler.Remove(siparis);
+            {
+                throw new Exception("Sipariş bulunamadı.");
+            }
+
+            if (mevcut.SiparisDetaylari.Any())
+            {
+                throw new Exception(
+                    "Bu sipariş silinemez. Siparişe bağlı parçalar bulunmaktadır.");
+            }
+
+            if (mevcut.Durum == "Tamamlandı")
+            {
+                throw new Exception(
+                    "Tamamlanmış siparişler silinemez.");
+            }
+
+            _context.Siparisler.Remove(mevcut);
             _context.SaveChanges();
         }
 

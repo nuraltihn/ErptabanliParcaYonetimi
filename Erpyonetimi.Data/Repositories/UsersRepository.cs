@@ -25,7 +25,6 @@ namespace Erpyonetimi.Data.Repositories
                 u.KulAd == kulAd && u.Sifre == sifre);
         }
  
-
         public void Add(Users user)
         {
 
@@ -41,22 +40,26 @@ namespace Erpyonetimi.Data.Repositories
                 mevcut.AdSoyad = user.AdSoyad;
                 mevcut.KulAd = user.KulAd;
                 mevcut.Sifre = user.Sifre;
-                mevcut.RolId = user.RolId
-;
+                mevcut.RolId = user.RolId;
+                mevcut.Tel = user.Tel;
+                mevcut.Email = user.Email;
+
                 _context.SaveChanges();
             }
             
         }
         public void Delete(int id)
         {
-            var user= _context.Users.FirstOrDefault(x => x.Id == id);
+            var user = _context.Users.FirstOrDefault(x => x.Id == id);
+
             if (user != null)
             {
-                _context.Remove(user);
+               
+                _context.Users.Remove(user);
+
                 _context.SaveChanges();
             }
         }
-
         public List<Users> GetAll()
         {
             if (!DatabaseHelper.IsConnected)
@@ -67,7 +70,6 @@ namespace Erpyonetimi.Data.Repositories
                 .ToList();
             
         }
-
         public Users? GetByKulAd(string kulAd)
         {
             return _context.Users

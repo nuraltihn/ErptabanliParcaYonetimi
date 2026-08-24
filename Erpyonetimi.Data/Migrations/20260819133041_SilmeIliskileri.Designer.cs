@@ -4,6 +4,7 @@ using Erpyonetimi.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Erpyonetimi.Migrations
 {
     [DbContext(typeof(ErpDbContext))]
-    partial class ErpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819133041_SilmeIliskileri")]
+    partial class SilmeIliskileri
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,11 +94,7 @@ namespace Erpyonetimi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("KullaniciAdSoyad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("KullaniciId")
+                    b.Property<int>("KullaniciId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Tarih")
@@ -413,7 +412,7 @@ namespace Erpyonetimi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("KullaniciId")
+                    b.Property<int>("KullaniciId")
                         .HasColumnType("int");
 
                     b.Property<int>("Miktar")
@@ -539,7 +538,8 @@ namespace Erpyonetimi.Migrations
                     b.HasOne("Erpyonetimi.Domain.Entities.Users", "Kullanici")
                         .WithMany()
                         .HasForeignKey("KullaniciId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Kullanici");
                 });
@@ -555,7 +555,7 @@ namespace Erpyonetimi.Migrations
                     b.HasOne("Erpyonetimi.Domain.Entities.Raflar", "Raf")
                         .WithMany("Parcalar")
                         .HasForeignKey("RafId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Erpyonetimi.Domain.Entities.Tedarikci", "Tedarikci")
                         .WithMany("Parcalar")
@@ -622,7 +622,8 @@ namespace Erpyonetimi.Migrations
                     b.HasOne("Erpyonetimi.Domain.Entities.Users", "Kullanici")
                         .WithMany("StokHareketleri")
                         .HasForeignKey("KullaniciId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Erpyonetimi.Domain.Entities.Parca", "Parca")
                         .WithMany("StokHareketleri")

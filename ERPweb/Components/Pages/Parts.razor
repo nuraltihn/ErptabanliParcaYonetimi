@@ -9,9 +9,11 @@
 @inject ITedarikciService TedarikciService
 @inject IRafService RafService
 @inject ILogService LogService
+@inject IDepoService DepoService
 @inject NavigationManager Navigation
 <h3>Parça Yönetimi</h3>
 <hr />
+
 <button class="btn btn-primary" @onclick="YeniParca">
     + Yeni Parça
 </button>
@@ -67,7 +69,7 @@
                 <td>@parca.MevcutStok</td>
                 <td>@parca.AlisFiyat</td>
                 <td>@parca.SatisFiyat</td>
-                <td>@parca.RafId</td>
+                <td>@parca.Raf?.RafKodu</td>
                 <td>
                     <button class="btn btn-warning btn-sm"
                             @onclick="() => Duzenle(parca)">
@@ -97,16 +99,23 @@
                     <button type="button" class="btn-close" @onclick="ModalKapat"></button>
                 </div>
                 <div class="modal-body">
+
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
                     <div class="mb-3">
-                        <label class="form-label">Parça Kodu</label>
+                        <label class="form-label">Parça Kodu *</label>
                         <input class="form-control" @bind="yeniParca.ParcaKodu" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Parça Adı</label>
+                        <label class="form-label">Parça Adı *</label>
                         <input class="form-control" @bind="yeniParca.ParcAdi" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Kategori</label>
+                        <label class="form-label">Kategori *</label>
                         <select class="form-select" @bind="yeniParca.KategoriId">
                             <option value="0">-- Kategori Seçin --</option>
                             @foreach (var kategori in kategoriler)
@@ -151,46 +160,66 @@
 							   @bind="yeniParca.Renk" />
                      </div>
                      <div class="mb-3">
-                         <label>Birim</label>
+                         <label>Birim *</label>
                          <input class="form-control"
                          @bind="yeniParca.Birim" />
                      </div>
 
                      <div class="mb-3">
-                         <label>Alış Fiyatı</label>
+                         <label>Alış Fiyatı *</label>
                          <input type="number" step="0.01"
                          class="form-control"
 							   @bind="yeniParca.AlisFiyat" />
 					</div>
 
                             <div class="mb-3">
-                                <label>Satış Fiyatı</label>
+                                <label>Satış Fiyatı *</label>
                                 <input type="number" step="0.01"
                                 class="form-control"
                                 @bind="yeniParca.SatisFiyat" />
                      </div>
                      <div class="mb-3">
-                         <label>Mevcut Stok</label>
+                         <label>Mevcut Stok *</label>
                          <input type="number"
                              class="form-control"
                              @bind="yeniParca.MevcutStok"/>
                      </div>
                      <div class="mb-3">
-                         <label>Minimum Stok</label>
+                         <label>Minimum Stok *</label>
                          <input type="number"
                              class="form-control"
                              @bind="yeniParca.MinimumStok" />
                      </div>
                      <div class="mb-3">
-                         <label>Raf</label>
-                         <select class="form-select" @bind="yeniParca.RafId">
-                             <option value ="">-- Raf Seçin --</option>
-                             @foreach (var raf in raflar)
-                             {
-                                 <option value="@raf.Id">
-                                     @raf.Id</option>
-							 }
-                         </select>
+                         <label>Depo *</label>
+                         <select class="form-select"
+                         @bind="secilenDepoId"
+                         @bind:after="DepoDegisti">
+                         <option value ="0">-- Depo Seçin --</option>
+                         @foreach (var depo in depolar)
+                            {
+                                <option value ="@depo.Id">
+                                @depo.Depaadi
+                                </option>
+                            }
+                        </select>
+                     </div>
+
+                     <div class="mb-3">
+                         <label>Raf *</label>
+                         <select class="form-select"
+                         @bind="yeniParca.RafId"
+                         disabled="@(secilenDepoId == 0)">
+
+                         <option value="0">--Raf Seçin --</option>
+                         @foreach (var raf in raflar.Where(x=>x.DepoId == secilenDepoId))
+                            {
+                                <option value="@raf.Id">
+                                    @raf.RafKodu
+                                </option>
+                            }
+
+                     </select>
                      </div>
                      <div class="mb-3">
                          <label>Açıklama</label>
@@ -208,17 +237,67 @@
         </div>
     </div>
 }
+@if (silmeModal)
+{
+    <div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Parça Silme</h5>
+                    <button type="button" class="btn-close"
+                    @onclick="SilmeyiIptalEt"></button>
+                </div>
+
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+
+                    <p>
+                        <strong>@silinecekParca?.ParcAdi</strong>
+                        adlı parçayı silmek istediğinize emin misiniz?
+                    </p>
+
+                    <div class="alert alert-warning">
+                        Bu işlem geri alınamaz.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" 
+                    @onclick="SilmeyiIptalEt">
+                        İptal
+                    </button>
+                    <button class="btn btn-danger" 
+                    @onclick="SilmeyiOnayla">
+                        Evet, Sil
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
 
 @code
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
     private string aramaMetni = "";
+    private bool silmeModal = false;
+    private Parca? silinecekParca;
+    private string hataMesaji = "";
     private int kategoriFiltresi = 0;
     private List<Parca> parcalar = new();
     private List<Kategori> kategoriler = new();
     private List<Tedarikci> tedarikciler = new();
     private List<Raflar> raflar = new();
+    private List<Depolar> depolar = new();
+    private int secilenDepoId = 0;
     private Parca yeniParca = new();
 
     private IEnumerable<Parca> FiltrelenmisParcalar
@@ -256,12 +335,15 @@
         kategoriler = KategoriService.GetAllKategori();
         tedarikciler = TedarikciService.GetAllTedarikci();
         raflar = RafService.GetAll();
+        depolar = DepoService.GetAll();
     }
 
     private void YeniParca()
     {
         yeniParca = new Parca();
+        secilenDepoId = 0;
         duzenlemeModu = false;
+        hataMesaji = "";
         showModal = true;
     }
 
@@ -269,9 +351,74 @@
     {
         showModal = false;
     }
-
     private void Kaydet()
     {
+        hataMesaji = "";
+
+        if (string.IsNullOrWhiteSpace(yeniParca.ParcaKodu))
+        {
+            hataMesaji = "Parça kodu boş bırakılamaz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniParca.ParcAdi))
+        {
+            hataMesaji = "Parça adı boş bırakılamaz.";
+            return;
+        }
+
+        if (yeniParca.KategoriId == 0)
+        {
+            hataMesaji = "Lütfen kategori seçiniz.";
+            return;
+        }
+
+        if (yeniParca.TedarikciId == 0)
+        {
+            hataMesaji = "Lütfen tedarikçi seçiniz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniParca.Birim))
+        {
+            hataMesaji = "Birim boş bırakılamaz.";
+            return;
+        }
+
+        if (yeniParca.AlisFiyat <= 0)
+        {
+            hataMesaji = "Alış fiyatı 0'dan büyük olmalıdır.";
+            return;
+        }
+
+        if (yeniParca.SatisFiyat <= 0)
+        {
+            hataMesaji = "Satış fiyatı 0'dan büyük olmalıdır.";
+            return;
+        }
+
+        if (yeniParca.MevcutStok < 0)
+        {
+            hataMesaji = "Mevcut stok 0'dan küçük olamaz.";
+            return;
+        }
+
+        if (yeniParca.MinimumStok < 0)
+        {
+            hataMesaji = "Minimum stok 0'dan küçük olamaz.";
+            return;
+        }
+        if (secilenDepoId == 0)
+        {
+            hataMesaji ="Lütfen depo seçiniz.";
+            return;
+        }
+
+        if (yeniParca.RafId == 0)
+        {
+            hataMesaji = "Lütfen raf seçiniz.";
+            return;
+        }
         if(duzenlemeModu)
         {
             ParcaService.UpdateParca(yeniParca);
@@ -296,6 +443,7 @@
         showModal = false;
         duzenlemeModu = false;
         yeniParca = new Parca();
+        secilenDepoId = 0;
 
     }
     private void Duzenle(Parca parca)
@@ -323,25 +471,66 @@
             RafId = parca.RafId,
             Aciklama = parca.Aciklama
         };
+        var raf = raflar.FirstOrDefault(x => x.Id == parca.RafId);
+        if(raf != null)
+        {
+            secilenDepoId = raf.DepoId;
+        }
+        else
+        {
+            secilenDepoId = 0;
+        }
 
         duzenlemeModu = true;
+        hataMesaji = "";
         showModal = true;
     }
     private void Sil(int id)
     {
-        var parca = ParcaService.GetById(id);
-        if (parca != null)
+        hataMesaji = "";
+        silinecekParca = ParcaService.GetById(id);
+
+        if (silinecekParca != null)
         {
-            ParcaService.RemoveParca(parca);
+            silmeModal = true;
+        }
+    }
+    private void SilmeyiIptalEt()
+    {
+        silmeModal= false;
+        silinecekParca = null;
+    }
+    private void SilmeyiOnayla()
+    {
+        if (silinecekParca == null)
+            return;
+
+        try
+        {
+            ParcaService.RemoveParca(silinecekParca);
+
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Parça Silme";
-            log.Aciklama = parca.ParcAdi + " adlı parça silindi";
+            log.Aciklama = silinecekParca.ParcAdi + " adlı parça silindi";
             LogService.Add(log);
 
             parcalar = ParcaService.GetAllParca();
-        }
 
+            hataMesaji = "";
+            silmeModal = false;
+            silinecekParca = null;
+        }
+        catch (Exception ex)
+        {
+            hataMesaji = ex.Message;
+        }
     }
+
+    private void DepoDegisti()
+    {
+        yeniParca.RafId = 0;
+    }
+
 }

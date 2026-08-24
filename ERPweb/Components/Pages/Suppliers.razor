@@ -11,6 +11,7 @@
 <button class="btn btn-primary" @onclick="YeniTedarikci">
     + Yeni Tedarikçi
 </button>
+
 <div class="mt-3 mb-3">
     <input class="form-control"
            placeholder="Tedarikçi kodu, firma adı veya yetkili kişi ara..."
@@ -20,6 +21,7 @@
 <hr />
 
 <table class="table table-striped">
+
     <thead>
         <tr>
             <th>Tedarikçi Kodu</th>
@@ -31,103 +33,262 @@
             <th>İşlemler</th>
         </tr>
     </thead>
+
     <tbody>
+
         @foreach (var tedarikci in FiltrelenmisTedarikciler)
         {
             <tr>
+
                 <td>@tedarikci.TedarikciKodu</td>
                 <td>@tedarikci.FirmaAdi</td>
                 <td>@tedarikci.YetkiliKisi</td>
                 <td>@tedarikci.Tel</td>
                 <td>@tedarikci.Email</td>
                 <td>@tedarikci.VergiNo</td>
+
                 <td>
-                    <button class="btn btn-warning btn-sm" 
-                    @onclick="() => Duzenle(tedarikci)">
+                    <button class="btn btn-warning btn-sm"
+                            @onclick="() => Duzenle(tedarikci)">
                         Düzenle
                     </button>
-                    <button class="btn btn-danger btn-sm ms-2" 
-                    @onclick="() => Sil(tedarikci.Id)">
+                    <button class="btn btn-danger btn-sm ms-2"
+                            @onclick="() => Sil(tedarikci.Id)">
                         Sil
                     </button>
+
                 </td>
+
             </tr>
         }
+
     </tbody>
+
 </table>
+
 
 @if (showModal)
 {
-    <div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color: rgba(0,0,0,0.5);">
+
         <div class="modal-dialog">
+
             <div class="modal-content">
 
                 <div class="modal-header">
+
                     <h5 class="modal-title">
-                        @(duzenlemeModu ? "Tedarikçi Düzenle" : "Yeni Tedarikçi")
+                        @(duzenlemeModu
+                            ? "Tedarikçi Düzenle"
+                            : "Yeni Tedarikçi")
                     </h5>
-                    <button type="button" class="btn-close" 
-                    @onclick="ModalKapat"></button>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="ModalKapat">
+                    </button>
+
                 </div>
+
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tedarikçi Kodu</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.TedarikciKodu" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Firma Adı</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.FirmaAdi" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Yetkili Kişi</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.YetkiliKisi" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Telefon</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.Tel" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.Email" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Adres</label>
-                        <textarea class="form-control" rows="3" 
-                        @bind="yeniTedarikci.Adres"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Fax</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.Fax" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Vergi No</label>
-                        <input class="form-control" 
-                        @bind="yeniTedarikci.VergiNo" />
-                    </div>
-                </div>
 
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" 
-                    @onclick="ModalKapat">İptal</button>
-                    <button class="btn btn-success" 
-                    @onclick="Kaydet">Kaydet</button>
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Tedarikçi Kodu *
+                        </label>
+                        <input class="form-control"
+                               @bind="yeniTedarikci.TedarikciKodu" />
+
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Firma Adı *
+                        </label>
+                        <input class="form-control"
+                               @bind="yeniTedarikci.FirmaAdi" />
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Yetkili Kişi *
+                        </label>
+
+                        <input class="form-control"
+                               @bind="yeniTedarikci.YetkiliKisi" />
+
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Telefon *
+                        </label>
+                        <input class="form-control"
+                               @bind="yeniTedarikci.Tel" />
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email *
+                        </label>
+
+                        <input class="form-control"
+                               @bind="yeniTedarikci.Email" />
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Adres
+                        </label>
+
+                        <textarea class="form-control"
+                                  rows="3"
+                                      @bind="yeniTedarikci.Adres">
+                        </textarea>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Fax
+                            </label>
+
+                            <input class="form-control"
+                                   @bind="yeniTedarikci.Fax" />
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Vergi No *
+                            </label>
+
+                            <input class="form-control"
+                                   @bind="yeniTedarikci.VergiNo" />
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+
+                        <button class="btn btn-secondary"
+                                @onclick="ModalKapat">
+                            İptal
+                        </button>
+
+                        <button class="btn btn-success"
+                                @onclick="Kaydet">
+                            Kaydet
+                        </button>
+
+                    </div>
+
                 </div>
 
             </div>
+
         </div>
-    </div>
-}
+    }
+
+
+    @if (silmeModal)
+    {
+        <div class="modal d-block"
+             tabindex="-1"
+             style="background-color:rgba(0,0,0,0.5);">
+
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">
+                            Tedarikçi Silme
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                @onclick="SilmeyiIptalEt">
+                        </button>
+
+                    </div>
+
+
+                    <div class="modal-body">
+                        @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+
+                        <p>
+                            <strong>
+                                @silinecekTedarikci?.FirmaAdi
+                            </strong>
+
+                            adlı tedarikçiyi silmek istediğinize emin misiniz?
+                        </p>
+
+                    </div>
+
+
+                    <div class="modal-footer">
+
+                        <button class="btn btn-secondary"
+                                @onclick="SilmeyiIptalEt">
+                            İptal
+                        </button>
+
+                        <button class="btn btn-danger"
+                                @onclick="SilmeyiOnayla">
+                            Evet, Sil
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
 @code
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
+    private bool silmeModal = false;
+    private Tedarikci? silinecekTedarikci;
+    private string hataMesaji = "";
     private List<Tedarikci> tedarikciler = new();
     private Tedarikci yeniTedarikci = new();
     private string aramaMetni = "";
@@ -139,9 +300,9 @@
             Navigation.NavigateTo("/dashboard");
             return;
         }
-
         tedarikciler = TedarikciService.GetAllTedarikci();
     }
+
 
     private IEnumerable<Tedarikci> FiltrelenmisTedarikciler
     {
@@ -149,13 +310,19 @@
         {
             var sonuc = tedarikciler;
 
-            if (aramaMetni != "")
+            if (!string.IsNullOrWhiteSpace(aramaMetni))
             {
                 string arama = aramaMetni.ToLower();
+
                 sonuc = sonuc.Where(x =>
-                    x.TedarikciKodu.ToLower().Contains(arama) ||
-                    x.FirmaAdi.ToLower().Contains(arama) ||
-                    x.YetkiliKisi.ToLower().Contains(arama)
+                    (x.TedarikciKodu != null &&
+                     x.TedarikciKodu.ToLower().Contains(arama))
+                    ||
+                    (x.FirmaAdi != null &&
+                     x.FirmaAdi.ToLower().Contains(arama))
+                    ||
+                    (x.YetkiliKisi != null &&
+                     x.YetkiliKisi.ToLower().Contains(arama))
                 ).ToList();
             }
 
@@ -163,57 +330,111 @@
         }
     }
 
+
     private void YeniTedarikci()
     {
         yeniTedarikci = new Tedarikci();
         duzenlemeModu = false;
+        hataMesaji = "";
         showModal = true;
     }
+
 
     private void ModalKapat()
     {
         showModal = false;
         duzenlemeModu = false;
+        hataMesaji = "";
     }
+
 
     private void Kaydet()
     {
+        hataMesaji = "";
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.TedarikciKodu))
+        {
+            hataMesaji =
+                "Tedarikçi kodu boş bırakılamaz.";
+
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.FirmaAdi))
+        {
+            hataMesaji =
+                "Firma adı boş bırakılamaz.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.YetkiliKisi))
+        {
+            hataMesaji =
+                "Yetkili kişi boş bırakılamaz.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.Tel))
+        {
+            hataMesaji =
+                "Telefon boş bırakılamaz.";
+
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.Email))
+        {
+            hataMesaji =
+                "Email boş bırakılamaz.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(yeniTedarikci.VergiNo))
+        {
+            hataMesaji =
+                "Vergi numarası boş bırakılamaz.";
+            return;
+        }
         if (duzenlemeModu)
         {
             TedarikciService.UpdateTedarikci(yeniTedarikci);
 
             Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.KullaniciId =
+                UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
-            log.Islem = "Tedarikçi Düzenleme";
-            log.Aciklama = yeniTedarikci.FirmaAdi + " adlı tedarikçi düzenlendi";
+            log.Islem =
+                "Tedarikçi Düzenleme";
+            log.Aciklama =
+                yeniTedarikci.FirmaAdi +
+                " adlı tedarikçi düzenlendi";
+
             LogService.Add(log);
         }
         else
         {
             TedarikciService.AddTedarikci(yeniTedarikci);
-
             Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.KullaniciId =
+                UserSession.CurrentUser.Id;
+
             log.Tarih = DateTime.Now;
-            log.Islem = "Tedarikçi Ekleme";
-            log.Aciklama = yeniTedarikci.FirmaAdi + " adlı tedarikçi eklendi";
+            log.Islem =
+                "Tedarikçi Ekleme";
+            log.Aciklama =
+                yeniTedarikci.FirmaAdi +
+                " adlı tedarikçi eklendi";
+
             LogService.Add(log);
         }
-
-        tedarikciler = TedarikciService.GetAllTedarikci();
-
+        tedarikciler =TedarikciService.GetAllTedarikci();
         showModal = false;
         duzenlemeModu = false;
         yeniTedarikci = new Tedarikci();
+        hataMesaji = "";
     }
+
 
     private void Duzenle(Tedarikci tedarikci)
     {
         yeniTedarikci = new Tedarikci
         {
             Id = tedarikci.Id,
-            TedarikciKodu = tedarikci.TedarikciKodu,
+            TedarikciKodu =tedarikci.TedarikciKodu,
             FirmaAdi = tedarikci.FirmaAdi,
             YetkiliKisi = tedarikci.YetkiliKisi,
             Tel = tedarikci.Tel,
@@ -224,23 +445,53 @@
         };
 
         duzenlemeModu = true;
+        hataMesaji = "";
         showModal = true;
     }
 
+
     private void Sil(int id)
     {
-        var tedarikci = tedarikciler.FirstOrDefault(x => x.Id == id);
+        hataMesaji = "";
+        silinecekTedarikci =
+            tedarikciler.FirstOrDefault(x => x.Id == id);
 
-        if (tedarikci != null)
+        if (silinecekTedarikci != null)
         {
-            TedarikciService.DeleteTedarikci(id);
-            Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
-            log.Tarih = DateTime.Now;
-            log.Islem = "Tedarikçi Silme";
-            log.Aciklama = tedarikci.FirmaAdi + " adlı tedarikçi silindi";
-            LogService.Add(log);
-            tedarikciler = TedarikciService.GetAllTedarikci();
+            silmeModal = true;
+        }
+    }
+    private void SilmeyiIptalEt()
+    {
+        silmeModal = false;
+        silinecekTedarikci = null;
+    }
+
+
+    private void SilmeyiOnayla()
+    {
+        if (silinecekTedarikci == null)
+            return;
+        {
+            try
+            {
+                TedarikciService.DeleteTedarikci(silinecekTedarikci.Id);
+                Log log = new Log();
+                log.KullaniciId = UserSession.CurrentUser.Id;
+                log.Tarih = DateTime.Now;
+                log.Islem = "Tedarikçi Silme";
+                log.Aciklama = silinecekTedarikci.FirmaAdi +
+                    " adlı tedarikçi silindi";
+                LogService.Add(log);
+                tedarikciler = TedarikciService.GetAllTedarikci();
+                hataMesaji = "";
+                silmeModal = false;
+                silinecekTedarikci = null;
+            }
+            catch(Exception ex)
+            {
+                hataMesaji = ex.Message;   
+            }
         }
     }
 }

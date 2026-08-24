@@ -24,7 +24,20 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Raflar raf)
         {
-            _context.Raflar.Remove(raf);
+            var dbRaf=_context.Raflar
+            .Include(r=> r.Parcalar)
+            .FirstOrDefault(r => r.Id == raf.Id);
+            if (dbRaf== null)
+            {
+                throw new Exception("Raf bulunamadı.");
+            }
+            if (dbRaf.Parcalar.Any())
+            {
+                throw new Exception(
+                 "Bu raf silinemez. Rafa bağlı parçalar bulunmaktadır.");
+            }
+
+            _context.Raflar.Remove(dbRaf);
             _context.SaveChanges();
         }
 

@@ -2,11 +2,13 @@
 @rendermode InteractiveServer
 
 @using Erpyonetimi.Domain.Entities
-@using Erpyonetimi.Application.Services.Interfaces
 @using Erpyonetimi.Data.Helpers
+@using Erpyonetimi.Application.Services.Interfaces
+
 
 @inject IRafService RafService
 @inject IDepoService DepoService
+@inject ILogService LogService
 @inject NavigationManager Navigation
 
 <h3>Raf Yönetimi</h3>
@@ -14,6 +16,13 @@
 @onclick="YeniRaf">
 +Yeni Raf
 </button>
+<div class="mt-3 mb-3">
+	<input class="form-control"
+	placeholder="Raf kodu ara..."
+	@bind="aramaMetni"
+	@bind:event="oninput" />
+
+</div>
 
 <table class="table table-striped mt-3">
 	<thead>
@@ -24,7 +33,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var raf in raflar)
+		@foreach (var raf in raflar.Where(x => x.RafKodu.ToLower().Contains(aramaMetni.ToLower())))
 		{
 			<tr>
 				<td>@raf.RafKodu</td>
@@ -60,25 +69,35 @@
 				@onclick="ModalKapat">
 			</button>
 		</div>
+
 		<div class="modal-body">
+
 			<div class="mb-3">
-				<label>Depo</label>
+				<label>Depo *</label>
+
+        @if (!string.IsNullOrEmpty(hataMesaji))
+		{
+		<div class="alert alert-danger">
+		@hataMesaji
+			</div>
+		}
+
 				<select class="form-select"
 				@bind="yeniRaf.DepoId">
 			<option value="0">
 				--DepoSeçin--
 			</option>
 			@foreach (var depo in depolar)
-							{
-								<option value="@depo.Id">
-									@depo.Depaadi
-								</option>
-							}
-						</select>
+		{
+		<option value="@depo.Id">
+		@depo.Depaadi
+		</option>
+		}
+		</select>
 			</div>
 
 			<div class="mb-3">
-				<label>Raf Kodu</label>
+				<label>Raf Kodu *</label>
 				<input class="form-control"
 				@bind="yeniRaf.RafKodu" />
 			</div>
@@ -98,10 +117,70 @@ Kaydet
 </div>
 </div>
 }
+@if (silmeModal)
+{
+	<div class="modal d-block"
+		 tabindex="-1"
+		 style="background-color: rgba(0,0,0,0.5);">
+
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title">Raf Silme</h5>
+
+					<button type="button"
+							class="btn-close"
+							@onclick="SilmeyiIptalEt">
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					@if (!string.IsNullOrEmpty(hataMesaji))
+					{
+						<div class="alert alert-danger">
+							@hataMesaji
+						</div>
+					}
+
+					<p>
+						<strong>@silinecekRaf?.RafKodu</strong>
+						adlı rafı silmek istediğinize emin misiniz?
+					</p>
+
+					<div class="alert alert-warning">
+						Bu işlem geri alınamaz.
+					</div>
+
+				</div>
+
+				<div class="modal-footer">
+
+					<button class="btn btn-secondary"
+							@onclick="SilmeyiIptalEt">
+						İptal
+					</button>
+
+					<button class="btn btn-danger"
+							@onclick="SilmeyiOnayla">
+						Evet, Sil
+					</button>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+}
 @code
 {
 	private bool showModal = false;
 	private bool duzenlemeModu = false;
+	private bool silmeModal = false;
+	private Raflar? silinecekRaf;
+	private string aramaMetni = "";
+	private string hataMesaji = "";
 	private List<Raflar> raflar =
 	new();
 	private List<Depolar> depolar = new();
@@ -122,27 +201,52 @@ Kaydet
 	{
 		yeniRaf = new Raflar();
 		duzenlemeModu = false;
+		hataMesaji = "";
 		showModal = true;
 	}
 	private void ModalKapat()
 	{
 		showModal = false;
+		hataMesaji = "";
 	}
 
 	private void Kaydet()
 	{
-		if (yeniRaf.DepoId == 0)
+		hataMesaji = "";
+		if(yeniRaf.DepoId == 0)
+		{
+			hataMesaji = "Lütfen depo seçiniz.";
 			return;
-		if (string.IsNullOrWhiteSpace(yeniRaf.RafKodu))
+		}
+		if(string.IsNullOrWhiteSpace(yeniRaf.RafKodu))
+		{
+			hataMesaji = "Raf kodu boş bırakılamaz.";
 			return;
-		if(duzenlemeModu)
+		}
+
+		if (duzenlemeModu)
 		{
 			RafService.UpdateRaf(yeniRaf);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Raf Düzenleme";
+			log.Aciklama = yeniRaf.RafKodu + " adlı raf düzenlendi";
+			LogService.Add(log);
 		}
 		else
 		{
 			RafService.AddRaf(yeniRaf);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Raf Ekleme";
+			log.Aciklama = yeniRaf.RafKodu + " adlı raf eklendi";
+			LogService.Add(log);
 		}
+
 		raflar = RafService.GetAll();
 		showModal = false;
 		duzenlemeModu = false;
@@ -161,11 +265,46 @@ Kaydet
 	}
 	private void Sil(int id)
 	{
-	var raf = RafService.GetById(id);
-	if( raf != null)
-	{
-		RafService.RemoveRaf(raf);
-		raflar = RafService.GetAll();
+		hataMesaji = "";
+
+		silinecekRaf = raflar.FirstOrDefault(x => x.Id == id);
+
+		if (silinecekRaf != null)
+		{
+			silmeModal = true;
+		}
 	}
-}
+	private void SilmeyiIptalEt()
+	{
+		silmeModal= false;
+		silinecekRaf= null;
+		hataMesaji = "";
+	}
+	private void SilmeyiOnayla()
+	{
+		if (silinecekRaf == null)
+			return;
+
+		try
+		{
+			RafService.RemoveRaf(silinecekRaf);
+
+			Log log = new Log();
+			log.KullaniciId = UserSession.CurrentUser.Id;
+			log.Tarih = DateTime.Now;
+			log.Islem = "Raf Silme";
+			log.Aciklama = silinecekRaf.RafKodu + " adlı raf silindi";
+			LogService.Add(log);
+
+			raflar = RafService.GetAll();
+
+			hataMesaji = "";
+			silmeModal = false;
+			silinecekRaf = null;
+		}
+		catch (Exception ex)
+		{
+			hataMesaji = ex.Message;
+		}
+	}
 }

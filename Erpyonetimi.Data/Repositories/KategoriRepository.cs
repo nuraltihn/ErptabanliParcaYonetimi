@@ -23,8 +23,8 @@ namespace Erpyonetimi.Data.Repositories
             if (!DatabaseHelper.IsConnected)
                 return new List<Kategori>();
 
-                return _context.Kategoriler.ToList();
-            
+            return _context.Kategoriler.ToList();
+
         }
         public Kategori? GetById(int id)
         {
@@ -53,20 +53,30 @@ namespace Erpyonetimi.Data.Repositories
         public void Delete(Kategori kategori)
         {
             var dbKategori = _context.Kategoriler
-     .Include(k => k.Parcalar)
-     .FirstOrDefault(k => k.Id == kategori.Id);
+                .Include(k => k.Parcalar)
+                    .ThenInclude(p => p.StokHareketleri)
+                .Include(k => k.Parcalar)
+                    .ThenInclude(p => p.SiparisDetaylari)
+                .FirstOrDefault(k => k.Id == kategori.Id);
 
             if (dbKategori == null)
             {
                 throw new Exception("Kategori bulunamadı.");
             }
-
-            if (dbKategori.Parcalar.Any())
+            if (dbKategori.Parcalar.Any(p => p.StokHareketleri.Any()))
             {
-                throw new Exception("Bu kategori kullanımda.");
+                throw new Exception(
+                    "Bu kategori silinemez. Kategoriye bağlı işlem görmüş parçalar bulunmaktadır.");
+            }
+            if (dbKategori.Parcalar.Any(p => p.SiparisDetaylari.Any()))
+            {
+                throw new Exception(
+                    "Bu kategori silinemez. Kategoriye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
             }
 
+            
             _context.Kategoriler.Remove(dbKategori);
+
             _context.SaveChanges();
         }
     }

@@ -57,7 +57,30 @@ namespace Erpyonetimi.Data.Repositories
         }
         public void Delete(Tedarikci tedarikci)
         {
+            var dbTedarikci = _context.Tedarikciler
+                .Include(t => t.Parcalar)
+                .ThenInclude(p=> p.StokHareketleri)
+                .Include(t=>t.Parcalar)
+                .ThenInclude(p =>p.SiparisDetaylari)
+               .FirstOrDefault(t => t.Id == tedarikci.Id);
+
+            if(dbTedarikci == null)
+            {
+                throw new Exception("Tedarikci bulunamadı.");
+            }
+
+            if(dbTedarikci.Parcalar.Any(p => p.StokHareketleri.Any()))
+            {
+                throw new Exception ("Bu tedarikçi silinemez. Tedarikçiye bağlı işlem görmüş parçalar bulunmaktadır.");
+            }
+
+            if (dbTedarikci.Parcalar.Any(p => p.SiparisDetaylari.Any()))
+            {
+                throw new Exception(
+                    "Bu tedarikçi silinemez. Tedarikçiye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
+            }
             _context.Tedarikciler.Remove(tedarikci);
+
             _context.SaveChanges();
         }
 

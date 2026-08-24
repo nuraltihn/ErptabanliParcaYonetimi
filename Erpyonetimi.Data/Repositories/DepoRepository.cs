@@ -5,6 +5,7 @@ using Erpyonetimi.Context;
 using Erpyonetimi.Data.Helpers;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 namespace Erpyonetimi.Data.Repositories
 {
     public class DepoRepository : IDepoRepository
@@ -23,12 +24,46 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Depolar depo)
         {
-            var silinecek =_context.Depolar.FirstOrDefault(x=>x.Id== depo.Id);
-            if (silinecek != null)
+            var dbDepo = _context.Depolar
+                .Include(d => d.Raflar)
+                .ThenInclude(r => r.Parcalar)
+                .ThenInclude(p => p.StokHareketleri)
+                .Include(d => d.Raflar)
+                .ThenInclude(r => r.Parcalar)
+                .ThenInclude(p => p.SiparisDetaylari)
+                .FirstOrDefault(d => d.Id == depo.Id);
+
+            if (dbDepo == null)
             {
-                _context.Depolar.Remove(silinecek);
-                _context.SaveChanges();
+                throw new Exception("Depo bulunamadı.");
             }
+
+            if (dbDepo.Raflar
+                .SelectMany(r => r.Parcalar)
+                .Any(p => p.SiparisDetaylari.Any()))
+            {
+                throw new Exception(
+                    "Bu depo silinemez. Depoya bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
+            }
+
+            if (dbDepo.Raflar
+                .SelectMany(r => r.Parcalar)
+                .Any(p => p.StokHareketleri.Any()))
+            {
+                throw new Exception(
+                    "Bu depo silinemez. Depoya bağlı işlem görmüş parçalar bulunmaktadır.");
+            }
+
+            if (dbDepo.Raflar
+                .SelectMany(r => r.Parcalar)
+                .Any())
+            {
+                throw new Exception(
+                    "Bu depo silinemez. Depoya bağlı parçalar bulunmaktadır.");
+            }
+
+            _context.Depolar.Remove(dbDepo);
+            _context.SaveChanges();
         }
 
         public List<Depolar> GetAll()

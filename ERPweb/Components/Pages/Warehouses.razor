@@ -1,8 +1,10 @@
 ﻿@page "/warehouses"
 @rendermode InteractiveServer
 @using Erpyonetimi.Domain.Entities
+@using Erpyonetimi.Data.Helpers;
 @using Erpyonetimi.Application.Services.Interfaces
 @inject IDepoService DepoService
+@inject ILogService LogService
 
 <h3>Depo Yönetimi</h3>
 
@@ -10,7 +12,12 @@
 @onclick="YeniDepo">
     +Yeni Depo
 </button>
-
+<div class="mt-3 mb-3">
+    <input class="form-control"
+    placeholder="Depo adı veya konum ara..."
+    @bind="aramaMetni"
+    @bind:event="oninput" />
+</div>
 <table class="table table-striped mt-3">
     <thead>
         <tr>
@@ -20,7 +27,8 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var depo in depolar)
+        @foreach (var depo in depolar.Where(x=> x.Depaadi.ToLower().Contains(aramaMetni.ToLower())||
+        x.Konum.ToLower().Contains(aramaMetni.ToLower())))
         {
     <tr>
     <td>@depo.Depaadi</td>
@@ -65,14 +73,22 @@
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label>Depo Adı</label>
+                        <label>Depo Adı *</label>
+
+
+                        @if (!string.IsNullOrEmpty(hataMesaji))
+                        {
+                            <div class="alert alert-danger">
+                                @hataMesaji
+                            </div>
+                        }
 
                         <input class="form-control"
                                @bind="yeniDepo.Depaadi" />
                     </div>
 
                     <div class="mb-3">
-                        <label>Konum</label>
+                        <label>Konum *</label>
 
                         <input class="form-control"
                                @bind="yeniDepo.Konum" />
@@ -97,10 +113,72 @@
     </div>
 }
 
+@if (silmeModal)
+{
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Depo Silme
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="SilmeyiIptalEt">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+
+                    <p>
+                        <strong>
+                            @silinecekDepo?.Depaadi
+                        </strong>
+                        adlı depoyu silmek istediğinize emin misiniz?
+                    </p>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-secondary"
+                            @onclick="SilmeyiIptalEt">
+                        İptal
+                    </button>
+
+                    <button class="btn btn-danger"
+                            @onclick="SilmeyiOnayla">
+                        Evet, Sil
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
 @code
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
+    private string aramaMetni = "";
+    private bool silmeModal = false;
+    private Depolar? silinecekDepo;
+    private string hataMesaji = "";
+
     private List<Depolar> depolar = new();
     private Depolar yeniDepo = new();
 
@@ -113,23 +191,52 @@
     {
         yeniDepo = new Depolar();
         duzenlemeModu = false;
+        hataMesaji = "";
         showModal = true;
     }
 
     private void ModalKapat()
     {
         showModal = false;
+        hataMesaji = "";
     }
 
     private void Kaydet()
     {
+        hataMesaji = "";
+
+        if (string.IsNullOrWhiteSpace(yeniDepo.Depaadi))
+        {
+            hataMesaji = "Depo adı boş bırakılamaz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniDepo.Konum))
+        {
+            hataMesaji = "Konum boş bırakılamaz.";
+            return;
+        }
         if (duzenlemeModu)
         {
             DepoService.UpdateDepo(yeniDepo);
+
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Depo Düzenleme";
+            log.Aciklama = yeniDepo.Depaadi + " adlı depo düzenlendi";
+            LogService.Add(log);
         }
         else
         {
             DepoService.AddDepo(yeniDepo);
+
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Depo Ekleme";
+            log.Aciklama = yeniDepo.Depaadi + " adlı depo eklendi";
+            LogService.Add(log);
         }
 
         depolar = DepoService.GetAll();
@@ -152,11 +259,46 @@
 
     private void Sil(int id)
     {
-        var depo = DepoService.GetById(id);
-        if (depo != null)
+        hataMesaji = "";
+        silinecekDepo = depolar.FirstOrDefault(x => x.Id == id);
+
+        if(silinecekDepo != null)
         {
-            DepoService.DeleteDepo(depo);
+            silmeModal = true;
+        }
+    }
+    private void SilmeyiIptalEt()
+    {
+        silmeModal = false;
+        silinecekDepo = null;
+        hataMesaji = "";
+    }
+    private void SilmeyiOnayla()
+    {
+        if (silinecekDepo == null)
+            return;
+        try
+        {
+            DepoService.DeleteDepo(silinecekDepo);
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Depo Silme";
+            log.Aciklama = silinecekDepo.Depaadi
+            + "adlı depo silindi";
+            LogService.Add(log);
             depolar = DepoService.GetAll();
+            hataMesaji = "";
+            silmeModal = false;
+            silinecekDepo = null;
+        }
+        catch (Exception ex)
+        {
+            hataMesaji = ex.Message;
         }
     }
 }
+
+   
+
+

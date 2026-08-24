@@ -23,14 +23,23 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Musteri musteri)
         {
-            var silinecek = _context.Musteriler.FirstOrDefault(x=>x.Id == musteri.Id);
-            if(silinecek != null)
-            {
-            _context.Musteriler.Remove(silinecek);
-            _context.SaveChanges();
+            var dbMusteri = _context.Musteriler
+                .Include(m => m.Siparisler)
+                .FirstOrDefault(m => m.Id == musteri.Id);
 
+            if (dbMusteri == null)
+            {
+                throw new Exception("Müşteri bulunamadı.");
             }
-            
+
+            if (dbMusteri.Siparisler.Any())
+            {
+                throw new Exception(
+                    "Bu müşteri silinemez. Müşteriye bağlı siparişler bulunmaktadır.");
+            }
+
+            _context.Musteriler.Remove(dbMusteri);
+            _context.SaveChanges();
         }
 
         public List<Musteri> GetAll()

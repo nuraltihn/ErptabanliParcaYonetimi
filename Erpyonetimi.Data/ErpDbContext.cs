@@ -55,25 +55,25 @@ namespace Erpyonetimi.Context
                 .HasOne(r => r.Depo)
                 .WithMany(d => d.Raflar)
                 .HasForeignKey(r => r.DepoId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Parca>()
                 .HasOne(p => p.Kategori)
                 .WithMany(k => k.Parcalar)
                 .HasForeignKey(p => p.KategoriId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Parca>()
                 .HasOne(p => p.Tedarikci)
                 .WithMany(t => t.Parcalar)
                 .HasForeignKey(p => p.TedarikciId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Parca>()
                 .HasOne(p => p.Raf)
                 .WithMany(r => r.Parcalar)
                 .HasForeignKey(p => p.RafId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StokHareket>()
                 .HasOne(sh => sh.Parca)
@@ -85,7 +85,7 @@ namespace Erpyonetimi.Context
                 .HasOne(sh => sh.Kullanici)
                 .WithMany(u => u.StokHareketleri)
                 .HasForeignKey(sh => sh.KullaniciId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<StokHareket>()
                 .HasOne(sh => sh.Depo)
@@ -115,7 +115,7 @@ namespace Erpyonetimi.Context
                 .HasOne(l => l.Kullanici)
                 .WithMany()
                 .HasForeignKey(l => l.KullaniciId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

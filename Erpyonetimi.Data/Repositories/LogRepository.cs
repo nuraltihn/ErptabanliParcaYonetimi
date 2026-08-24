@@ -16,6 +16,16 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Add(Log log)
         {
+            if(log.KullaniciId.HasValue)
+            {
+                var kullanici = _context.Users
+                    .FirstOrDefault(x => x.Id == log.KullaniciId.Value);
+
+                if (kullanici!= null)
+                {
+                    log.KullaniciAdSoyad = kullanici.AdSoyad;
+                }
+            }
             _context.Loglar.Add(log);
             _context.SaveChanges();
         }

@@ -10,6 +10,7 @@
 
 <h3>Kullanıcı Yönetimi</h3>
 <hr />
+
 <button class="btn btn-primary" @onclick="YeniKullanici">
     + Yeni Kullanıcı
 </button>
@@ -17,10 +18,11 @@
 <div class="row mt-3 mb-3">
     <div class="col-md-8">
         <input class="form-control"
-        placeholder=" Ad Soyad veya kullanıcı adı ara..."
-        @bind="aramaMetni"
-        @bind:event="oninput"/>
+               placeholder="Ad Soyad veya kullanıcı adı ara..."
+               @bind="aramaMetni"
+               @bind:event="oninput" />
     </div>
+
     <div class="col-md-4">
         <select class="form-select" @bind="rolFiltresi">
             <option value="0">Tüm Roller</option>
@@ -33,7 +35,10 @@
 
 @if (showModal)
 {
-    <div class="modal d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
+
         <div class="modal-dialog">
             <div class="modal-content">
 
@@ -41,36 +46,70 @@
                     <h5 class="modal-title">
                         @(duzenlemeModu ? "Kullanıcı Düzenle" : "Yeni Kullanıcı")
                     </h5>
-                    <button type="button" class="btn-close" @onclick="ModalKapat"></button>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="ModalKapat">
+                    </button>
                 </div>
 
                 <div class="modal-body">
 
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+                    
                     <div class="mb-3">
-                        <label class="form-label">Ad Soyad</label>
+                        <label class="form-label">Ad Soyad *</label>
+
                         <input class="form-control"
                                @bind="yeniUser.AdSoyad" />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Kullanıcı Adı</label>
+                        <label class="form-label">Kullanıcı Adı *</label>
+
                         <input class="form-control"
                                @bind="yeniUser.KulAd" />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Şifre</label>
+                        <label class="form-label">Şifre *</label>
+
                         <input type="password"
                                class="form-control"
                                @bind="yeniUser.Sifre" />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Rol</label>
-                        <select class="form-select" @bind="yeniUser.RolId">
+                        <label class="form-label">Telefon</label>
+
+                        <input class="form-control"
+                               @bind="yeniUser.Tel" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+
+                        <input type="email"
+                               class="form-control"
+                               @bind="yeniUser.Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Rol *</label>
+
+                        <select class="form-select"
+                                @bind="yeniUser.RolId">
+
+                            <option value="0">Rol Seçiniz</option>
                             <option value="1">Admin</option>
                             <option value="2">Depo</option>
                             <option value="3">Satış</option>
+
                         </select>
                     </div>
 
@@ -95,12 +134,67 @@
     </div>
 }
 
+@if (silmeModal && silinecekUser != null)
+{
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Kullanıcı Sil</h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="SilmeModalKapat">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+                    <p>
+                        <strong>@silinecekUser.AdSoyad</strong>
+                        adlı kullanıcıyı silmek istediğinize emin misiniz?
+                    </p>
+
+                    <div class="alert alert-warning">
+                        Bu işlem geri alınamaz.
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-secondary"
+                            @onclick="SilmeModalKapat">
+                        İptal
+                    </button>
+
+                    <button class="btn btn-danger"
+                            @onclick="SilmeyiOnayla">
+                        Evet, Sil
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
 <hr />
 
 <table class="table table-striped">
 
     <thead>
-
         <tr>
             <th>Ad Soyad</th>
             <th>Kullanıcı Adı</th>
@@ -109,7 +203,6 @@
             <th>Email</th>
             <th>İşlemler</th>
         </tr>
-
     </thead>
 
     <tbody>
@@ -117,18 +210,18 @@
         @foreach (var user in FiltrelenmisKullanicilar)
         {
             <tr>
+
                 <td>@user.AdSoyad</td>
                 <td>@user.KulAd</td>
                 <td>@user.Rol?.RolAdi</td>
                 <td>@user.Tel</td>
                 <td>@user.Email</td>
-                <td>
 
+                <td>
                     <button class="btn btn-warning btn-sm"
                             @onclick="() => Duzenle(user)">
                         Düzenle
                     </button>
-
                     <button class="btn btn-danger btn-sm ms-2"
                             @onclick="() => Sil(user.Id)">
                         Sil
@@ -136,7 +229,6 @@
                 </td>
             </tr>
         }
-
     </tbody>
 </table>
 
@@ -144,20 +236,22 @@
 {
     private bool showModal = false;
     private bool duzenlemeModu = false;
+    private bool silmeModal = false;
+    private Users? silinecekUser;
     private string aramaMetni = "";
+    private string hataMesaji = "";
     private int rolFiltresi = 0;
-
     private List<Users> users = new();
-
     private Users yeniUser = new();
 
     protected override void OnInitialized()
     {
-        if(!UserSession.IsAdmin)
+        if (!UserSession.IsAdmin)
         {
             Navigation.NavigateTo("/dashboard");
             return;
         }
+
         users = UserService.GetAllUsers();
     }
 
@@ -165,62 +259,123 @@
     {
         duzenlemeModu = false;
         yeniUser = new Users();
+        hataMesaji = "";
         showModal = true;
     }
 
     private void ModalKapat()
     {
         showModal = false;
+        hataMesaji = "";
+        yeniUser = new Users();
     }
 
     private void Kaydet()
     {
+        hataMesaji = "";
+
+        if (string.IsNullOrWhiteSpace(yeniUser.AdSoyad))
+        {
+            hataMesaji = "Ad Soyad alanı boş bırakılamaz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniUser.KulAd))
+        {
+            hataMesaji = "Kullanıcı adı boş bırakılamaz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniUser.Sifre))
+        {
+            hataMesaji = "Şifre boş bırakılamaz.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(yeniUser.Email))
+        {
+            hataMesaji = "E-posta alanı boş bırakılamaz.";
+            return;
+        }
+
+        if (yeniUser.RolId == 0)
+        {
+            hataMesaji = "Lütfen bir rol seçiniz.";
+            return;
+        }
+
         if (duzenlemeModu)
         {
             UserService.UpdateUser(yeniUser);
+
             Log log = new Log();
+
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Kullanıcı Düzenleme";
             log.Aciklama = yeniUser.AdSoyad + " adlı kullanıcı düzenlendi";
+
             LogService.Add(log);
         }
         else
         {
             UserService.AddUser(yeniUser);
+
             Log log = new Log();
+
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Kullanıcı Ekleme";
             log.Aciklama = yeniUser.AdSoyad + " adlı kullanıcı eklendi";
+
             LogService.Add(log);
         }
 
         users = UserService.GetAllUsers();
-
         showModal = false;
         duzenlemeModu = false;
-
         yeniUser = new Users();
     }
 
     private void Sil(int id)
     {
-        var user = users.FirstOrDefault(x => x.Id == id);
-
-        if (user != null)
+        silinecekUser = users.FirstOrDefault(x => x.Id == id);
+        if (silinecekUser != null)
         {
-            UserService.DeleteUser(id);
+            silmeModal = true;
+        }
+    }
+    private void SilmeModalKapat()
+    {
+        silmeModal = false;
+        silinecekUser = null;
+    }
+
+    private void SilmeyiOnayla()
+    {
+        if (silinecekUser == null)
+            return;
+
+        try
+        {
+            UserService.DeleteUser(silinecekUser.Id);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Kullanıcı Silme";
-            log.Aciklama = user.AdSoyad + " adlı kullanıcı silindi";
-            LogService.Add(log);
+            log.Aciklama = silinecekUser.AdSoyad + " adlı kullanıcı silindi";
 
+            LogService.Add(log);
             users = UserService.GetAllUsers();
+            silmeModal = false;
+            silinecekUser = null;
         }
+        catch(Exception ex)
+        {
+            hataMesaji = ex.Message;
+        }
+
     }
 
     private void Duzenle(Users user)
@@ -235,26 +390,35 @@
             Tel = user.Tel,
             Email = user.Email
         };
-
         duzenlemeModu = true;
+        hataMesaji = "";
         showModal = true;
     }
+
     private IEnumerable<Users> FiltrelenmisKullanicilar
     {
         get
         {
-            var sonuc = users;
-            if (aramaMetni !="")
+            IEnumerable<Users> sonuc = users;
+
+            if (!string.IsNullOrWhiteSpace(aramaMetni))
             {
+                string arama = aramaMetni.ToLower();
+
                 sonuc = sonuc.Where(x =>
-             x.AdSoyad.ToLower().Contains(aramaMetni.ToLower()) ||
-             x.KulAd.ToLower().Contains(aramaMetni.ToLower())
-            ).ToList();
+                    (!string.IsNullOrEmpty(x.AdSoyad) &&
+                     x.AdSoyad.ToLower().Contains(arama))
+                    ||
+                    (!string.IsNullOrEmpty(x.KulAd) &&
+                     x.KulAd.ToLower().Contains(arama))
+                );
             }
-            if (rolFiltresi !=0)
+
+            if (rolFiltresi != 0)
             {
-                sonuc = sonuc.Where(x => x.RolId == rolFiltresi).ToList();
+                sonuc = sonuc.Where(x => x.RolId == rolFiltresi);
             }
+
             return sonuc;
         }
     }

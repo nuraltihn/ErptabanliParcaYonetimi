@@ -23,17 +23,39 @@ namespace Erpyonetimi.Data.Repositories
 
         public void Delete(Parca parca)
         {
-            _context.Parcalar.Remove(parca);
+            var dbParca = _context.Parcalar
+                .Include(p => p.StokHareketleri)
+                .Include(p => p.SiparisDetaylari)
+                .FirstOrDefault(p => p.Id == parca.Id);
+
+            if (dbParca == null)
+            {
+                throw new Exception("Parça bulunamadı.");
+            }
+
+            if (dbParca.StokHareketleri.Any())
+            {
+                throw new Exception(
+                    "Bu parça silinemez. Parçaya bağlı stok hareketleri bulunmaktadır.");
+            }
+
+            if (dbParca.SiparisDetaylari.Any())
+            {
+                throw new Exception(
+                    "Bu parça silinemez. Parçaya bağlı sipariş detayları bulunmaktadır.");
+            }
+            _context.Parcalar.Remove(dbParca);
             _context.SaveChanges();
         }
-
         public List<Parca> GetAll()
         {
          if(!DatabaseHelper.IsConnected)
                 return new List<Parca>();
             return _context.Parcalar
                  .Include(x => x.Kategori)
-                 .Include(x => x.Tedarikci).ToList();
+                 .Include(x => x.Tedarikci)
+                 .Include(x => x.Raf)
+                 .ToList();
             
         }
 

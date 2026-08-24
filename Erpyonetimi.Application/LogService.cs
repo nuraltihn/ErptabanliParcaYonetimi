@@ -18,6 +18,5 @@ namespace Erpyonetimi.Application.Services
         {
             _logRepository.Add(log);
         }
-
     }
 }
