@@ -68,10 +68,10 @@ namespace Erpyonetimi.ViewModels
             SonParcalar = new ObservableCollection<Parca>();
             SonSiparisler = new ObservableCollection<Siparis>();
 
-            VeriYukle();
+          _=  VeriYukle();
         }
 
-        private void VeriYukle()
+        private async Task VeriYukle()
         {
              DatabaseHelper.CheckConnection();
                 if (!DatabaseHelper.IsConnected)
@@ -83,22 +83,22 @@ namespace Erpyonetimi.ViewModels
             {
                
 
-                ToplamMusteri = _dashboardService.GetToplamMusteri();
-                ToplamSiparis = _dashboardService.GetToplamSiparis();
-                ToplamKullanici = _dashboardService.GetToplamKullanici();
-                ToplamParca = _dashboardService.GetToplamParca();
-                ToplamKategori = _dashboardService.GetToplamKategori();
-                ToplamTedarikci = _dashboardService.GetToplamTedarikci();
-                KrittikStokSayisi = _dashboardService.GetKritikStokSayisi();
+                ToplamMusteri = await _dashboardService.GetToplamMusteriAsync();
+                ToplamSiparis = await _dashboardService.GetToplamSiparisAsync();
+                ToplamKullanici = await _dashboardService.GetToplamKullaniciAsync();
+                ToplamParca = await _dashboardService.GetToplamParcaAsync();
+                ToplamKategori = await _dashboardService.GetToplamKategoriAsync();
+                ToplamTedarikci = await _dashboardService.GetToplamTedarikciAsync();
+                KrittikStokSayisi = await _dashboardService.GetKritikStokSayisiAsync();
 
-                SonKullanicilar = new ObservableCollection<Users>(
-                    _dashboardService.GetSonKullanicilar(10));
+                SonKullanicilar = new ObservableCollection<Users>( await
+                    _dashboardService.GetSonKullanicilarAsync(10));
 
-                SonParcalar = new ObservableCollection<Parca>(
-                    _dashboardService.GetSonParcalar(10));
+                SonParcalar = new ObservableCollection<Parca>( await
+                    _dashboardService.GetSonParcalarAsync(10));
 
-                SonSiparisler = new ObservableCollection<Siparis>(
-                    _dashboardService.GetSonSiparisler(10));
+                SonSiparisler = new ObservableCollection<Siparis>( await
+                    _dashboardService.GetSonSiparislerAsync(10));
 
           
                 OnPropertyChanged(nameof(SonKullanicilar));

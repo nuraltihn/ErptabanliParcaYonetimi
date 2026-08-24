@@ -118,14 +118,14 @@ namespace Erpyonetimi.ViewModels
         {
             _musteriService = musteriService;
 
-
+Musteriler = new ObservableCollection<Musteri>();
             MusteriEkleCommand = new RelayCommand(Ekle);
             MusteriGuncelleCommand = new RelayCommand(Guncelle);
             MusteriSilCommand = new RelayCommand(Sil);
             MusteriListeleCommand = new RelayCommand(Listele);
             MusteriTemizleCommand= new RelayCommand(Temizle);
-            _tumMusteriler = _musteriService.GetAll();
-            Musteriler = new ObservableCollection<Musteri>(_tumMusteriler);
+
+            _ = Listele();
         }
         private void Filtrele()
         {
@@ -139,9 +139,10 @@ namespace Erpyonetimi.ViewModels
             Musteriler = new ObservableCollection<Musteri>(sonuc);
             OnPropertyChanged(nameof(Musteriler));
         }
-        private void Listele()
+        private async Task Listele()
         {
-            Musteriler = new ObservableCollection<Musteri>(_musteriService.GetAll());
+            var musteriler = await _musteriService.GetAllAsync();
+            Musteriler = new ObservableCollection<Musteri>(musteriler);
             OnPropertyChanged(nameof(Musteriler));
         }
         private void Temizle()
@@ -160,7 +161,7 @@ namespace Erpyonetimi.ViewModels
             SeciliMusteri = null;
         }
 
-        private void Ekle()
+        private async Task Ekle()
         {
             DatabaseHelper.CheckConnection();
 
@@ -186,8 +187,8 @@ namespace Erpyonetimi.ViewModels
                 return;
             }
            
-               
-            if(_musteriService.GetByKod(MusteriKodu) != null)
+               var mevcut = await _musteriService.GetByKodAsync(MusteriKodu);
+            if(mevcut != null)
             {
                 MessageBox.Show("Bu müşteri kodu zaten mevcut");
                 return;
@@ -216,13 +217,13 @@ namespace Erpyonetimi.ViewModels
                 VergiNo= VergiNo,
                 Fax = Fax
             };
-            _musteriService.AddMusteri(musteri);
-            Listele();
+            await _musteriService.AddMusteriAsync(musteri);
+            await Listele();
              Temizle();
             MessageBox.Show("Müşteri eklendi.");
            
         }
-        private void Guncelle()
+        private async Task Guncelle()
 
         {
             DatabaseHelper.CheckConnection();
@@ -274,12 +275,12 @@ namespace Erpyonetimi.ViewModels
             SeciliMusteri.Email = Email;
             SeciliMusteri.VergiNo = VergiNo;
             SeciliMusteri.Fax = Fax;
-            _musteriService.UpdateMusteri(SeciliMusteri);
-            Listele();
+             await _musteriService.UpdateMusteriAsync(SeciliMusteri);
+            await Listele();
             MessageBox.Show("Müşteri güncellendi");
         }
 
-        private void Sil()
+        private async Task Sil()
         {
             DatabaseHelper.CheckConnection();
 
@@ -295,8 +296,8 @@ namespace Erpyonetimi.ViewModels
                 MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-            _musteriService.DeleteMusteri(SeciliMusteri);
-            Listele();
+            await _musteriService.DeleteMusteriAsync(SeciliMusteri);
+            await Listele();
             Temizle();
             MessageBox.Show("Müşteri silindi.");
         }
