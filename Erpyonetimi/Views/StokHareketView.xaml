@@ -56,11 +56,11 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                <Button Content="Ekle" Width="100" Margin="5" Command="{Binding StokHEkleCommand}"/>
-                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding StokGuncelleCommand}"/>
-                <Button Content="Sil" Width="100" Margin="5" Command="{Binding StokSilCommand}"/>
-                <Button Content="Geri al" Width="100" Margin="5" Command="{Binding StokGeriAlCommand}"/>
-                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding StokTemizleCommand}"/>
+                <Button Content="Ekle" Width="80" Margin="5" Command="{Binding StokHEkleCommand}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding StokGuncelleCommand}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Sil" Width="50" Margin="5" Command="{Binding StokSilCommand}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Geri al" Width="100" Margin="5" Command="{Binding StokGeriAlCommand}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding StokTemizleCommand}" Style="{StaticResource Crudbutton}" />
             </StackPanel>
             <DataGrid Grid.Row="1" ItemsSource="{Binding Hareketler}"
                       SelectedItem="{Binding SeciliHareket}"

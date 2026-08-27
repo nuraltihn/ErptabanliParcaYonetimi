@@ -17,19 +17,35 @@ namespace Erpyonetimi.ViewModels
 {
     public class UsersYonetimViewModel :BaseViewModel
     {
-        private readonly IUsersService _usersService;
-        public ObservableCollection<Users> Userlist { get; set; }
-        public ObservableCollection<Roles> Roller { get; set; }
+        private readonly IUsersService _usersService; 
         private readonly ErpDbContext _context;
-        private List<Users> _tumKullanicilar;
+        private ObservableCollection<Users> _userlist = new();
+        public ObservableCollection<Users> Userlist
+        {
+            get => _userlist;
+            set
+            {
+                _userlist = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<Roles> _roller = new();
+        public ObservableCollection<Roles> Roller
+        {
+            get => _roller; set
+            {
+                _roller = value; OnPropertyChanged();
+            }
+        }
+
+        private List<Users> _tumKullanicilar = new();
         private Users? _selecteduser;
         public Users? SelectedUser
         {
             get => _selecteduser;
             set
             {
-                if(value == null)
-                    return;
+                
                 _selecteduser = value;
                 if (_selecteduser != null)
                 {
@@ -123,9 +139,9 @@ namespace Erpyonetimi.ViewModels
         public ICommand UsersTemizleCommand { get; }
         public UsersYonetimViewModel()
         {
-             UsersEkleCommand = new RelayCommand(UsersEkleme);
-            UsersGuncelCommand = new RelayCommand(UsersGuncelleme);
-            UsersSilCommand = new RelayCommand(UsersSilme);
+             UsersEkleCommand = new RelayCommand(async()=>await UsersEkleme());
+            UsersGuncelCommand = new RelayCommand(async()=>await UsersGuncelleme());
+            UsersSilCommand = new RelayCommand(async()=>await UsersSilme());
             UsersTemizleCommand = new RelayCommand(Temizle);
              Roller = new ObservableCollection<Roles>();
              Userlist = new ObservableCollection<Users>();
@@ -147,7 +163,7 @@ namespace Erpyonetimi.ViewModels
         private async Task UsersEkleme()
             
         {
-            var mevcut = _usersService.GetByAdSoyadAsync(AdSoyad);
+            var mevcut = await _usersService.GetByAdSoyadAsync(AdSoyad);
             if (mevcut != null)
             {
                 MessageBox.Show("Bu kullanıcı zaten var.");
@@ -206,9 +222,11 @@ namespace Erpyonetimi.ViewModels
 
         private async Task Listele()
         {
+            var users = await _usersService.GetAllUsersAsync();
+            _tumKullanicilar = users?.ToList() ?? new List<Users>();
             Userlist = new ObservableCollection<Users>(
-              await  _usersService.GetAllUsersAsync());
-            OnPropertyChanged(nameof(Userlist));
+              _tumKullanicilar);
+            
         }
 
 
@@ -258,13 +276,14 @@ namespace Erpyonetimi.ViewModels
                 "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-           await _usersService.DeleteUseAsync(SelectedUser.Id);
+           await _usersService.DeleteUserAsync(SelectedUser.Id);
            await Listele();
             Temizle();
         }
         private void Temizle()
         {
-            SelectedUser = null;
+            _selecteduser = null;
+            OnPropertyChanged(nameof(SelectedUser));
             AdSoyad = "";
             KulAd = "";
             Sifre = "";

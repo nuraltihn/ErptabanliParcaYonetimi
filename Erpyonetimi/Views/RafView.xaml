@@ -43,11 +43,11 @@
                     <Button Content="Ekle"
                             Width="100"
                             Margin="5"
-                            Command="{Binding RafEkleCommand}"/>
-                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding RafGuncelleCommand}"/>
-                    <Button Content="Sil" Margin="5" Width="100" Command="{Binding RafSilCommand}"/>
-                    <Button Content="Listele" Width="100" Margin="5" Command="{Binding ListeleRafCommand}"/>
-                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding RafTemizleCommand}"/>
+                            Command="{Binding RafEkleCommand}"  Style="{StaticResource Crudbutton}" />
+                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding RafGuncelleCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Sil" Margin="5" Width="50" Command="{Binding RafSilCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Listele" Width="100" Margin="5" Command="{Binding ListeleRafCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding RafTemizleCommand}" Style="{StaticResource Crudbutton}" />
                 </StackPanel>
             </Grid>
         </Border>

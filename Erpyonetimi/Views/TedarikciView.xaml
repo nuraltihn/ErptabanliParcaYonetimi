@@ -75,11 +75,11 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                <Button Content=" Ekle" Width="100" Margin="5" Command="{Binding TedarikciEkleCommand}" Visibility="{Binding AdminButtonVisibil}"/>
-                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}" Visibility="{Binding AdminButtonVisibil}" />
-                <Button Content="Sil" Width="100" Margin="5" Command="{Binding TedarikciSilCommand}" Visibility="{Binding AdminButtonVisibil}"/>
-                <Button Content="Listele" Width="100" Margin="5" Command="{Binding TedarikciListeleCommand}"/>
-                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding TedarikciTemizleCommand}"/>
+                <Button Content=" Ekle" Width="80" Margin="5" Command="{Binding TedarikciEkleCommand}" Visibility="{Binding AdminButtonVisibil}"  Style="{StaticResource Crudbutton}" />
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding TedarikciGuncelleCommand}" Visibility="{Binding AdminButtonVisibil}"  Style="{StaticResource Crudbutton}"  />
+                <Button Content="Sil" Width="50" Margin="5" Command="{Binding TedarikciSilCommand}" Visibility="{Binding AdminButtonVisibil}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Listele" Width="100" Margin="5" Command="{Binding TedarikciListeleCommand}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding TedarikciTemizleCommand}" Style="{StaticResource Crudbutton}" />
             </StackPanel>
             <DataGrid Grid.Row="1"
                       ItemsSource="{Binding Tedarikciler}"
@@ -87,26 +87,26 @@
                       AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Kod"
-                                        Binding="{Binding TedarikciKodu}"/>
+                                        Binding="{Binding TedarikciKodu}" Width="100"/>
                     <DataGridTextColumn Header="Firma Adı"
-                     Binding="{Binding FirmaAdi}"/>
+                     Binding="{Binding FirmaAdi}" Width="120"/>
 
                     <DataGridTextColumn Header="Yetkili Kişi"
-                     Binding="{Binding YetkiliKisi}"/>
+                     Binding="{Binding YetkiliKisi}" Width="120"/>
                     
                     <DataGridTextColumn Header="Telefon"
-                     Binding="{Binding Tel}"/>
+                     Binding="{Binding Tel}" Width="120"/>
 
                     <DataGridTextColumn Header="Email"
-                                        Binding="{Binding Email}"/>
+                                        Binding="{Binding Email}" Width="120"/>
                     
                     <DataGridTextColumn Header="Adres"
-                                        Binding="{Binding Adres}"/>
+                                        Binding="{Binding Adres}" Width="150"/>
 
                     <DataGridTextColumn Header="Vergi No"
-                                        Binding="{Binding VergiNo}"/>
+                                        Binding="{Binding VergiNo}" Width="100"/>
                     <DataGridTextColumn Header="Fax"
-                                        Binding="{Binding Fax}"/>
+                                        Binding="{Binding Fax}" Width="100"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

@@ -20,7 +20,7 @@
            FontWeight="Bold" Foreground="White"/>
         </Border>
         <Grid Grid.Row="1">
-           <Border Background="PaleVioletRed" CornerRadius="5" Margin="5" Height="50" Width="200" HorizontalAlignment="Left" BorderBrush="Aqua">
+           <Border Background="PaleVioletRed" CornerRadius="5" Margin="5" Height="50" Width="400" HorizontalAlignment="Left" BorderBrush="Aqua">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Text="{Binding Hosgeldinmsj}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left"/>
                     <TextBlock Text="{Binding Rutbemsj}" FontSize="12" HorizontalAlignment="Left"/>

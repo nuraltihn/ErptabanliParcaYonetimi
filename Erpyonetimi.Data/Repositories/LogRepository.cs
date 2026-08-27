@@ -33,6 +33,7 @@ namespace Erpyonetimi.Data.Repositories
         public async Task<List<Log>> GetAllAsync()
         {
             return await _context.Loglar
+                .AsNoTracking()
                 .Include(x => x.Kullanici)
                 .OrderByDescending(x => x.Tarih)
                 .ToListAsync();

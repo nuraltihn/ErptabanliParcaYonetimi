@@ -17,7 +17,7 @@ namespace Erpyonetimi.ViewModels
         private readonly ISiparisService _siparisService;
         private readonly IMusteriService _musteriService;
         public ObservableCollection<Siparis> Siparisler { get; set; }
-        private List<Siparis> _tumSiparisler;
+        private List<Siparis> _tumSiparisler = new();
         public ObservableCollection<Musteri> Musteriler { get; set; }
 
         private Siparis? _seciliSiparis;
@@ -34,6 +34,7 @@ namespace Erpyonetimi.ViewModels
 
                     SeciliMusteri = Musteriler.FirstOrDefault(x => x.Id == value.MusteriId);
                 }
+                OnPropertyChanged();
             }
         }
         private StokHareket _seciliHareket;
@@ -124,18 +125,36 @@ namespace Erpyonetimi.ViewModels
            
             Musteriler = new ObservableCollection<Musteri>();
 
-            SiparisEkleCommand = new RelayCommand(Ekle);
-            SiparisSilCommand = new RelayCommand(Sil);
-            SiparisGuncelleCommand = new RelayCommand(Guncelle);
+            SiparisEkleCommand = new RelayCommand(async ()=> await Ekle());
+            SiparisSilCommand = new RelayCommand(async()=> await Sil());
+            SiparisGuncelleCommand = new RelayCommand(async()=>await Guncelle());
             SiparisTemizleCommand = new RelayCommand(Temizle);
             DetayAcCommand = new RelayCommand(obj=>
             {
                 if (obj is Siparis siparis)
                     DetayAc(siparis);
             });
-            _ = Listele();
+            _ = Yukle();
            
         }
+        private async Task Yukle()
+        {
+            try
+            {
+                var musteriler = await _musteriService.GetAllAsync();
+                Musteriler = new ObservableCollection<Musteri>(
+                    musteriler ?? new List<Musteri>());
+                OnPropertyChanged(nameof(Musteriler));
+                await Listele();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Sipariş verileri yüklenirken bir hata oluştu:\n{ex.Message}");
+            }
+
+
+        }
+
         public Visibility CrudVisibility
         {
             get
@@ -154,20 +173,30 @@ namespace Erpyonetimi.ViewModels
         }
         private void Filtrele()
         {
+            if (_tumSiparisler == null)
+                return;
+
             var sonuc = _tumSiparisler
                 .Where(x =>
-                string.IsNullOrWhiteSpace(AramaMetni)
-                || x.SiparisNo.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)).ToList();
+                string.IsNullOrWhiteSpace(AramaMetni)||
+                (!string.IsNullOrWhiteSpace(x.SiparisNo)&&
+                x.SiparisNo.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase))).ToList();
 
             Siparisler = new ObservableCollection<Siparis>(sonuc);
             OnPropertyChanged(nameof(Siparisler));
         }
         private async Task Listele()
         {
-            var siparisler = await _siparisService.GetAllAsync();
-            _tumSiparisler = siparisler;
-            Siparisler = new ObservableCollection<Siparis>(siparisler);
-            OnPropertyChanged(nameof(Siparisler));
+            try
+            {
+                var siparisler = await _siparisService.GetAllAsync();
+                _tumSiparisler = siparisler?.ToList() ?? new List<Siparis>();
+                Filtrele();
+            }
+           catch(Exception ex){
+                MessageBox.Show(
+                    $"Siparişler yüklenirken bir hata oluştu:\n{ex.Message}");
+            }
 
         }
         private void Temizle()

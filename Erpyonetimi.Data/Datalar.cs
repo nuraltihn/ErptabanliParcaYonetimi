@@ -26,7 +26,7 @@ namespace Erpyonetimi.Data
                 SeedRaflar(db);
                 SeedUserlar(db);
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
 
             }

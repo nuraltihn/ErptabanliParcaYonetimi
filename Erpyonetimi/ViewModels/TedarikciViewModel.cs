@@ -32,11 +32,18 @@ namespace Erpyonetimi.ViewModels
                 _seciliTedarikci = value;
                 if (_seciliTedarikci != null)
                 {
-                    TedarikciKodu = _seciliTedarikci.TedarikciKodu;
-                    FirmaAdi = _seciliTedarikci.FirmaAdi;
-                    YetkiliKisi = _seciliTedarikci.YetkiliKisi;
-                    Tel = _seciliTedarikci.Tel;
-                    Email = _seciliTedarikci.Email;
+                    TedarikciKodu = _seciliTedarikci.TedarikciKodu ?? "";
+                    FirmaAdi = _seciliTedarikci.FirmaAdi  ??"";
+                    YetkiliKisi = _seciliTedarikci.YetkiliKisi ?? "";
+                    Tel = _seciliTedarikci.Tel ??"";
+                    Email = _seciliTedarikci.Email ??"";
+                    VergiNo = _seciliTedarikci.VergiNo ?? "";
+                    Adres = _seciliTedarikci.Adres ?? "";
+                    Fax = _seciliTedarikci.Fax ?? "";
+                }
+                else
+                {
+                    Temizle();
                 }
                 OnPropertyChanged();
             }
@@ -140,10 +147,10 @@ namespace Erpyonetimi.ViewModels
             _tedarikciService = tedarikciService;
 
                Tedarikciler = new ObservableCollection<Tedarikci>();
-            TedarikciEkleCommand = new RelayCommand(Ekle);
-            TedarikciGuncelleCommand = new RelayCommand(Guncelle);
-            TedarikciSilCommand = new RelayCommand(Sil);
-            TedarikciListeleCommand = new RelayCommand(Listele);
+            TedarikciEkleCommand = new RelayCommand(async ()=> await Ekle());
+            TedarikciGuncelleCommand = new RelayCommand(async()=> await Guncelle());
+            TedarikciSilCommand = new RelayCommand(async()=> await Sil());
+            TedarikciListeleCommand = new RelayCommand(async()=> await Listele());
             TedarikciTemizleCommand = new RelayCommand(Temizle);
          
             _ = Listele();
@@ -156,7 +163,7 @@ namespace Erpyonetimi.ViewModels
                 .Where(x => string.IsNullOrWhiteSpace(AramaMetni)
                     || x.FirmaAdi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
                     || x.TedarikciKodu?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true
-                    || x.YetkiliKisi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true));
+                    || x.YetkiliKisi?.Contains(AramaMetni ?? "", StringComparison.OrdinalIgnoreCase) == true);
             Tedarikciler = new ObservableCollection<Tedarikci>(sonuc);
             OnPropertyChanged(nameof(Tedarikciler));
         }
@@ -164,28 +171,32 @@ namespace Erpyonetimi.ViewModels
         private async Task Listele()
         {
             var tedarikciler = await _tedarikciService.GetAllTedarikciAsync();
-            _tumtedarikciler = tedarikciler;
+            _tumtedarikciler = tedarikciler ?? new List<Tedarikci>();
+            if (!string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Filtrele();
+            }
+            else { 
             Tedarikciler = new ObservableCollection<Tedarikci>(_tumtedarikciler);
-
             OnPropertyChanged(nameof(Tedarikciler));
+}
+            
         }
 
         private async Task Ekle()
         {
-            var mevcut = await _tedarikciService.GetByKodAsync(TedarikciKodu);
-            if(mevcut != null)
+            DatabaseHelper.CheckConnection();
+            if (!DatabaseHelper.IsConnected)
             {
-                MessageBox.Show("Bu tedarikçi kodu zaten kayıtlı");
+                MessageBox.Show("Veri bağlantısı yok. Bu işlem yapılamaz.");
                 return;
-            }
+            }   
+            
+            if (!UserSession.IsAdmin)
+                return;
             if (string.IsNullOrWhiteSpace(TedarikciKodu))
             {
                 MessageBox.Show("Tedarikçi kodu boş olamaz.");
-                return;
-            }
-            if(!DatabaseHelper.IsConnected)
-            {
-                MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
                 return;
             }
             if (string.IsNullOrWhiteSpace(FirmaAdi) || string.IsNullOrWhiteSpace(YetkiliKisi))
@@ -194,6 +205,14 @@ namespace Erpyonetimi.ViewModels
                 return;
  
             }
+
+            var mevcut = await _tedarikciService.GetByKodAsync(TedarikciKodu);
+            if(mevcut != null)
+            {
+                MessageBox.Show("Bu tedarikçi kodu zaten kayıtlı");
+                return;
+            }
+            
             if (string.IsNullOrWhiteSpace(TedarikciKodu))
             {
                 MessageBox.Show("Tedarikçi kodu boş olamaz.");
@@ -205,9 +224,7 @@ namespace Erpyonetimi.ViewModels
                 return;
             }
             
-                
-            if (!UserSession.IsAdmin)
-                return;
+            
 
             await _tedarikciService.AddTedarikciAsync(
                 new Tedarikci
@@ -224,9 +241,18 @@ namespace Erpyonetimi.ViewModels
                 });
 
             await Listele();
+            Temizle();
+            MessageBox.Show("Tedarikçi eklendi");
         }
         private void Temizle()
         {
+            _seciliTedarikci = null;
+            OnPropertyChanged(nameof(SeciliTedarikci));
+            TemizleForm();
+           
+        }
+        private void TemizleForm()
+        { 
             TedarikciKodu = "";
             FirmaAdi = "";
             YetkiliKisi = "";
@@ -235,6 +261,7 @@ namespace Erpyonetimi.ViewModels
             Adres = "";
             VergiNo = "";
             Fax = "";
+
         }
         private async Task Sil()
         {
@@ -243,12 +270,9 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
                 return;
             }
-            if (!UserSession.IsAdmin)
+            if (!UserSession.IsAdmin||SeciliTedarikci==null)
                 return;  
 
-
-            if (SeciliTedarikci != null) {
-               ;
                 var cevap = MessageBox.Show(
                     "Seçili tedarikçiyi silmek istediğinize emin misiniz?",
                     "Silme Onayı", MessageBoxButton.YesNo,
@@ -260,8 +284,10 @@ namespace Erpyonetimi.ViewModels
                 }
                await _tedarikciService.DeleteTedarikciAsync(SeciliTedarikci.Id);
                 await Listele();
+            Temizle();
+            MessageBox.Show("Tedarikçi silindi.");
             }
-        }
+       
         private async Task Guncelle()
         {
             if (!DatabaseHelper.IsConnected)
@@ -269,23 +295,19 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veribağlantısı yok.Bu işlem yapılamaz");
                 return;
             }
-            if(string.IsNullOrWhiteSpace(VergiNo)|| VergiNo.Length != 10)
+            if (!UserSession.IsAdmin || SeciliTedarikci == null) return;
+               
+
+            if(string.IsNullOrWhiteSpace(TedarikciKodu)|| string.IsNullOrWhiteSpace(FirmaAdi) || string.IsNullOrWhiteSpace(YetkiliKisi))
             {
-                MessageBox.Show("Vergi numarası 10 haneli olmak zorundadır");
+                MessageBox.Show("Lütfen gerekli alanları doldurunuz.");
                 return;
             }
-            if (TedarikciKodu == null || FirmaAdi == null || YetkiliKisi == null)
+            if (string.IsNullOrWhiteSpace(VergiNo) || VergiNo.Trim().Length != 10)
             {
-                MessageBox.Show("lütfen gerekli yerleri doldurunuz.");
+                MessageBox.Show("Vergi numarası 10 haneli olmak zorunda.");
                 return;
-
             }
-            if (!UserSession.IsAdmin)
-                return;
-
-            if (SeciliTedarikci == null)
-                return;
-
             SeciliTedarikci.TedarikciKodu = TedarikciKodu;
             SeciliTedarikci.FirmaAdi= FirmaAdi;
             SeciliTedarikci.YetkiliKisi= YetkiliKisi;
@@ -298,6 +320,8 @@ namespace Erpyonetimi.ViewModels
 
            await  _tedarikciService.UpdateTedarikciAsync(SeciliTedarikci);
             await Listele();
+            Temizle();
+            MessageBox.Show("Tedarikçi güncellendi");
            
         }
 

@@ -23,33 +23,24 @@ namespace Erpyonetimi.ViewModels
             set
             {
                 _seciliMusteri = value;
-                if (value != null)
+                if (_seciliMusteri != null)
                 {
-                    MusteriKodu = value.MusteriKodu;
-                    FirmaAdi = value.FirmaAdi;
-                    YetkiliKisi = value.YetkiliKisi;
-                    Ad = value.Ad;
-                    Soyad = value.Soyad;
-                    Adres = value.Adres;
-                    Sehir = value.Sehir;
-                    Tel = value.Tel;
-                    Email = value.Email;
-                    Fax = value.Fax;
-                    VergiNo = value.VergiNo;
+                    MusteriKodu = _seciliMusteri.MusteriKodu ?? "";
+                    FirmaAdi = _seciliMusteri.FirmaAdi ?? "";
+                    YetkiliKisi = _seciliMusteri.YetkiliKisi ?? "";
+                    Ad = _seciliMusteri.Ad ?? "";
+                    Soyad = _seciliMusteri.Soyad ?? "";
+                    Adres = _seciliMusteri.Adres ?? "";
+                    Sehir = _seciliMusteri.Sehir ?? "";
+                    Tel = _seciliMusteri.Tel ?? "";
+                    Email = _seciliMusteri.Email ??"";
+                    Fax = _seciliMusteri.Fax??"";
+                    VergiNo = _seciliMusteri.VergiNo ??"";
 
-                    OnPropertyChanged(nameof(MusteriKodu));
-                    OnPropertyChanged(nameof(FirmaAdi));
-                    OnPropertyChanged(nameof(YetkiliKisi));
-                    OnPropertyChanged(nameof(Ad));
-                    OnPropertyChanged(nameof(Soyad));
-                    OnPropertyChanged(nameof(Adres));
-                    OnPropertyChanged(nameof(Sehir));
-                    OnPropertyChanged(nameof(Tel));
-                    OnPropertyChanged(nameof(Email));
-                    OnPropertyChanged(nameof(Fax));
-                    OnPropertyChanged(nameof(VergiNo));
+                   
 
                 }
+                OnPropertyChanged();
             }
         }
         private string _musteriKodu;
@@ -119,22 +110,26 @@ namespace Erpyonetimi.ViewModels
             _musteriService = musteriService;
 
 Musteriler = new ObservableCollection<Musteri>();
-            MusteriEkleCommand = new RelayCommand(Ekle);
-            MusteriGuncelleCommand = new RelayCommand(Guncelle);
-            MusteriSilCommand = new RelayCommand(Sil);
-            MusteriListeleCommand = new RelayCommand(Listele);
+            MusteriEkleCommand = new RelayCommand(async ()=>await Ekle());
+            MusteriGuncelleCommand = new RelayCommand(async()=> await Guncelle());
+            MusteriSilCommand = new RelayCommand(async ()=> await Sil());
+            MusteriListeleCommand = new RelayCommand(async()=>await Listele());
             MusteriTemizleCommand= new RelayCommand(Temizle);
 
             _ = Listele();
         }
         private void Filtrele()
+            
         {
+            if (_tumMusteriler == null) return;
+            var arama = AramaMetni?.Trim();
+
             var sonuc = _tumMusteriler
                 .Where(p =>
-                string.IsNullOrWhiteSpace(AramaMetni)
-                || p.MusteriKodu.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
-                || p.FirmaAdi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
-                || p.YetkiliKisi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)).ToList();
+                string.IsNullOrWhiteSpace(arama)
+                || (!string.IsNullOrWhiteSpace(p.MusteriKodu)&&p.MusteriKodu.Contains(arama,StringComparison.OrdinalIgnoreCase))
+                || (!string.IsNullOrWhiteSpace(p.FirmaAdi)&&p.FirmaAdi.Contains(arama, StringComparison.OrdinalIgnoreCase))
+                ||(!string.IsNullOrWhiteSpace(p.YetkiliKisi)&&p.YetkiliKisi.Contains(arama, StringComparison.OrdinalIgnoreCase))).ToList();
 
             Musteriler = new ObservableCollection<Musteri>(sonuc);
             OnPropertyChanged(nameof(Musteriler));
@@ -142,8 +137,15 @@ Musteriler = new ObservableCollection<Musteri>();
         private async Task Listele()
         {
             var musteriler = await _musteriService.GetAllAsync();
+            _tumMusteriler= musteriler?.ToList() ?? new List<Musteri>();
+            if (!string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Filtrele();
+            }
+            else { 
             Musteriler = new ObservableCollection<Musteri>(musteriler);
             OnPropertyChanged(nameof(Musteriler));
+            }
         }
         private void Temizle()
         {

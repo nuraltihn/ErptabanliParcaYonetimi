@@ -39,13 +39,13 @@
 
                 <StackPanel Grid.Row="1" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 15 0 0">
                     <Button Content="Ekle"
-                            Width="100"
+                            Width="80"
                             Margin="5"
-                            Command="{Binding KategoriEkleCommand}"/>
-                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding KategoriGuncelleCommand}"/>
-                    <Button Content="Sil" Margin="5" Width="100" Command="{Binding KategoriSilCommand}"/>
-                    <Button Content="Listele" Width="100" Margin="5" Command="{Binding ListeleKategoriCommand}"/>
-                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding KategoriTemizleCommand}"/>
+                            Command="{Binding KategoriEkleCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding KategoriGuncelleCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Sil" Margin="5" Width="50" Command="{Binding KategoriSilCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Listele" Width="100" Margin="5" Command="{Binding ListeleKategoriCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding KategoriTemizleCommand}" Style="{StaticResource Crudbutton}" />
                 </StackPanel>
             </Grid>
 

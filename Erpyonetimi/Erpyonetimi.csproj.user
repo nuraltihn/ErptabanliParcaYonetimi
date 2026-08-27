@@ -20,6 +20,9 @@
     <Compile Update="Views\LoginView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\LogView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\MusteriView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -27,6 +30,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\RafView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\RaporView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\SiparisDetayView.xaml.cs">

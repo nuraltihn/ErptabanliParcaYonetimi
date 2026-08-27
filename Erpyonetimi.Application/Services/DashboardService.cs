@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Erpyonetimi.Context;
@@ -11,41 +12,48 @@ namespace Erpyonetimi.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly ErpDbContext _context;
-        public DashboardService(ErpDbContext context)
+        private readonly IDbContextFactory<ErpDbContext> _contextFactory;
+        public DashboardService(IDbContextFactory<ErpDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<int> GetToplamKullaniciAsync()
         {
-            return await _context.Users.CountAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Users.CountAsync();
         }
 
         public async Task<int> GetToplamParcaAsync()
         {
-            return await _context.Parcalar.CountAsync();
+            using var context  = await _contextFactory.CreateDbContextAsync();
+            return await context.Parcalar.CountAsync();
         }
 
         public async Task<int> GetToplamKategoriAsync()
         {
-            return await _context.Kategoriler.CountAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Kategoriler.CountAsync();
         }
 
         public async Task<int> GetToplamTedarikciAsync()
         {
-            return await _context.Tedarikciler.CountAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Tedarikciler.CountAsync();
         }
 
         public async Task<int> GetKritikStokSayisiAsync()
         {
-            return await _context.Parcalar
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Parcalar
                 .CountAsync(u => u.MevcutStok < u.MinimumStok);
         }
 
         public async Task<List<Users>> GetSonKullanicilarAsync(int adet)
         {
-            return await _context.Users
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Users
+               
                 .OrderByDescending(u => u.OlusturmaTarih)
                 .Take(adet)
                 .ToListAsync();
@@ -53,7 +61,9 @@ namespace Erpyonetimi.Application.Services
 
         public async Task<List<Parca>> GetSonParcalarAsync(int adet)
         {
-            return await _context.Parcalar
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Parcalar
+             
                 .OrderByDescending(u => u.OlusturmaTarih)
                 .Take(adet)
                 .ToListAsync();
@@ -61,7 +71,9 @@ namespace Erpyonetimi.Application.Services
 
         public async Task<List<Siparis>> GetSonSiparislerAsync(int adet)
         {
-            return await _context.Siparisler
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Siparisler
+                
                 .OrderByDescending(u => u.OlusturmaTarih)
                 .Take(adet)
                 .ToListAsync();
@@ -71,13 +83,14 @@ namespace Erpyonetimi.Application.Services
         {
             if (!DatabaseHelper.IsConnected)
                 return 0;
-
-            return await _context.Musteriler.CountAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Musteriler.CountAsync();
         }
 
         public async Task<int> GetToplamSiparisAsync()
         {
-            return await _context.Siparisler.CountAsync();
+            using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.Siparisler.CountAsync();
         }
     }
 }

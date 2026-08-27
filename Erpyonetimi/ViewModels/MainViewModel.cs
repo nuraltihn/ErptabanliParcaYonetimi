@@ -9,42 +9,37 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using Erpyonetimi.Application.Services;
 using Erpyonetimi.Application.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Erpyonetimi.Nav;
+
 
 namespace Erpyonetimi.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        public Visibility Databasebaglivisibility=>
+        public Visibility Databasebaglivisibility =>
             DatabaseHelper.IsConnected
             ? Visibility.Collapsed
-            :Visibility.Visible;
+            : Visibility.Visible;
 
-        private object _currentView=null;
+        private object _currentView = null;
         public object CurrentView
         {
             get => _currentView;
-            set { _currentView= value;
+            set
+            {
+                _currentView = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Sidemenugorunme));
                 OnPropertyChanged(nameof(Sidemenugenisligi));
             }
         }
-        private readonly DashboardViewModel _dashboardViewModel;
-        private readonly TedarikciViewModel _tedarikciViewModel;
-        private readonly ParcaViewModel _parcaViewModel;
-        private readonly UsersYonetimViewModel _usersYonetimViewModel;
-        private readonly KategoriViewModel _kategoriViewModel;
-        private readonly StokHareketViewModel _stokHareketViewModel;
-        private readonly DepoViewModel _depoViewModel;
-        private readonly RafViewModel _rafViewModel;
-        private readonly MusteriViewModel _musteriViewModel;
-        private readonly SiparisViewModel _siparisViewModel;
-        private readonly SiparisDetayViewModel _siparisDetayViewModel;
+        
         public Visibility Sidemenugorunme
         {
             get
             {
-                return CurrentView is LoginViewModel? Visibility.Collapsed
+                return CurrentView is LoginViewModel ? Visibility.Collapsed
                     : Visibility.Visible;
             }
         }
@@ -53,11 +48,11 @@ namespace Erpyonetimi.ViewModels
         {
             get
             {
-                return CurrentView is LoginViewModel? new GridLength(0)
+                return CurrentView is LoginViewModel ? new GridLength(0)
                     : new GridLength(230);
             }
         }
-       public bool UserPanelgor
+        public bool UserPanelgor
         {
             get
             {
@@ -79,7 +74,7 @@ namespace Erpyonetimi.ViewModels
                 var adsoyad = UserSession.CurrentUser?.AdSoyad;
                 if (string.IsNullOrWhiteSpace(adsoyad))
                     return "U";
-                var kelimeler = adsoyad.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+                var kelimeler = adsoyad.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (kelimeler.Length == 1)
                     return kelimeler[0][0].ToString().ToUpper();
                 return $"{kelimeler[0][0]}{kelimeler[^1][0]}".ToUpper();
@@ -92,13 +87,14 @@ namespace Erpyonetimi.ViewModels
                 return UserSession.CurrentUser?.Rol?.RolAdi ?? "Kullanıcı";
             }
         }
-      
+
         public ICommand UserYonCommand { get; }
         public ICommand DashboardCommand { get; }
         public ICommand TedarikciCommand { get; }
         public ICommand ParcaCommand { get; }
         public ICommand KategoriCommand { get; }
-      
+
+        //private readonly IAuthService _authService;
         public ICommand RafCommand { get; }
         public ICommand StokHCommand { get; }
         public ICommand DepoCommand { get; }
@@ -106,24 +102,25 @@ namespace Erpyonetimi.ViewModels
         public ICommand SiparisCommand { get; }
         public ICommand SiparisDetayCommand { get; }
         public ICommand CikisCommand { get; }
-        public ICommand     YenidenbaglanCommand { get; }
-        public MainViewModel( DashboardViewModel dashboardViewModel, TedarikciViewModel tedarikciViewModel,
-            ParcaViewModel parcaViewModel, UsersYonetimViewModel usersYonetimViewModel, KategoriViewModel kategoriViewModel, StokHareketViewModel stokHareketViewModel,
-            DepoViewModel depoViewModel, RafViewModel rafViewModel, MusteriViewModel musteriViewModel, SiparisViewModel siparisViewModel, SiparisDetayViewModel siparisDetayViewModel)
+        public ICommand LogCommand { get; }
+        public ICommand RaporCommand { get; }
+        public ICommand YenidenbaglanCommand { get; }
+
+        private readonly INavigationService _navigationService;
+        public MainViewModel(Erpyonetimi.Nav.INavigationService navigationService)
+
         {
+            _navigationService = navigationService;
+            _navigationService.CurrentViewChanged += NavigationService_CurrentViewChanged;
+
            
-            _usersYonetimViewModel = usersYonetimViewModel;
-            _dashboardViewModel = dashboardViewModel;
-            _tedarikciViewModel= tedarikciViewModel;
-            _parcaViewModel = parcaViewModel;
-            _kategoriViewModel = kategoriViewModel;
-            _stokHareketViewModel = stokHareketViewModel;
-            _depoViewModel = depoViewModel;
-            _rafViewModel = rafViewModel;
-            _musteriViewModel = musteriViewModel;
-            _siparisViewModel = siparisViewModel;
-            _siparisDetayViewModel = siparisDetayViewModel;
-            CurrentView = new LoginViewModel(this);
+            //var auth = _serviceProvider.GetRequiredService<IAuthService>();
+            
+            if(UserSession.CurrentUser == null)
+            {
+                _navigationService.Navigate(Pages.login);
+            }
+        
             UserYonCommand = new RelayCommand(OpenUserPanel);
             DashboardCommand = new RelayCommand(OpenDashboard);
             TedarikciCommand = new RelayCommand(OpenTedarikci);
@@ -137,16 +134,13 @@ namespace Erpyonetimi.ViewModels
             SiparisDetayCommand = new RelayCommand(OpenSiparisDetay);
             CikisCommand = new RelayCommand(Cikis);
             YenidenbaglanCommand = new RelayCommand(YenidenBaglan);
+            LogCommand = new RelayCommand(Loggir);
+            RaporCommand = new RelayCommand(Rapors);
+            
         }
-
-        public void Kullanicigirisyapti(Users users)
+        private void NavigationService_CurrentViewChanged(object sender, EventArgs e)
         {
-            UserSession.CurrentUser = users;
-          
-
-            CurrentView = _dashboardViewModel;
-
-           
+            CurrentView = _navigationService.CurrentView;
 
             OnPropertyChanged(nameof(UserPanelgor));
             OnPropertyChanged(nameof(UserPanelVisibility));
@@ -156,11 +150,32 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(KullaniciAdiSoyadi));
             OnPropertyChanged(nameof(KullaniciRol));
             OnPropertyChanged(nameof(KullaniciAvatar));
+
+        }
+        public void NavigatePages(Pages page)
+        {
+            _navigationService.Navigate(page);
+        }
+        public void KullaniciBilgileriniGuncelle()
+        {
+            
+             
+
+            OnPropertyChanged(nameof(UserPanelgor));
+            OnPropertyChanged(nameof(UserPanelVisibility));
+            OnPropertyChanged(nameof(AdminVisibility));
+            OnPropertyChanged(nameof(DepoVisibility));
+            OnPropertyChanged(nameof(SatisVisibility));
+            OnPropertyChanged(nameof(KullaniciAdiSoyadi));
+            OnPropertyChanged(nameof(KullaniciRol));
+            OnPropertyChanged(nameof(KullaniciAvatar)); 
+            
+            
         }
         private void Cikis()
         {
             UserSession.CurrentUser = null;
-            CurrentView = new LoginViewModel(this);
+            //CurrentView = new LoginViewModel(this, _authService);
             OnPropertyChanged(nameof(UserPanelgor));
             OnPropertyChanged(nameof(UserPanelVisibility));
             OnPropertyChanged(nameof(AdminVisibility));
@@ -169,6 +184,7 @@ namespace Erpyonetimi.ViewModels
             OnPropertyChanged(nameof(KullaniciAdiSoyadi));
             OnPropertyChanged(nameof(KullaniciRol));
             OnPropertyChanged(nameof(KullaniciAvatar));
+            NavigatePages(Pages.login);
         }
         private void YenidenBaglan()
         {
@@ -186,55 +202,61 @@ namespace Erpyonetimi.ViewModels
         }
         private void OpenSiparisDetay()
         {
-            CurrentView = _siparisDetayViewModel;
+            NavigatePages(Pages.siparisdetaylari);
         }
-        
-
+        private void Rapors()
+        {
+            NavigatePages(Pages.raporlar);
+        }
+        private void Loggir()
+        {
+            NavigatePages(Pages.loglar);
+        }
         private void OpenSiparis()
         {
-            CurrentView = _siparisViewModel;
+            NavigatePages(Pages.siparisler);
         }
-      private void OpenMusteri()
+        private void OpenMusteri()
         {
-            CurrentView = _musteriViewModel;
+            NavigatePages(Pages.musteriler);
         }
         private void OpenRaf()
         {
-            CurrentView= _rafViewModel;
+            NavigatePages(Pages.raflar);
         }
         private void OpenDepo()
         {
-            CurrentView = _depoViewModel;
+            NavigatePages(Pages.depolar);
         }
         private void OpenStok()
         {
-            CurrentView = _stokHareketViewModel;
+            NavigatePages(Pages.stokhareketleri);
         }
         private void OpenParca()
         {
-            CurrentView = _parcaViewModel;
+            NavigatePages(Pages.parcalar);
         }
         private void OpenTedarikci()
         {
-            CurrentView = _tedarikciViewModel;
+            NavigatePages(Pages.tedarikciler);
         }
         private void OpenDashboard()
         {
-            CurrentView = _dashboardViewModel;
+            NavigatePages(Pages.dashboard);
         }
         private void OpenKat()
         {
-            CurrentView = _kategoriViewModel;
+            NavigatePages(Pages.kategoriler);
         }
         private void OpenUserPanel()
         {
-           
+
             if (!UserSession.IsAdmin)
             {
                 MessageBox.Show("Erişim yetkiniz yok");
                 return;
             }
-            CurrentView = new UsersYonetimViewModel();
+            NavigatePages(Pages.kullanicilar);
         }
         public Visibility UserPanelVisibility
         {
@@ -247,19 +269,24 @@ namespace Erpyonetimi.ViewModels
 
         }
 
-        public Visibility AdminVisibility=>
-            UserSession.CurrentUser?.Rol?.RolAdi=="Sistem Yöneticisi"
+        public Visibility AdminVisibility =>
+            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi"
             ? Visibility.Visible : Visibility.Collapsed;
         public Visibility DepoVisibility =>
-            UserSession.CurrentUser?.Rol?.RolAdi=="Sistem Yöneticisi"||
+            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi" ||
             UserSession.CurrentUser?.Rol?.RolAdi == "Depo Personeli"
             ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility SatisVisibility=>
-            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi"||
+        public Visibility SatisVisibility =>
+            UserSession.CurrentUser?.Rol?.RolAdi == "Sistem Yöneticisi" ||
             UserSession.CurrentUser?.Rol?.RolAdi == "Satış Personeli"
             ? Visibility.Visible : Visibility.Collapsed;
 
+      
 
+
+
+        }
 
     }
-}
+
+

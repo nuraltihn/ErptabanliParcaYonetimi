@@ -24,10 +24,10 @@ namespace Erpyonetimi.ViewModels
                 _seciliKategori = value;
                 if (_seciliKategori != null)
                 {
-                    KategoriAdi = value.KategoriAdi;
-                    Aciklama = value.Aciklama;
-                    OnPropertyChanged(nameof(KategoriAdi));
-                    OnPropertyChanged(nameof(Aciklama));
+                    KategoriAdi = _seciliKategori.KategoriAdi;
+                    Aciklama = _seciliKategori.Aciklama;
+                    
+                   
                 }
                 OnPropertyChanged();
             }
@@ -64,11 +64,12 @@ namespace Erpyonetimi.ViewModels
 
             _kategoriService = kategoriService;
             Kategoriler = new ObservableCollection<Kategori>();
-            KategoriEkleCommand = new RelayCommand(Ekle);
-            KategoriGuncelleCommand = new RelayCommand(Guncelle);
-            KategoriSilCommand = new RelayCommand(Sil);
-            ListeleKategoriCommand = new RelayCommand(Listele);
+            KategoriEkleCommand = new RelayCommand(async()=> await Ekle());
+            KategoriGuncelleCommand = new RelayCommand(async()=>await Guncelle());
+            KategoriSilCommand = new RelayCommand(async()=> await Sil());
+            ListeleKategoriCommand = new RelayCommand(async()=> await Listele());
             KategoriTemizleCommand= new RelayCommand(Temizle);
+            _ = Listele();
 
         }
 
@@ -108,6 +109,7 @@ namespace Erpyonetimi.ViewModels
                 Aciklama = Aciklama
             };
             await _kategoriService.AddKategoriAsync(kategori);
+            MessageBox.Show("Kategori eklendi.");
             await Listele();
             Temizle();
 
@@ -136,6 +138,7 @@ namespace Erpyonetimi.ViewModels
             SeciliKategori.Aciklama = Aciklama;
 
             await _kategoriService.UpdateKategoriAsync(SeciliKategori);
+            MessageBox.Show("Kategori güncellendi.");
             await Listele();
         }
         private async Task Sil()
@@ -154,8 +157,10 @@ namespace Erpyonetimi.ViewModels
             if (cevap != MessageBoxResult.Yes)
                 return;
             await _kategoriService.DeleteKategoriAsync(SeciliKategori.Id);
-            
+            MessageBox.Show("Kategori silindi.");
+      
            await Listele();
+            Temizle();
         }
         private async Task Listele()
         {

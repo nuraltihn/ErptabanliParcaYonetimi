@@ -63,8 +63,9 @@
 
 
                 </StackPanel>
+                <ScrollViewer>
                 <StackPanel>
-                  
+
 
 
                     <RadioButton Style="{StaticResource Sidemenubutton}"
@@ -174,7 +175,32 @@
                         </StackPanel>
                     </RadioButton>
 
-                </StackPanel>
+
+                        <RadioButton Style="{StaticResource Sidemenubutton}"
+GroupName="Sidemenu"
+         Command="{Binding RaporCommand}" Visibility="{Binding SatisVisibility}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📝" FontSize="16" Margin="0 0 10 0"/>
+                                <TextBlock Text="Rapor Çıkart"/>
+                            </StackPanel>
+                        </RadioButton>
+
+
+                        <RadioButton Style="{StaticResource Sidemenubutton}"
+GroupName="Sidemenu"
+         Command="{Binding LogCommand}" Visibility="{Binding AdminVisibility}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📝" FontSize="16" Margin="0 0 10 0"/>
+                                <TextBlock Text="Log Hareketleri"/>
+                            </StackPanel>
+                        </RadioButton>
+
+
+
+                    </StackPanel>
+                
+                
+                </ScrollViewer>
 
             </DockPanel>
         </Border>
