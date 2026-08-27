@@ -56,8 +56,6 @@ namespace Erpyonetimi.Data.Repositories
                 .OrderByDescending(x => x.Tarih)
                 .ToListAsync();
         }
-                .OrderByDescending(x => x.Tarih)
-                .ToListAsync();
+           
         }
     }
-}
