@@ -19,7 +19,7 @@ namespace Erpyonetimi.ViewModels
         public ObservableCollection<SiparisDetaylari> Detaylar { get; set; }
         public ObservableCollection<Parca> Parcalar { get; set; }
         public ObservableCollection<Siparis> Siparisler { get; set; }
-        private List<SiparisDetaylari> _tumDetaylar;
+        private List<SiparisDetaylari> _tumDetaylar = new();
         private int _miktar;
         public int Miktar
         {
@@ -32,6 +32,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged(nameof(ToplamFiyat));
             }
         }
+
+      
         private string _aramaMetni = "";
         public string AramaMetni
         {
@@ -49,7 +51,9 @@ namespace Erpyonetimi.ViewModels
             get => _birimFiyat;
             set {
                 _birimFiyat = value;
+                ToplamFiyat = Miktar * value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ToplamFiyat));
             }
         }
 
@@ -74,8 +78,10 @@ namespace Erpyonetimi.ViewModels
                     Miktar = value.Miktar;
                     BirimFiyat = value.BirimFiyat;
                     ToplamFiyat = value.ToplamFiyat;
-                    SeciliParca = Parcalar.FirstOrDefault(x => x.Id == value.ParcaId);
+                    SeciliParca = Parcalar?.FirstOrDefault(x => x.Id == value.ParcaId);
+                 
 
+                
                     OnPropertyChanged(nameof(SeciliParca));
                     OnPropertyChanged(nameof(Miktar));
                     OnPropertyChanged(nameof(BirimFiyat));
@@ -139,11 +145,15 @@ namespace Erpyonetimi.ViewModels
         }
         private async Task Yukle()
         {
+            var parcalar = await _parcaService.GetAllParcaAsync();
             Parcalar = new ObservableCollection<Parca>(
-                await _parcaService.GetAllParcaAsync());
+                parcalar ?? new List<Parca>());
+            var siparisler = await _siparisService.GetAllAsync();
             Siparisler = new ObservableCollection<Siparis>(
-               await _siparisService.GetAllAsync());
-            _tumDetaylar = await _siparisDetayService.GetAllAsync();
+               siparisler ?? new List<Siparis>());
+          
+            var detaylar = await _siparisDetayService.GetAllAsync();
+            _tumDetaylar = detaylar ?? new List<SiparisDetaylari>();
             Detaylar = new ObservableCollection<SiparisDetaylari>(_tumDetaylar);
             OnPropertyChanged(nameof(Parcalar));
             OnPropertyChanged(nameof(Siparisler));
@@ -264,24 +274,49 @@ namespace Erpyonetimi.ViewModels
                 return;
             }
 
-            if (SeciliDetay==null || SeciliParca == null)
+            if (SeciliDetay==null || SeciliParca == null||SeciliSiparis==null)
                 return;
-            var eskiparca = await _parcaService.GetByIdAsync(SeciliDetay.ParcaId);
-            if (eskiparca == null)
+            var eskiParca = await _parcaService.GetByIdAsync(SeciliDetay.ParcaId);
+
+            if (eskiParca == null)
             {
-                MessageBox.Show("Eski parça bulunamadı");
-                return;
-            }
-            eskiparca.MevcutStok += SeciliDetay.Miktar;
-            await _parcaService.UpdateParcaAsync(eskiparca);
-            if(SeciliParca.MevcutStok < Miktar)
-            {
-                MessageBox.Show("Yeterli stok yok");
+                MessageBox.Show("Eski parça bulunamadı.");
                 return;
             }
 
-            SeciliParca.MevcutStok -= Miktar;
-           await _parcaService.UpdateParcaAsync(SeciliParca);
+            // Eski parçanın siparişten düşen miktarını geri ver
+            eskiParca.MevcutStok += SeciliDetay.Miktar;
+
+            if (SeciliParca.Id == eskiParca.Id)
+            {
+                // Aynı parça seçildiyse eski miktarı geri verdiğimiz
+                // için yeni miktarı buradan kontrol ediyoruz.
+                if (eskiParca.MevcutStok < Miktar)
+                {
+                    MessageBox.Show("Yeterli stok yok.");
+                    return;
+                }
+
+                eskiParca.MevcutStok -= Miktar;
+
+                await _parcaService.UpdateParcaAsync(eskiParca);
+            }
+            else
+            {
+                // Yeni parça farklıysa yeni parçanın stok kontrolü
+                if (SeciliParca.MevcutStok < Miktar)
+                {
+                    MessageBox.Show("Yeterli stok yok.");
+                    return;
+                }
+
+                await _parcaService.UpdateParcaAsync(eskiParca);
+
+                SeciliParca.MevcutStok -= Miktar;
+
+                await _parcaService.UpdateParcaAsync(SeciliParca);
+            }
+            
             SeciliDetay.ParcaId = SeciliParca.Id;
             SeciliDetay.Miktar = Miktar;
             SeciliDetay.BirimFiyat= BirimFiyat;
@@ -298,6 +333,7 @@ namespace Erpyonetimi.ViewModels
                await _siparisService.UpdateSiparisAsync(siparis);
             }
             MessageBox.Show("Sipariş detayı güncellendi");
+         
 
         }
         private async Task Sil()
@@ -309,15 +345,22 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
             }
+            if (SeciliDetay == null||SeciliParca == null)
+                return;
             var cevap = MessageBox.Show(
                 "Seçili sipariş detayını silmek ister misiniz?",
                 "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (cevap != MessageBoxResult.Yes)
                 return;
-            if (SeciliDetay == null||SeciliParca == null)
-                return;
             SeciliParca.MevcutStok += SeciliDetay.Miktar;
             await _parcaService.UpdateParcaAsync(SeciliParca);
+            await _siparisDetayService.DeleteDetayAsync(SeciliDetay);
+            
+
+          
+            
+            
+           ;
             
             await _siparisDetayService.DeleteDetayAsync(SeciliDetay);
        

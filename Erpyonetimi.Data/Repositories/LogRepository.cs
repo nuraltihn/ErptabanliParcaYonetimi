@@ -38,6 +38,7 @@ namespace Erpyonetimi.Data.Repositories
 
             return await context.Loglar
                 .AsNoTracking()
+                .Include(x => x.Kullanici)
                 .OrderByDescending(x => x.Tarih)
                 .ToListAsync();
         }
@@ -52,6 +53,9 @@ namespace Erpyonetimi.Data.Repositories
                 .AsNoTracking()
                 .Where(x => x.Tarih >= baslangicTarihi &&
                             x.Tarih < bitisTarihi.AddDays(1))
+                .OrderByDescending(x => x.Tarih)
+                .ToListAsync();
+        }
                 .OrderByDescending(x => x.Tarih)
                 .ToListAsync();
         }

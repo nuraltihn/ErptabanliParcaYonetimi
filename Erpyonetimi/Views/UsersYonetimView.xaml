@@ -54,10 +54,10 @@
                 <StackPanel Grid.Row="3" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 10 0 0">
                     <TextBlock Text="Ara:" Margin="5" FontSize="14"/>
                     <TextBox Grid.Row="3" Grid.Column="1" Margin="5" Text="{Binding AramaMetni ,UpdateSourceTrigger=PropertyChanged}" Width="200"/>
-                    <Button Content="Ekle" Width="100" Margin="5" Command="{Binding UsersEkleCommand}"/>
-                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding UsersGuncelCommand}"/>
-                    <Button Content="Sil" Width="100" Margin="5" Command="{Binding UsersSilCommand}"/>
-                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding UsersTemizleCommand}"/>
+                    <Button Content="Ekle" Width="80" Margin="5" Command="{Binding UsersEkleCommand}" Style="{StaticResource Crudbutton}" />
+                    <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding UsersGuncelCommand}"  Style="{StaticResource Crudbutton}"  />
+                    <Button Content="Sil" Width="50" Margin="5" Command="{Binding UsersSilCommand}"  Style="{StaticResource Crudbutton}"  />
+                    <Button Content="Temizle" Width="100" Margin="5" Command="{Binding UsersTemizleCommand}"  Style="{StaticResource Crudbutton}"  />
                 </StackPanel>
             </Grid>
         </Border>

@@ -60,10 +60,14 @@ namespace Erpyonetimi.ViewModels
                 _seciliRaf = value;
                 if(value!= null)
                 {
-                RafKodu = value.RafKodu;
-                    SeciliDepo = Depolar
-                        .FirstOrDefault(x => x.Id == value.DepoId);
+                RafKodu = _seciliRaf.RafKodu ??"";
+                    SeciliDepo = Depolar?.FirstOrDefault(x => x.Id == _seciliRaf.DepoId);
                    
+                }
+                else
+                {
+                    RafKodu = "";
+                    SeciliDepo = null;
                 }
                 OnPropertyChanged();
             }
@@ -85,10 +89,10 @@ namespace Erpyonetimi.ViewModels
             Depolar= new ObservableCollection<Depolar>(); 
             Raflar = new ObservableCollection<Raflar>();
             _tumRaflar = new List<Raflar>();
-            RafEkleCommand = new RelayCommand(Ekle);
-            RafSilCommand = new RelayCommand(Sil);
-            RafGuncelleCommand = new RelayCommand(Guncelle);
-            ListeleRafCommand= new RelayCommand(Listele);
+            RafEkleCommand = new RelayCommand(async()=> await Ekle());
+            RafSilCommand = new RelayCommand(async()=> await Sil());
+            RafGuncelleCommand = new RelayCommand(async()=> await Guncelle());
+            ListeleRafCommand= new RelayCommand(async ()=> await Listele());
             RafTemizleCommand= new RelayCommand(Temizle);
             _ = YukleAsync();
            
@@ -105,15 +109,17 @@ namespace Erpyonetimi.ViewModels
         }
         private void Filtrele()
         {
+            if (_tumRaflar == null) return;
             if (string.IsNullOrWhiteSpace(AramaMetni))
             {
                 Raflar = new ObservableCollection<Raflar>(_tumRaflar);
             }
             else
             {
+                var arama = AramaMetni.Trim();
                 var filtrelenmisRaflar = _tumRaflar
-                    .Where(r => (r.RafKodu?.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                                (r.Depo?.Depaadi?.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .Where(r => (r.RafKodu!= null && r.RafKodu.Contains(arama, StringComparison.OrdinalIgnoreCase)) ||
+                                (r.Depo !=null && r.Depo.Depaadi !=null && r.Depo.Depaadi.Contains(arama, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
                 Raflar = new ObservableCollection<Raflar>(filtrelenmisRaflar);
             }
@@ -122,10 +128,19 @@ namespace Erpyonetimi.ViewModels
         private async Task Listele()
         {
             var raflar = await _rafService.GetAllAsync();
-            _tumRaflar = raflar;
-            Raflar = new ObservableCollection<Raflar>(raflar);
+            _tumRaflar = raflar ?? new List<Raflar>();
+            if (!string.IsNullOrWhiteSpace(AramaMetni))
+            {
+                Filtrele();
+            }
+            else
+            {
+               Raflar = new ObservableCollection<Raflar>(_tumRaflar);
+                OnPropertyChanged(nameof(Raflar)); 
+            }
+            
 
-            OnPropertyChanged(nameof(Raflar));
+            
         }
         private void Temizle()
         {
@@ -142,21 +157,16 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
             }
-            var mevcut = await _rafService.GetByKodAsync(RafKodu);
-            if (mevcut != null)
-            {
-                MessageBox.Show("Bu isimde bir raf zaten mevcut.");
-                return;
-            }
-
-            if (SeciliDepo == null)
-            {
-                MessageBox.Show("Depo seçiniz");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(RafKodu)) 
+            var kod = RafKodu?.Trim();
+            if (string.IsNullOrWhiteSpace(kod))
             {
                 MessageBox.Show("Raf kodu giriniz.");
+                return;
+            }
+            var mevcut = await _rafService.GetByKodAsync(kod);
+            if (mevcut != null)
+            {
+                MessageBox.Show("Bu isimde bir raf zaten mevcut");
                 return;
             }
             var raf = new Raflar

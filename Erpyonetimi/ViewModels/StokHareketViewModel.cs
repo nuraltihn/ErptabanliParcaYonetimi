@@ -5,7 +5,6 @@ using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -66,8 +65,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private string _islemTipi;
-        public string IslemTipi
+        private string? _islemTipi;
+        public string? IslemTipi
         {
             get => _islemTipi;
             set
@@ -86,8 +85,8 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private string _aciklama;
-        public string Aciklama
+        private string? _aciklama;
+        public string? Aciklama
         {
             get => _aciklama;
             set
@@ -149,17 +148,17 @@ namespace Erpyonetimi.ViewModels
         {
             if (!DatabaseHelper.IsConnected)
             {
-                MessageBox.Show("Veritabanı bağlantısı yok");
+                MessageBox.Show("Veritabanı bağlantısı yok.");
                 return;
             }
             if (SeciliHareket == null)
             {
-                MessageBox.Show("Lütfen geri almak istediğiniz stok hareketini seçiniz");
+                MessageBox.Show("Lütfen geri almak istediğiniz stok hareketini seçiniz.");
                 return;
             }
             if(SeciliHareket.Aciklama?.Contains("Geri Alındı") == true)
             {
-                MessageBox.Show("Bu hareket daha önceden geri alımış");
+                MessageBox.Show("Bu hareket daha önceden geri alımış.");
                 return;
             }
             var cevap = MessageBox.Show("Seçili hareketi geri almak istediğinize emin misiniz?", "Stok Hareketi Geri Alma",
@@ -172,14 +171,14 @@ namespace Erpyonetimi.ViewModels
             var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
             if (parca == null)
             {
-                MessageBox.Show("Parça bulunamadı");
+                MessageBox.Show("Parça bulunamadı.");
                 return;
             }
 
             if (SeciliHareket.IslemTipi == "Giriş")
             {
                 if (parca.MevcutStok < SeciliHareket.Miktar) {
-                    MessageBox.Show("Bu hareket geri alnımaz.mevcut stok miktarı yeterli değil");
+                    MessageBox.Show("Bu hareket geri alnımaz.mevcut stok miktarı yeterli değil.");
                     return; 
                 }
             
@@ -200,9 +199,9 @@ namespace Erpyonetimi.ViewModels
                 );
 
         }
-       
-            
-        
+
+
+
         private async Task Sil()
         {
             if (!DatabaseHelper.IsConnected)
@@ -210,27 +209,37 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
             }
-            if (SeciliHareket == null)
+            var cevap = MessageBox.Show(
+                "Bu stok hareketini silmek istediğinize emin misiniz?",
+                "Silme Onayı",
+                 MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (cevap != MessageBoxResult.Yes)
                 return;
+
             var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
             if (parca != null)
             {
                 if (SeciliHareket.IslemTipi == "Giriş")
+                {
+                    if (parca.MevcutStok < SeciliHareket.Miktar)
+                    {
+                        MessageBox.Show("Stok miktarı bu hareketi silmek için yeterli değil.");
+                        return;
+                    }
                     parca.MevcutStok -= SeciliHareket.Miktar;
-                else
+
+                }
+                else if (SeciliHareket.IslemTipi == "Çıkış")
+                {
                     parca.MevcutStok += SeciliHareket.Miktar;
-
-               await _parcaService.UpdateParcaAsync(parca);
+                }
+                await _parcaService.UpdateParcaAsync(parca);
             }
-            var cevap = MessageBox.Show("Bu stok hareketini silmek istediğinize emin misiniz?",
-                "Silme Onayı", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (cevap != MessageBoxResult.Yes)
-                return; 
-
-           await  _service.RemoveStokHareketAsync(SeciliHareket);
-           await Listele();
+            await _service.RemoveStokHareketAsync(SeciliHareket);
+            await Listele();
             MessageBox.Show("Stok hareketi silindi.");
         }
+
         private async Task Guncelle()
         {
 
@@ -238,40 +247,95 @@ namespace Erpyonetimi.ViewModels
             {
                 MessageBox.Show("Veritabanı bağlantısı yok. Bu işlem yapılamaz.");
                 return;
-            }
-            if (SeciliDepo == null)
+            } 
+            if (SeciliHareket == null)
             {
-                MessageBox.Show("Depo seçiniz");
+                MessageBox.Show("Stok hareketi seçiniz");
                 return;
             }
+
+
             if (SeciliParca == null)
             {
                 MessageBox.Show("Parça seçiniz");
                 return;
             }
-            if (SeciliHareket == null || SeciliParca == null || SeciliDepo == null)
-                return;
-
-            var parca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
-            if (parca == null)
-                return;
-            if (SeciliHareket.IslemTipi == "Giriş")
-                parca.MevcutStok -= SeciliHareket.Miktar;
-            else
-                parca.MevcutStok += SeciliHareket.Miktar;
-
-            if (IslemTipi == "Giriş")
-                parca.MevcutStok += Miktar;
-            else
+           
+            if (SeciliDepo == null)
             {
-                if (parca.MevcutStok < Miktar)
+                MessageBox.Show("Depo seçiniz");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(IslemTipi))
+            {
+                MessageBox.Show("İşlem tipi seçiniz.");
+                return;
+            }
+            if(Miktar <=0)
+            {
+                MessageBox.Show("Miktar sıfırdan büyük olmalıdır.");
+                return;
+            }
+
+            var eskiparca = await _parcaService.GetByIdAsync(SeciliHareket.ParcaId);
+            if (eskiparca == null)
+            {
+                MessageBox.Show("Eski parça bulunamadı.");
+                return;
+
+            }
+            if (SeciliHareket.IslemTipi == "Giriş")
+            {
+                if(eskiparca.MevcutStok < SeciliHareket.Miktar)
+                {
+                    MessageBox.Show("Eski hareket geri alınamıyor");
+                    return;
+                }
+                eskiparca.MevcutStok-= SeciliHareket.Miktar;
+
+            }
+            else if(SeciliHareket.IslemTipi == "Çıkış")
+            {
+                eskiparca.MevcutStok += SeciliHareket.Miktar;
+            }
+            if (eskiparca.Id != SeciliParca.Id)
+            {
+                if(IslemTipi =="Çıkış"&& SeciliParca.MevcutStok < Miktar)
                 {
                     MessageBox.Show("Yeterli stok yok.");
                     return;
                 }
-                parca.MevcutStok -= Miktar;
+                await _parcaService.UpdateParcaAsync(eskiparca);
+                if (IslemTipi == "Giriş")
+                {
+                    SeciliParca.MevcutStok += Miktar;
+                }
+                else if (IslemTipi == "Çıkış")
+                {
+  
+                    SeciliParca.MevcutStok -= Miktar;
+                }
+                await _parcaService.UpdateParcaAsync(SeciliParca);
             }
-           await _parcaService.UpdateParcaAsync(parca);
+            else
+            {
+                if (IslemTipi == "Giriş")
+                {
+                    eskiparca.MevcutStok += Miktar;
+                }
+                else if (IslemTipi == "Çıkış")
+                {
+                    if(eskiparca.MevcutStok < Miktar)
+                    {
+                        MessageBox.Show("Yeterli stok yok.");
+                        return;
+                    }
+                    eskiparca.MevcutStok -= Miktar;
+                }
+
+
+                await _parcaService.UpdateParcaAsync(eskiparca);
+            }
             SeciliHareket.ParcaId = SeciliParca.Id;
             SeciliHareket.DepoId = SeciliDepo.Id;
             SeciliHareket.Miktar = Miktar;

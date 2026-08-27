@@ -31,7 +31,7 @@
                 <Button Content="Giriş Yap"
                         Command="{Binding GirisCommand}"
                         CommandParameter="{Binding ElementName=txtPassword}"
-                        Height="35">
+                        Height="35" Style="{StaticResource Loginbutton}">
                         
                 </Button>
                 

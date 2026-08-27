@@ -22,9 +22,9 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10 0 0 15">
             <TextBlock Margin="10 0 10 0" Text="Ara:" FontSize="14" VerticalAlignment="Center" />
             <TextBox Width="250" Height="30" Text="{Binding AramaMetni,UpdateSourceTrigger=PropertyChanged}"/>
-         
-            <Button Content="Listele" Width="100" Margin="10 0 0 0" Command="{Binding ListeleCommand}"/>
-            <Button Content="Kritik Stok" Width="100" Margin="10 0 0 0" Command="{Binding KritikStoklarCommand}"/>
+
+            <Button Content="Listele" Width="100" Margin="10 0 0 0" Command="{Binding ListeleCommand}"  Style="{StaticResource Crudbutton}" />
+            <Button Content="Kritik Stok" Width="100" Margin="10 0 0 0" Command="{Binding KritikStoklarCommand}"  Style="{StaticResource Crudbutton}" />
             
         </StackPanel>
         <Grid Grid.Row="2" Margin="0 0 0 15">
@@ -78,11 +78,6 @@
             <TextBlock Text="Açıklama:" Grid.Row="4" Grid.Column="2" Margin="5"/>
             <TextBox Text="{Binding Aciklama}" Grid.Row="4" Grid.Column="3" Margin="5"/>
            
-            <Border Grid.Column="4" Grid.RowSpan="3" BorderBrush="Black" Margin="5">
-                
-            </Border>
-            <Button Content="Ekle" Command="" Grid.Column="4" Grid.Row="3" Height="20"/>
-
         </Grid>
 
         <Grid Grid.Row="3">
@@ -91,10 +86,10 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-            <Button Content="Ekle" Width="100" Margin="5" Command="{Binding EkleCommand}" Visibility="{Binding SatisVisibility }"/>
-            <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding GuncelleCommand}" Visibility="{Binding SatisVisibility}"/>
-            <Button Content="Sil" Width="100" Margin="5" Command="{Binding SilCommand}" Visibility="{Binding SatisVisibility}"/>
-                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding ParcaTemizleCommand}" Visibility="{Binding SatisVisibility}"/>
+                <Button Content="Ekle" Width="80" Margin="5" Command="{Binding EkleCommand}" Visibility="{Binding SatisVisibility }"  Style="{StaticResource Crudbutton}" />
+                <Button Content="Güncelle" Width="100" Margin="5" Command="{Binding GuncelleCommand}" Visibility="{Binding SatisVisibility}"  Style="{StaticResource Crudbutton}" />
+                <Button Content="Sil" Width="50" Margin="5" Command="{Binding SilCommand}" Visibility="{Binding SatisVisibility}" Style="{StaticResource Crudbutton}" />
+                <Button Content="Temizle" Width="100" Margin="5" Command="{Binding ParcaTemizleCommand}" Visibility="{Binding SatisVisibility}"  Style="{StaticResource Crudbutton}" />
             </StackPanel>
             <DataGrid Grid.Row="1" ItemsSource="{Binding Parcalar}" SelectedItem="{Binding SeciliParca}"
                       AutoGenerateColumns="False" CanUserAddRows="False">
@@ -108,6 +103,7 @@
                 <DataGridTextColumn Header="Satis FFiyatı" Binding="{Binding SatisFiyat}"/>
                 <DataGridTextColumn Header="Mevcut Stok" Binding="{Binding MevcutStok}"/>
                 <DataGridTextColumn Header="Minimum Stok" Binding="{Binding MinimumStok}"/>
+                    
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

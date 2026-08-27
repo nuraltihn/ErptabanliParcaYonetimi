@@ -16,9 +16,9 @@ namespace Erpyonetimi.ViewModels
 {
     public class ParcaViewModel: BaseViewModel
     {
-        public ObservableCollection<Parca> Parcalar { get; set; }
-        public ObservableCollection<Kategori> Kategoriler { get; set; }
-        public ObservableCollection<Tedarikci> Tedarikciler { get; set; }
+        public ObservableCollection<Parca> Parcalar { get; set; } = new();
+        public ObservableCollection<Kategori> Kategoriler { get; set; } = new();
+        public ObservableCollection<Tedarikci> Tedarikciler { get; set; } = new();
         private string _parcaKodu = string.Empty;
         public string ParcaKodu { get => _parcaKodu; set { _parcaKodu = value; OnPropertyChanged(); } }
         private string _parcAdi = string.Empty;
@@ -39,8 +39,10 @@ namespace Erpyonetimi.ViewModels
         public int MinimumStok { get => _minimumStok; set { _minimumStok = value; OnPropertyChanged(); } }
         private string _aciklama = string.Empty;
         public string Aciklama { get => _aciklama; set { _aciklama = value; OnPropertyChanged(); } }
-        private string? _resimyolu;
-   
+
+
+     
+    
         private Kategori? _secilikategori;
         public Kategori? SeciliKategori
         {
@@ -61,7 +63,7 @@ namespace Erpyonetimi.ViewModels
                 OnPropertyChanged();
             }
         }
-        private List<Parca> _tumParcalar;
+        private List<Parca> _tumParcalar = new();
         private string _aramaMetni = string.Empty;
       public string AramaMetni
         {
@@ -79,8 +81,8 @@ namespace Erpyonetimi.ViewModels
                     ParcaKodu= value.ParcaKodu;
                     ParcAdi = value.ParcAdi;
                     Marka = value.Marka;
-                    SeciliKategori= Kategoriler.FirstOrDefault(x=>x.Id== value.Kategori.Id);
-                    SeciliTedarikci= Tedarikciler.FirstOrDefault(x=>x.Id== value.Tedarikci.Id);
+                    SeciliKategori= Kategoriler?.FirstOrDefault(x=>x.Id== value.Kategori.Id);
+                    SeciliTedarikci= Tedarikciler?.FirstOrDefault(x=>x.Id== value.Tedarikci.Id);
                     KategoriId= value.KategoriId;
                     TedarikciId = value.TedarikciId;
                     AlisFiyat = value.AlisFiyat;
@@ -88,6 +90,7 @@ namespace Erpyonetimi.ViewModels
                     MevcutStok = value.MevcutStok;
                     MinimumStok = value.MinimumStok;
                     Aciklama = value.Aciklama;
+                  
                     OnPropertyChanged(nameof(ParcaKodu));
                     OnPropertyChanged(nameof(ParcAdi));
                     OnPropertyChanged(nameof(Marka));
@@ -113,7 +116,7 @@ namespace Erpyonetimi.ViewModels
     
        public ICommand ParcaTemizleCommand { get; }
         public ICommand KritikStoklarCommand { get; }
-        public ICommand ResimSecCommand { get; }
+     
 
         private readonly IParcaService _parcaService;
         private readonly IKategoriService _kategoriService;
@@ -125,29 +128,36 @@ namespace Erpyonetimi.ViewModels
         _kategoriService = kategoriService;
             _tedarikciService = tedarikciService;
       
-            EkleCommand = new RelayCommand(Ekle);
+            EkleCommand = new RelayCommand(async()=> await Ekle());
             KritikStoklarCommand = new RelayCommand(KritikStoklariGetir);
-            GuncelleCommand = new RelayCommand(Guncelle);
-            SilCommand = new RelayCommand(Sil);
-            ListeleCommand = new RelayCommand(Listele);
+            GuncelleCommand = new RelayCommand(async()=> await Guncelle());
+            SilCommand = new RelayCommand(async()=> await Sil());
+            ListeleCommand = new RelayCommand(async()=> await Listele());
             ParcaTemizleCommand = new RelayCommand(Temizle);
+          
           
             OnPropertyChanged(nameof(CrudVisibility));
             _ = Yukle();
     
         }
+  
         private async Task Yukle()
         {
-            Kategoriler = new ObservableCollection<Kategori>(
-                await _kategoriService.GetAllKategoriAsync());
-            Tedarikciler = new ObservableCollection<Tedarikci>(
-                await _tedarikciService.GetAllTedarikciAsync());
-            _tumParcalar = await _parcaService.GetAllParcaAsync();
-            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
-            OnPropertyChanged(nameof(Kategoriler));
-            OnPropertyChanged(nameof(Tedarikciler));
-            OnPropertyChanged(nameof(Parcalar));
-        }
+            try {
+                var katList = await _kategoriService.GetAllKategoriAsync();
+                Kategoriler = new ObservableCollection<Kategori>(katList ?? new List<Kategori>());
+
+                var tedList = await _tedarikciService.GetAllTedarikciAsync();
+                Tedarikciler = new ObservableCollection<Tedarikci>(tedList ?? new List<Tedarikci>());
+                OnPropertyChanged(nameof(Tedarikciler));
+                OnPropertyChanged(nameof(Kategoriler));
+                await Listele();
+            }
+            catch (Exception ex) {
+                MessageBox.Show("Parça verileri yüklenirken hata oluştu");
+
+
+            } }
         public Visibility CrudVisibility
         {
             get
@@ -213,14 +223,16 @@ namespace Erpyonetimi.ViewModels
                 SatisFiyat = SatisFiyat,
                 MevcutStok = MevcutStok,
                 MinimumStok = MinimumStok,
-                Aciklama = Aciklama
+                Aciklama = Aciklama,
+                
+                
                 
             };
 
             try
             {
               await  _parcaService.AddParcaAsync(parca);
-                Parcalar.Add(parca);
+                await Listele();
                 MessageBox.Show("Parça eklendi.");
             }
             catch (InvalidOperationException ex)
@@ -231,19 +243,29 @@ namespace Erpyonetimi.ViewModels
         }
         private void Filtrele()
         {
+            var arama = AramaMetni?.Trim();
+
             var sonuc = _tumParcalar
                 .Where(p =>
-                string.IsNullOrWhiteSpace(AramaMetni)
-                || p.ParcaKodu.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
-                || p.ParcAdi.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase)
-                || p.Marka.Contains(AramaMetni, StringComparison.OrdinalIgnoreCase))
+                    string.IsNullOrWhiteSpace(arama)
+                    || (!string.IsNullOrWhiteSpace(p.ParcaKodu) &&
+                        p.ParcaKodu.Contains(arama, StringComparison.OrdinalIgnoreCase))
+                    || (!string.IsNullOrWhiteSpace(p.ParcAdi) &&
+                        p.ParcAdi.Contains(arama, StringComparison.OrdinalIgnoreCase))
+                    || (!string.IsNullOrWhiteSpace(p.Marka) &&
+                        p.Marka.Contains(arama, StringComparison.OrdinalIgnoreCase))
+                )
                 .ToList();
+
             Parcalar = new ObservableCollection<Parca>(sonuc);
+
             OnPropertyChanged(nameof(Parcalar));
         }
         private async Task Guncelle()
         {
-            if (string.IsNullOrWhiteSpace(ParcAdi)||string.IsNullOrWhiteSpace(ParcaKodu))
+            if (SeciliParca == null)
+                return;
+            if (string.IsNullOrWhiteSpace(ParcAdi) || string.IsNullOrWhiteSpace(ParcaKodu))
             {
                 MessageBox.Show("Parça adı ve parça kodu zorunludur."); return;
             }
@@ -252,7 +274,7 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Fiyat negatif olamaz");
                 return;
             }
-            if(MevcutStok <0|| MinimumStok < 0)
+            if (MevcutStok < 0 || MinimumStok < 0)
             {
                 MessageBox.Show("Stok değerleri negatif  olamaz.");
                 return;
@@ -262,33 +284,44 @@ namespace Erpyonetimi.ViewModels
                 MessageBox.Show("Minimum stok mevcut stoktan büyük olamaz.");
                 return;
             }
-            if (SeciliKategori==null|| SeciliTedarikci == null)
+            if (SeciliKategori == null || SeciliTedarikci == null)
             {
                 MessageBox.Show("Kategori ve tedarikçi seçiniz.");
                 return;
             }
-            if (SeciliParca == null)
+
+            var mevcut = await _parcaService.GetByKodAsync(ParcaKodu);
+            if (mevcut != null && mevcut.Id != SeciliParca.Id)
+            {
+                MessageBox.Show("Bu parça kodu zaten mevcut");
                 return;
-            
+            }
+
             SeciliParca.ParcaKodu = ParcaKodu;
             SeciliParca.ParcAdi = ParcAdi;
             SeciliParca.Marka = Marka;
 
             SeciliParca.KategoriId = SeciliKategori.Id;
-            SeciliParca.TedarikciId= SeciliTedarikci.Id;
-            SeciliParca.AlisFiyat= AlisFiyat;
+            SeciliParca.TedarikciId = SeciliTedarikci.Id;
+            SeciliParca.AlisFiyat = AlisFiyat;
             SeciliParca.SatisFiyat = SatisFiyat;
             SeciliParca.MevcutStok = MevcutStok;
             SeciliParca.MinimumStok = MinimumStok;
-            SeciliParca.Aciklama= Aciklama;
+            SeciliParca.Aciklama = Aciklama;
+         
+            try
+            {
+                await _parcaService.UpdateParcaAsync(SeciliParca);
+                await Listele();
+                Temizle();
 
-            await _parcaService.UpdateParcaAsync(SeciliParca);
-            _tumParcalar = await _parcaService.GetAllParcaAsync();
-            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
-            await Listele();
-          
-            MessageBox.Show("Parça güncellendi");
 
+                MessageBox.Show("Parça güncellendi");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Parça yüklenirken bir hata oluştu:\n{ex.Message}");
+            }
         }
 
         private async Task Sil()
@@ -303,19 +336,33 @@ namespace Erpyonetimi.ViewModels
             if (cevap != MessageBoxResult.Yes)
                 return;
 
-
-            _parcaService.RemoveParcaAsync(SeciliParca);
-            Parcalar.Remove(SeciliParca);
-            MessageBox.Show("Parça silindi");
+            try
+            {
+                await _parcaService.RemoveParcaAsync(SeciliParca);
+                await Listele();
+                Temizle();
+                MessageBox.Show("Parça silindi");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Parça silinirken bir hata oluştu:\n{ex.Message}");
+            }
         }
 
-       
+
         private async Task Listele()
         {
-            _tumParcalar = await _parcaService.GetAllParcaAsync();
-            Parcalar = new ObservableCollection<Parca>(_tumParcalar);
-            OnPropertyChanged(nameof(Parcalar));
-        }
+            try
+            {
+                var parcalar = await _parcaService.GetAllParcaAsync();
+                _tumParcalar = parcalar?.ToList() ?? new List<Parca>();
+               
+                Filtrele();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Parçalar yüklenirken hata oluştu:\n{ex.Message}");
+            } }
         private async Task KritikStoklariGetir()
         {
             var parcalar = await _parcaService.GetAllParcaAsync();
@@ -325,6 +372,7 @@ namespace Erpyonetimi.ViewModels
             Parcalar = new ObservableCollection<Parca>(kritikler);
             OnPropertyChanged(nameof(Parcalar));
         }
+        
         private void Temizle()
         {
             ParcaKodu = "";
@@ -337,6 +385,7 @@ namespace Erpyonetimi.ViewModels
             MinimumStok = 0;
             SeciliKategori = null;
             SeciliTedarikci = null;
+     
         }
     }
 }

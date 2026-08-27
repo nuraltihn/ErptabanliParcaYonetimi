@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Erpyonetimi.Context;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +9,8 @@ namespace Erpyonetimi.Data.Helpers
 {
     public class DatabaseHelper
     {
-        public static bool IsConnected { get; private set; }
+        public static bool IsConnected { get;  set; }
+
       public static void CheckConnection()
         {
             try
@@ -16,14 +19,16 @@ namespace Erpyonetimi.Data.Helpers
                string sqlConn=
                   "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True";
 
-                using var conn = new SqlConnection(sqlConn);
-                conn.Open();
-                IsConnected = true;
+                //using var conn = new SqlConnection(sqlConn);
+                //conn.Open();
+                //IsConnected = true;
+
+
 
             }
             catch
             {
-                IsConnected = false;
+                //IsConnected = false;
             }
         }
        
