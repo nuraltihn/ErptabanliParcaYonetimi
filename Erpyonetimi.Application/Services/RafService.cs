@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Application.Common;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
+using System.Linq;
 namespace Erpyonetimi.Application.Services
 {
     public class RafService : IRafService
@@ -34,9 +36,24 @@ namespace Erpyonetimi.Application.Services
             return await  _rafRepository.GetByKodAsync (rafkodu);
         }
 
-        public async Task  RemoveRafAsync (Raflar raf)
+        public async Task<ServiceResult> RemoveRafAsync(Raflar raf)
         {
-             await _rafRepository.DeleteAsync (raf);
+            var dbRaf = await _rafRepository.GetByIdWithParcalarAsync(raf.Id);
+
+            if (dbRaf == null)
+            {
+                return ServiceResult.Basarisiz("Raf bulunamadı.");
+            }
+
+            if (dbRaf.Parcalar.Any())
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu raf silinemez. Rafa bağlı parçalar bulunmaktadır.");
+            }
+
+            await _rafRepository.DeleteAsync(dbRaf);
+
+            return ServiceResult.Basarili_("Raf başarıyla silindi.");
         }
 
         public async Task UpdateRafAsync (Raflar raf)

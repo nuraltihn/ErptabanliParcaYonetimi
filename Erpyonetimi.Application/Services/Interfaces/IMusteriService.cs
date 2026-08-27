@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Application.Common;
 using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
@@ -12,6 +13,6 @@ namespace Erpyonetimi.Application.Services.Interfaces
         Task<Musteri?> GetByKodAsync (string musteriKodu);
          Task AddMusteriAsync(Musteri musteri);
          Task UpdateMusteriAsync (Musteri musteri);
-         Task DeleteMusteriAsync (Musteri musteri);
+         Task <ServiceResult> DeleteMusteriAsync (Musteri musteri);
     }
 }

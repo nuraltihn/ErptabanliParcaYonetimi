@@ -20,27 +20,12 @@ namespace Erpyonetimi.Data.Repositories
             await _context.Musteriler.AddAsync(musteri);
            await  _context.SaveChangesAsync();
         }
-
         public async Task DeleteAsync(Musteri musteri)
         {
-            var dbMusteri = await _context.Musteriler
-                .Include(m => m.Siparisler)
-                .FirstOrDefaultAsync(m => m.Id == musteri.Id);
-
-            if (dbMusteri == null)
-            {
-                throw new Exception("Müşteri bulunamadı.");
-            }
-
-            if (dbMusteri.Siparisler.Any())
-            {
-                throw new Exception(
-                    "Bu müşteri silinemez. Müşteriye bağlı siparişler bulunmaktadır.");
-            }
-
-            _context.Musteriler.Remove(dbMusteri);
-          await  _context.SaveChangesAsync();
+            _context.Musteriler.Remove(musteri);
+            await _context.SaveChangesAsync();
         }
+
 
         public async Task< List<Musteri>> GetAllAsync()
         {
@@ -55,6 +40,12 @@ namespace Erpyonetimi.Data.Repositories
         public async Task< Musteri?> GetByIdAsync(int id)
         {
             return await _context.Musteriler.FirstOrDefaultAsync(m=>m.Id == id);
+        }
+        public async Task<Musteri?> GetByIdWithIliskilerAsync(int id)
+        {
+            return await _context.Musteriler
+                .Include(m => m.Siparisler)
+                .FirstOrDefaultAsync (m => m.Id == id); 
         }
 
         public async Task<Musteri?> GetByKodAsync(string musteriKodu)

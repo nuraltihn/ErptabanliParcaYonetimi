@@ -26,7 +26,10 @@ namespace Erpyonetimi.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+            modelBuilder.Entity<Kategori>()
+                .Property(k => k.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Users>().HasIndex(u => u.KulAd).IsUnique();
             modelBuilder.Entity<Tedarikci>().HasIndex(t => t.TedarikciKodu).IsUnique();
             modelBuilder.Entity<Musteri>().HasIndex(m => m.MusteriKodu).IsUnique();

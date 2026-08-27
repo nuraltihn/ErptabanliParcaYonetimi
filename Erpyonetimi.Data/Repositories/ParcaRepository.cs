@@ -23,28 +23,7 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task DeleteAsync(Parca parca)
         {
-            var dbParca = await _context.Parcalar
-                .Include(p => p.StokHareketleri)
-                .Include(p => p.SiparisDetaylari)
-                .FirstOrDefaultAsync(p => p.Id == parca.Id);
-
-            if (dbParca == null)
-            {
-                throw new Exception("Parça bulunamadı.");
-            }
-
-            if (dbParca.StokHareketleri.Any())
-            {
-                throw new Exception(
-                    "Bu parça silinemez. Parçaya bağlı stok hareketleri bulunmaktadır.");
-            }
-
-            if (dbParca.SiparisDetaylari.Any())
-            {
-                throw new Exception(
-                    "Bu parça silinemez. Parçaya bağlı sipariş detayları bulunmaktadır.");
-            }
-            _context.Parcalar.Remove(dbParca);
+            _context.Parcalar.Remove(parca);
            await _context.SaveChangesAsync();
         }
         public async Task< List<Parca>> GetAllAsync()
@@ -63,7 +42,13 @@ namespace Erpyonetimi.Data.Repositories
         {
             return await _context.Parcalar.FirstOrDefaultAsync(x => x.Id == id);
         }
-
+        public async Task<Parca?> GetByIdWithIliskilerAsync(int id)
+        {
+            return await _context.Parcalar
+                .Include(p => p.StokHareketleri)
+                .Include(p => p.SiparisDetaylari)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
         public async Task<Parca?> GetByKodAsync(string parcaKodu)
         {
             return await _context.Parcalar.FirstOrDefaultAsync(x => x.ParcaKodu == parcaKodu);

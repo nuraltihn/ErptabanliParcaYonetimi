@@ -1,6 +1,8 @@
-﻿using Erpyonetimi.Domain.Entities;
+﻿using Erpyonetimi.Application.Common;
+using Erpyonetimi.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using Erpyonetimi.Application.Common;
 using System.Threading.Tasks;
 using System.Text;
 
@@ -12,7 +14,7 @@ namespace Erpyonetimi.Application.Services.Interfaces
        Task  <Tedarikci?> GetByIdAsync (int id);
         Task  <Tedarikci?> GetByKodAsync (string kod);
         Task  AddTedarikciAsync (Tedarikci tedarikci);
-        Task  DeleteTedarikciAsync (int id);
+        Task <ServiceResult> DeleteTedarikciAsync (int id);
         Task UpdateTedarikciAsync (Tedarikci tedarikci);
     }
 }

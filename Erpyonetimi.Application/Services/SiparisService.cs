@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text;
+using System.Linq;
+using Erpyonetimi.Application.Common;
 using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
@@ -36,11 +38,21 @@ namespace Erpyonetimi.Application.Services
             return await _siparisRepository.GetByNoAsync(siparisNo);
         }
 
-        public async Task  RemoveSiparisAsync(Siparis siparis)
+        public async Task<ServiceResult> RemoveSiparisAsync(Siparis siparis)
         {
-            await _siparisRepository.DeleteAsync(siparis);
+            var dbSiparis = await _siparisRepository.GetByIdWithIliskilerAsync(siparis.Id);
+            if (dbSiparis == null)
+            {
+                return ServiceResult.Basarisiz("Siparis bulunamadı.");
+            }
+            if (dbSiparis.SiparisDetaylari.Any())
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu sipariş silinemez.Siparişe bağlı parçalar bulunmaktadır.");
+            }
+            await _siparisRepository.DeleteAsync(dbSiparis);
+            return ServiceResult.Basarili_("Sipariş başaryıyla silindi.");
         }
-
         public async Task  UpdateSiparisAsync (Siparis siparis)
         {
             await _siparisRepository.UpdateAsync(siparis);

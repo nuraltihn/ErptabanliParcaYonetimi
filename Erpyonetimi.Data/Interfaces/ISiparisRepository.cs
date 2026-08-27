@@ -10,6 +10,8 @@ namespace Erpyonetimi.Data.Interfaces
         Task<Siparis?> GetByIdAsync(int id);
         Task<Siparis?> GetByNoAsync(string siparisNo);
 
+        Task<Siparis?> GetByIdWithIliskilerAsync(int id);
+
         Task AddAsync(Siparis siparis);
         Task UpdateAsync(Siparis siparis);
         Task DeleteAsync(Siparis siparis);

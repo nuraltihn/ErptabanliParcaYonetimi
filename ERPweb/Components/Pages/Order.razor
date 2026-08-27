@@ -33,7 +33,7 @@
 	</div>
 </div>
 
-<table class="table table-striped mt-3">
+<table class="table table-striped management-table">
 	<thead>
 		<tr>
 			<th>Sipariş No</th>
@@ -41,7 +41,7 @@
 			<th>Sipariş Tarihi</th>
 			<th>Toplam Tutar</th>
 			<th>Durum</th>
-			<th>İşlemler</th>
+			<th class="actions-column">İşlemler</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -53,19 +53,22 @@
 				<td>@siparis.SiparisTarihi.ToShortDateString()</td>
 				<td>@siparis.ToplamTutar ₺</td>
 				<td>@siparis.Durum</td>
-				<td>
-					<button class="btn btn-warning btn-sm" 
+				<td class="actions-column">
+					<div class="action-buttons">
+
+					<button class="btn btn-warning" 
 					@onclick="() => Duzenle(siparis)">
 						Düzenle
 					</button>
-					<button class="btn btn-danger btn-sm ms-2"
+					<button class="btn btn-danger"
 					@onclick="() => Sil(siparis.Id)">
 						Sil
 					</button>
-					<button class="btn btn-info btn-sm ms-2" title="Sipariş Detayı" 
+					<button class="btn btn-info" title="Sipariş Detayı" 
 					@onclick="() => DetayGoster(siparis)">
 						ⓘ
 					</button>
+					</div>
 				</td>
 			</tr>
 		}
@@ -321,7 +324,7 @@
 	private Siparis yeniSiparis = new();
 	private string hataMesaji = "";
 	private bool silmeModal = false;
-    private Siparis? silinecekSiparis;
+	private Siparis? silinecekSiparis;
 	private bool detayModal = false;
 
 
@@ -392,7 +395,7 @@
 			hataMesaji = "Bu sipariş numarası zaten kullanılıyor.";
 			return;
 		}
-		
+
 		if (yeniSiparis.MusteriId == 0)
 		{
 			hataMesaji = "Lütfen müşteri seçiniz.";
@@ -413,7 +416,7 @@
 			log.Tarih = DateTime.Now;
 			log.Islem = "Sipariş Düzenleme";
 			log.Aciklama = yeniSiparis.SiparisNo + " numaralı sipariş düzenlendi";
-			 await LogService.AddAsync (log);
+			await LogService.AddAsync (log);
 		}
 		else
 		{
@@ -450,51 +453,52 @@
 	}
 
 	private void Sil(int id)
-{
-    hataMesaji = "";
+	{
+		hataMesaji = "";
 
-    silinecekSiparis = siparisler.FirstOrDefault(x => x.Id == id);
+		silinecekSiparis = siparisler.FirstOrDefault(x => x.Id == id);
 
-    if (silinecekSiparis != null)
-    {
-        silmeModal = true;
-    }
-}
-   private void SilmeyiIptalEt()
+		if (silinecekSiparis != null)
+		{
+			silmeModal = true;
+		}
+	}
+	private void SilmeyiIptalEt()
 
-  {
-    silmeModal = false;
-    silinecekSiparis = null;
-    hataMesaji = "";
-   }
-   private async Task SilmeyiOnayla()
-{
-    if (silinecekSiparis == null)
-        return;
+	{
+		silmeModal = false;
+		silinecekSiparis = null;
+		hataMesaji = "";
+	}
+	private async Task SilmeyiOnayla()
+	{
+		if (silinecekSiparis == null)
+			return;
 
-    try
-    {
-       await SiparisService.RemoveSiparisAsync (silinecekSiparis);
+		var sonuc = await SiparisService.RemoveSiparisAsync(silinecekSiparis);
 
-        Log log = new Log();
-        log.KullaniciId = UserSession.CurrentUser.Id;
-        log.Tarih = DateTime.Now;
-        log.Islem = "Sipariş Silme";
-        log.Aciklama = silinecekSiparis.SiparisNo
-            + " numaralı sipariş silindi";
-        await LogService.AddAsync (log);
+		if (!sonuc.Basarili)
+		{
+			hataMesaji = sonuc.Mesaj;
+			return;
+		}
 
-        siparisler = await SiparisService.GetAllAsync ();
+		Log log = new Log();
+		log.KullaniciId = UserSession.CurrentUser.Id;
+		log.Tarih = DateTime.Now;
+		log.Islem = "Sipariş Silme";
+		log.Aciklama = silinecekSiparis.SiparisNo
+			+ " numaralı sipariş silindi";
 
-        hataMesaji = "";
-        silmeModal = false;
-        silinecekSiparis = null;
-    }
-    catch (Exception ex)
-    {
-        hataMesaji = ex.Message;
-    }
-}
+		await LogService.AddAsync(log);
+
+		siparisler = await SiparisService.GetAllAsync();
+
+		hataMesaji = "";
+		silmeModal = false;
+		silinecekSiparis = null;
+	}
+
 	private async Task DetayGoster(Siparis siparis)
 	{
 		seciliSiparis = siparis;

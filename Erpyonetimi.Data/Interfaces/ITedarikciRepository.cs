@@ -10,6 +10,7 @@ namespace Erpyonetimi.Data.Interfaces
     {
         Task<List<Tedarikci>> GetAllAsync();
         Task<Tedarikci?> GetByIdAsync(int id);
+        Task<Tedarikci?> GetByIdWithIliskilerAsync(int id);
         Task<Tedarikci?> GetByKodAsync(string kod);
         Task AddAsync(Tedarikci tedarikci);
         Task UpdateAsync(Tedarikci tedarikci);

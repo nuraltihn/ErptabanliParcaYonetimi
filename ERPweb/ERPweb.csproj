@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Erpyonetimi.Domain\Erpyonetimi.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\NewFolder\" />
+  </ItemGroup>
+
 </Project>

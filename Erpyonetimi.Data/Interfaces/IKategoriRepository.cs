@@ -5,11 +5,13 @@ using Erpyonetimi.Domain.Entities;
 namespace Erpyonetimi.Data.Interfaces
 {
     public interface IKategoriRepository
-    {Task<List<Kategori>> GetAllAsync ();
+    {Task<List<Kategori>> GetAllAsync();
         Task<Kategori?> GetByIdAsync(int id);
         Task AddAsync (Kategori kategori);
+        Task<Kategori?> GetByIdWithParcalarAsync(int id);
         Task UpdateAsync (Kategori kategori);
         Task DeleteAsync (Kategori kategori);
+        
 
     }
 }

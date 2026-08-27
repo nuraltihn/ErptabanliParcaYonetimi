@@ -11,9 +11,18 @@ namespace Erpyonetimi.Application.Services
         {
             _logRepository = logRepository;
         }
-        public async Task  <List<Log>> GetAllAsync()
+        public async Task<List<Log>> GetAllAsync()
         {
             return await _logRepository.GetAllAsync();
+        }
+        public async Task<List<Log>> GetByDateRangeAsync(
+            DateTime baslangicTarihi,
+            DateTime bitisTarihi)
+
+        {
+            return await _logRepository.GetByDateRangeAsync(
+                baslangicTarihi,
+                bitisTarihi);
         }
         public async Task AddAsync(Log log)
         {

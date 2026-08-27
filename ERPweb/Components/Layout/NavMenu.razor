@@ -6,6 +6,8 @@
 @inject ILogService LogService
 @rendermode InteractiveServer
 
+<div class="nav-menu-container">
+
 <div class="logo-area">
 	<img src="/images/logo.svg" alt="Özgenç Makina" />
 </div>
@@ -87,18 +89,36 @@
 		</NavLink>
 	</div>
 }
+<div class="user-area">
+	<div class="user-profile">
 
-<div class="nav-item px-3">
-	<button class="logout-button"@onclick="CikisYap">
+		<div class="user-avatar @GetRoleClass()">
+			@GetInitials()
+		</div>
+
+		<div class="user-info">
+			<div class="user-name">
+				@UserSession.CurrentUser?.AdSoyad
+			</div>
+
+			<div class="user-role @GetRoleClass()">
+				@GetRoleName()
+			</div>
+		</div>
+
+	</div>
+
+	<button class="logout-button" @onclick="CikisYap">
 		Çıkış Yap
 	</button>
+</div>
 </div>
 @code
 {
 	private async Task CikisYap()
 	{
 		Log log = new Log();
-		log.KullaniciId = UserSession.CurrentUser.Id;
+		log.KullaniciId = UserSession.CurrentUser!.Id;
 		log.Tarih = DateTime.Now;
 		log.Islem = "Kullanıcı Çıkışı";
 		log.Aciklama = "Sistemden çıkış yaptı";
@@ -107,4 +127,46 @@
 
 		Navigation.NavigateTo("/login", true);
 	}
-}
+	private string GetInitials()
+	{
+		if (UserSession.CurrentUser == null)
+			return "?";
+		var isim = UserSession.CurrentUser.AdSoyad;
+		if (string.IsNullOrWhiteSpace(isim))
+			return"?";
+		var kelimeler = isim
+		.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+		if (kelimeler.Length == 1)
+			return kelimeler[0][0].ToString().ToUpper();
+
+		return $"{kelimeler[0][0]}{kelimeler[^1][0]}".ToUpper();
+	}
+	private string GetRoleName()
+	{
+		if (UserSession.IsAdmin)
+			return "Yönetici";
+
+		if (UserSession.IsDepo)
+			return "Depo Görevlisi";
+
+		if (UserSession.IsSatis)
+			return "Satış Temsilcisi";
+
+		return "Kullanıcı";
+	}
+
+	private string GetRoleClass()
+	{
+		if (UserSession.IsAdmin)
+			return "role-admin";
+
+		if (UserSession.IsDepo)
+			return "role-depo";
+
+		if (UserSession.IsSatis)
+			return "role-satis";
+
+		return "role-user";
+	}
+	}

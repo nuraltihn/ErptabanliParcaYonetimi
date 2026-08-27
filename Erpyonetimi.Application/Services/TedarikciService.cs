@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Application.Common;
+using System.Linq;
 using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Domain.Entities;
 
@@ -25,14 +27,30 @@ namespace Erpyonetimi.Application.Services
         {
             return await _tedarikciRepository.GetByIdAsync(id);
         }
-        public async Task DeleteTedarikciAsync(int id)
+        public async Task<ServiceResult> DeleteTedarikciAsync(int id)
         {
-            var tedarikci = await _tedarikciRepository.GetByIdAsync(id);
+            var tedarikci = await _tedarikciRepository.GetByIdWithIliskilerAsync(id);
 
-            if (tedarikci != null)
+            if (tedarikci == null)
             {
-                await _tedarikciRepository.DeleteAsync(tedarikci);
+                return ServiceResult.Basarisiz("Tedarikçi bulunamadı.");
             }
+
+            if (tedarikci.Parcalar.Any(p => p.StokHareketleri.Any()))
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu tedarikçi silinemez. Tedarikçiye bağlı işlem görmüş parçalar bulunmaktadır.");
+            }
+
+            if (tedarikci.Parcalar.Any(p => p.SiparisDetaylari.Any()))
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu tedarikçi silinemez. Tedarikçiye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
+            }
+
+            await _tedarikciRepository.DeleteAsync(tedarikci);
+
+            return ServiceResult.Basarili_("Tedarikçi başarıyla silindi.");
         }
         public async Task UpdateTedarikciAsync(Tedarikci tedarikci)
         {

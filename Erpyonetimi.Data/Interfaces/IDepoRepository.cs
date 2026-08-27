@@ -8,6 +8,7 @@ namespace Erpyonetimi.Data.Interfaces
     {
         Task<List<Depolar>> GetAllAsync();
         Task<Depolar?> GetByIdAsync(int id);
+        Task<Depolar?> GetByIdWithIliskilerAsync(int id);
         Task<Depolar?> GetByDepoadiAsync (string depoadi);
         Task AddAsync(Depolar depo);
         Task UpdateAsync(Depolar depo);

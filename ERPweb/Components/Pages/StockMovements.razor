@@ -17,7 +17,7 @@
 @onclick="StokHareketiAc">
     + Stok Hareketi
 </button>
-<table class="table table-striped mt-3">
+<table class="table table-striped management-table">
     <thead>
         <tr>
 <th>Parça Kodu</th>
@@ -94,7 +94,7 @@ else
                 <th>Kullanıcı</th>
                 <th>Tarih</th>
                 <th>Açıklama</th>
-                <th>İşlem</th>
+                <th class="actions-column">İşlem</th>
             </tr>
         </thead>
 
@@ -130,13 +130,15 @@ else
                         }
                     </td>
 
-                    <td>
+                    <td class="actions-column">
                         @if (UserSession.IsAdmin || UserSession.IsDepo)
                         {
+                            <div class="action-buttons">
                             <button class="btn btn-warning btn-sm"
                                     @onclick="() => GeriAl(hareket)">
                                 Geri Al
                             </button>
+                            </div>
                         }
                     </td>
                 </tr>

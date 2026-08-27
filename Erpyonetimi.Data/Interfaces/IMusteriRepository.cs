@@ -8,6 +8,8 @@ namespace Erpyonetimi.Data.Interfaces
     {
         Task<List<Musteri>> GetAllAsync();
         Task<Musteri?> GetByIdAsync(int id);
+
+        Task<Musteri?> GetByIdWithIliskilerAsync(int id);
         Task<Musteri?> GetByKodAsync(string musteriKodu);
 
         Task AddAsync(Musteri musteri);

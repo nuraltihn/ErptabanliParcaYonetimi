@@ -41,7 +41,7 @@
         </select>
     </div>
 </div>
-<table class="table table-striped">
+<table class="table table-striped management-table">
     <thead>
         <tr>
             <th>Parça Kodu</th>
@@ -71,16 +71,18 @@
                 <td>@parca.AlisFiyat</td>
                 <td>@parca.SatisFiyat</td>
                 <td>@parca.Raf?.RafKodu</td>
-                <td>
-                    <button class="btn btn-warning btn-sm"
-                            @onclick="() => Duzenle(parca)">
-                        Düzenle
-                    </button>
 
-                    <button class="btn btn-danger btn-sm ms-2"
-                            @onclick="() => Sil(parca.Id)">
-                        Sil
-                    </button>
+                <td class="actions-column">
+                    <div class="action-buttons">
+                        <button class="btn btn-warning"
+                                @onclick="() => Duzenle(parca)">
+                            Düzenle
+                        </button>
+                        <button class="btn btn-danger"
+                                @onclick="() => Sil(parca.Id)">
+                            Sil
+                        </button>
+                    </div>
                 </td>
 
             </tr>
@@ -433,12 +435,19 @@
         }
         else
         {
-            await ParcaService.AddParcaAsync (yeniParca);
+            var sonuc = await ParcaService.AddParcaAsync(yeniParca);
+
+            if (!sonuc.Basarili)
+            {
+                hataMesaji = sonuc.Mesaj;
+                return;
+            }
+
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Parça Ekleme";
-            log.Aciklama = yeniParca.ParcAdi + "adlı parça eklendi";
+            log.Aciklama = yeniParca.ParcAdi + " adlı parça eklendi";
             await LogService.AddAsync(log);
         }
         parcalar = await ParcaService.GetAllParcaAsync ();
@@ -502,34 +511,34 @@
         silmeModal= false;
         silinecekParca = null;
     }
+   
     private async Task SilmeyiOnayla()
     {
         if (silinecekParca == null)
             return;
 
-        try
+        var sonuc = await ParcaService.RemoveParcaAsync(silinecekParca);
+
+        if (!sonuc.Basarili)
         {
-            await ParcaService.RemoveParcaAsync (silinecekParca);
-
-            Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
-            log.Tarih = DateTime.Now;
-            log.Islem = "Parça Silme";
-            log.Aciklama = silinecekParca.ParcAdi + " adlı parça silindi";
-          await  LogService.AddAsync(log);
-
-            parcalar = await ParcaService.GetAllParcaAsync();
-
-            hataMesaji = "";
-            silmeModal = false;
-            silinecekParca = null;
+            hataMesaji = sonuc.Mesaj;
+            return;
         }
-        catch (Exception ex)
-        {
-            hataMesaji = ex.Message;
-        }
+
+        Log log = new Log();
+        log.KullaniciId = UserSession.CurrentUser.Id;
+        log.Tarih = DateTime.Now;
+        log.Islem = "Parça Silme";
+        log.Aciklama = silinecekParca.ParcAdi + " adlı parça silindi";
+
+        await LogService.AddAsync(log);
+
+        parcalar = await ParcaService.GetAllParcaAsync();
+
+        hataMesaji = "";
+        silmeModal = false;
+        silinecekParca = null;
     }
-
     private void DepoDegisti()
     {
         yeniParca.RafId = 0;

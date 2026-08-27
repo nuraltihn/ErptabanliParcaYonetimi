@@ -1,7 +1,9 @@
 ﻿using Erpyonetimi.Application.Services.Interfaces;
 using Erpyonetimi.Data.Interfaces;
+using Erpyonetimi.Application.Common;
 using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,9 +28,20 @@ namespace Erpyonetimi.Application.Services
             await _musteriRepository.AddAsync (musteri);
         }
 
-        public async Task DeleteMusteriAsync (Musteri musteri)
+        public async Task<ServiceResult> DeleteMusteriAsync(Musteri musteri)
         {
-             await _musteriRepository.DeleteAsync (musteri);
+            var dbMusteri = await _musteriRepository.GetByIdWithIliskilerAsync (musteri.Id);
+            if (dbMusteri == null)
+            {
+                return ServiceResult.Basarisiz("Müşteri bulunamadı.");
+            }
+            if(dbMusteri.Siparisler.Any())
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu müşteri silinemez. Müşteriye bağlı siparişler bulunmaktadır");
+            }
+            await _musteriRepository.DeleteAsync(dbMusteri);
+            return ServiceResult.Basarili_("Müşteri başarıyla silindi");
         }
 
         public async Task <Musteri?> GetByIdAsync (int id)

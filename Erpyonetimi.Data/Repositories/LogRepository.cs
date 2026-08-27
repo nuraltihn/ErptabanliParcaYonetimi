@@ -7,33 +7,51 @@ namespace Erpyonetimi.Data.Repositories
 {
     public class LogRepository : ILogRepository
     {
-        private readonly ErpDbContext _context;
-
-        public LogRepository(ErpDbContext context)
+        private readonly IDbContextFactory<ErpDbContext> _contextFactory;
+        public LogRepository(IDbContextFactory<ErpDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task AddAsync(Log log)
         {
-            if(log.KullaniciId.HasValue)
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            if (log.KullaniciId.HasValue)
             {
-                var kullanici = await _context.Users
+                var kullanici = await context.Users
                     .FirstOrDefaultAsync(x => x.Id == log.KullaniciId.Value);
 
-                if (kullanici!= null)
+                if (kullanici != null)
                 {
                     log.KullaniciAdSoyad = kullanici.AdSoyad;
                 }
             }
-           await _context.Loglar.AddAsync(log);
-            await _context.SaveChangesAsync();
+
+            await context.Loglar.AddAsync(log);
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<Log>> GetAllAsync()
         {
-            return await _context.Loglar
-                .Include(x => x.Kullanici)
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Loglar
+                .AsNoTracking()
+                .OrderByDescending(x => x.Tarih)
+                .ToListAsync();
+        }
+
+        public async Task<List<Log>> GetByDateRangeAsync(
+            DateTime baslangicTarihi,
+            DateTime bitisTarihi)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Loglar
+                .AsNoTracking()
+                .Where(x => x.Tarih >= baslangicTarihi &&
+                            x.Tarih < bitisTarihi.AddDays(1))
                 .OrderByDescending(x => x.Tarih)
                 .ToListAsync();
         }

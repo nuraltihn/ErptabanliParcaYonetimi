@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Erpyonetimi.Domain.Entities;
+using System.Linq;
 using Erpyonetimi.Application.Services.Interfaces;
+using Erpyonetimi.Application.Common;
 using Erpyonetimi.Data.Interfaces;
 
 namespace Erpyonetimi.Application.Services
@@ -17,20 +19,19 @@ namespace Erpyonetimi.Application.Services
             _parcaRepository = parcaRepository;
         }
 
-        public async Task AddParcaAsync(Parca parca)
+        public async Task<ServiceResult> AddParcaAsync(Parca parca)
         {
-            var parcalar = await _parcaRepository.GetAllAsync();
-
-            var mevcutParca = parcalar
-                .FirstOrDefault(x => x.ParcaKodu == parca.ParcaKodu);
+            var mevcutParca = await _parcaRepository.GetByKodAsync(parca.ParcaKodu);
 
             if (mevcutParca != null)
             {
-                throw new InvalidOperationException(
+                return ServiceResult.Basarisiz(
                     "Bu parça kodu zaten mevcut.");
             }
 
             await _parcaRepository.AddAsync(parca);
+
+            return ServiceResult.Basarili_("Parça başarıyla eklendi.");
         }
 
         public async Task<List<Parca>> GetAllParcaAsync()
@@ -48,9 +49,30 @@ namespace Erpyonetimi.Application.Services
             return await _parcaRepository.GetByKodAsync(parcakodu);
         }
 
-        public async Task RemoveParcaAsync(Parca parca)
+        public async Task<ServiceResult> RemoveParcaAsync(Parca parca)
         {
-            await _parcaRepository.DeleteAsync(parca);
+            var dbParca = await _parcaRepository.GetByIdWithIliskilerAsync(parca.Id);
+
+            if (dbParca == null)
+            {
+                return ServiceResult.Basarisiz("Parça bulunamadı.");
+            }
+
+            if (dbParca.StokHareketleri.Any())
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu parça silinemez. Parçaya bağlı stok hareketleri bulunmaktadır.");
+            }
+
+            if (dbParca.SiparisDetaylari.Any())
+            {
+                return ServiceResult.Basarisiz(
+                    "Bu parça silinemez. Parçaya bağlı sipariş detayları bulunmaktadır.");
+            }
+
+            await _parcaRepository.DeleteAsync(dbParca);
+
+            return ServiceResult.Basarili_("Parça başarıyla silindi.");
         }
 
         public async Task UpdateParcaAsync(Parca parca)

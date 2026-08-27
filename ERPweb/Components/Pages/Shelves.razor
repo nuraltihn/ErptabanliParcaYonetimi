@@ -24,12 +24,12 @@
 
 </div>
 
-<table class="table table-striped mt-3">
+<table class="table table-striped management-table">
 	<thead>
 		<tr>
 			<th>Raf Kodu</th>
 			<th>Depo</th>
-			<th>İşlemler</th>
+			<th class="actions-column">İşlemler</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -38,15 +38,18 @@
 			<tr>
 				<td>@raf.RafKodu</td>
 				<td>@raf.Depo?.Depaadi</td>
-				<td>
-					<button class="btn btn-warning btn-sm"
+
+				<td class="actions-column">
+					<div class="action-buttons">
+					<button class="btn btn-warning"
 					@onclick="() => Duzenle(raf)">
 				Düzenle
 			</button>
-			<button class="btn btn-danger btn-sm ms-2"
+			<button class="btn btn-danger"
 			@onclick="() => Sil(raf.Id)">
 		Sil
 	               </button>
+				   </div>
 				</td>
 			</tr>
 		}
@@ -181,9 +184,10 @@ Kaydet
 	private Raflar? silinecekRaf;
 	private string aramaMetni = "";
 	private string hataMesaji = "";
-	private List<Raflar> raflar =
-	new();
+
+	private List<Raflar> raflar = new();
 	private List<Depolar> depolar = new();
+
 	private Raflar yeniRaf = new();
 
 	protected override async Task OnInitializedAsync()
@@ -197,6 +201,7 @@ Kaydet
 		raflar = await RafService.GetAllAsync();
 		depolar = await DepoService.GetAllAsync();
 	}
+
 	private void YeniRaf()
 	{
 		yeniRaf = new Raflar();
@@ -204,6 +209,7 @@ Kaydet
 		hataMesaji = "";
 		showModal = true;
 	}
+
 	private void ModalKapat()
 	{
 		showModal = false;
@@ -213,12 +219,14 @@ Kaydet
 	private async Task Kaydet()
 	{
 		hataMesaji = "";
-		if(yeniRaf.DepoId == 0)
+
+		if (yeniRaf.DepoId == 0)
 		{
 			hataMesaji = "Lütfen depo seçiniz.";
 			return;
 		}
-		if(string.IsNullOrWhiteSpace(yeniRaf.RafKodu))
+
+		if (string.IsNullOrWhiteSpace(yeniRaf.RafKodu))
 		{
 			hataMesaji = "Raf kodu boş bırakılamaz.";
 			return;
@@ -226,43 +234,60 @@ Kaydet
 
 		if (duzenlemeModu)
 		{
-			 await RafService.UpdateRafAsync (yeniRaf);
+			await RafService.UpdateRafAsync(yeniRaf);
 
 			Log log = new Log();
 			log.KullaniciId = UserSession.CurrentUser.Id;
 			log.Tarih = DateTime.Now;
 			log.Islem = "Raf Düzenleme";
 			log.Aciklama = yeniRaf.RafKodu + " adlı raf düzenlendi";
+
 			await LogService.AddAsync(log);
 		}
+		//yeni raf ekle basarılı log oluştur oldu
+		//
 		else
 		{
-			
+			try
+			{
+				await RafService.AddRafAsync(yeniRaf);
 
-			Log log = new Log();
-			log.KullaniciId = UserSession.CurrentUser.Id;
-			log.Tarih = DateTime.Now;
-			log.Islem = "Raf Ekleme";
-			log.Aciklama = yeniRaf.RafKodu + " adlı raf eklendi";
-			await LogService.AddAsync(log);
+				Log log = new Log();
+				log.KullaniciId = UserSession.CurrentUser.Id;
+				log.Tarih = DateTime.Now;
+				log.Islem = "Raf Ekleme";
+				log.Aciklama = yeniRaf.RafKodu + " adlı raf eklendi";
+
+				await LogService.AddAsync(log);
+			}
+			catch (Exception ex)
+			{
+				hataMesaji = ex.Message;
+				return;
+			}
 		}
 
 		raflar = await RafService.GetAllAsync();
+
 		showModal = false;
 		duzenlemeModu = false;
 		yeniRaf = new Raflar();
 	}
-	private void Duzenle (Raflar raf)
+
+	private void Duzenle(Raflar raf)
 	{
 		yeniRaf = new Raflar
-			{
-				Id = raf.Id,
-				DepoId = raf.DepoId,
-				RafKodu = raf.RafKodu
-			};
+		{
+			Id = raf.Id,
+			DepoId = raf.DepoId,
+			RafKodu = raf.RafKodu
+		};
+
 		duzenlemeModu = true;
+		hataMesaji = "";
 		showModal = true;
 	}
+
 	private void Sil(int id)
 	{
 		hataMesaji = "";
@@ -274,37 +299,40 @@ Kaydet
 			silmeModal = true;
 		}
 	}
+
 	private void SilmeyiIptalEt()
 	{
-		silmeModal= false;
-		silinecekRaf= null;
+		silmeModal = false;
+		silinecekRaf = null;
 		hataMesaji = "";
 	}
+
 	private async Task SilmeyiOnayla()
 	{
 		if (silinecekRaf == null)
 			return;
 
-		try
+		var sonuc = await RafService.RemoveRafAsync(silinecekRaf);
+
+		//yeni//
+		if (!sonuc.Basarili)
 		{
-			await RafService.RemoveRafAsync(silinecekRaf);
-
-			Log log = new Log();
-			log.KullaniciId = UserSession.CurrentUser.Id;
-			log.Tarih = DateTime.Now;
-			log.Islem = "Raf Silme";
-			log.Aciklama = silinecekRaf.RafKodu + " adlı raf silindi";
-			await LogService.AddAsync(log);
-
-			raflar = await RafService.GetAllAsync();
-
-			hataMesaji = "";
-			silmeModal = false;
-			silinecekRaf = null;
+			hataMesaji = sonuc.Mesaj;
+			return;
 		}
-		catch (Exception ex)
-		{
-			hataMesaji = ex.Message;
-		}
+
+		Log log = new Log();
+		log.KullaniciId = UserSession.CurrentUser.Id;
+		log.Tarih = DateTime.Now;
+		log.Islem = "Raf Silme";
+		log.Aciklama = silinecekRaf.RafKodu + " adlı raf silindi";
+
+		await LogService.AddAsync(log);
+
+		raflar = await RafService.GetAllAsync();
+
+		hataMesaji = "";
+		silmeModal = false;
+		silinecekRaf = null;
 	}
 }

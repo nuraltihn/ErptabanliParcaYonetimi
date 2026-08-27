@@ -193,7 +193,7 @@
 
 <hr />
 
-<table class="table table-striped">
+<table class="table table-striped management-table">
 
     <thead>
         <tr>
@@ -217,16 +217,17 @@
                 <td>@user.Rol?.RolAdi</td>
                 <td>@user.Tel</td>
                 <td>@user.Email</td>
-
                 <td>
-                    <button class="btn btn-warning btn-sm"
-                            @onclick="() => Duzenle(user)">
-                        Düzenle
-                    </button>
-                    <button class="btn btn-danger btn-sm ms-2"
-                            @onclick="() => Sil(user.Id)">
-                        Sil
-                    </button>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning"
+                        @onclick= "() => Duzenle(user)">
+                    Düzenle
+                </button>
+                <button class="btn btn-danger"
+                @onclick="()=> Sil(user.Id)">
+            Sil
+        </button>
+                    </div>
                 </td>
             </tr>
         }

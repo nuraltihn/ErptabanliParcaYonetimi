@@ -11,38 +11,110 @@
 <h3>Log Kayıtları</h3>
 
 <hr />
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <label class="form-label">Başlangıç Tarihi</label>
+
+        <input type="date"
+               class="form-control"
+               @bind="baslangicTarihi" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Bitiş Tarihi</label>
+
+        <input type="date"
+               class="form-control"
+               @bind="bitisTarihi" />
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end gap-2">
+
+        <button class="btn btn-primary"
+                @onclick="Filtrele">
+            Filtrele
+        </button>
+
+        <button class="btn btn-secondary"
+                @onclick="TumunuGoster">
+            Temizle
+        </button>
+
+    </div>
+
+</div>
+
 <table class="table table-striped">
-	<thead>
-		<tr>
-			<th>Tarih</th>
-			<th>Kullanıcı</th>
-			<th>İşlem</th>
-			<th>Açıklama</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var log in loglar)
-		{
-			<tr>
-				<td>@log.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
-				<td>@log.KullaniciAdSoyad</td>
-				<td>@log.Islem</td>
-				<td>@log.Aciklama</td>
-			</tr>
-		}
-	</tbody>
+
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>Kullanıcı</th>
+            <th>İşlem</th>
+            <th>Açıklama</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (!loglar.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center">
+                    Kayıt bulunamadı.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var log in loglar)
+            {
+                <tr>
+                    <td>@log.Tarih.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@log.KullaniciAdSoyad</td>
+                    <td>@log.Islem</td>
+                    <td>@log.Aciklama</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+
 </table>
 
 @code
 {
-	private List<Log> loglar = new();
-	protected override async Task OnInitializedAsync()
-	{
-		if (!UserSession.IsAdmin)
-		{
-			Navigation.NavigateTo("/dashboard");
-			return;
-		}
-		loglar = await LogService.GetAllAsync();
-	}
+    private List<Log> loglar = new();
+    private DateTime baslangicTarihi = DateTime.Today.AddDays(-7);
+    private DateTime bitisTarihi = DateTime.Today;
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserSession.IsAdmin)
+        {
+            Navigation.NavigateTo("/dashboard");
+            return;
+        }
+
+        loglar = await LogService.GetByDateRangeAsync(
+            baslangicTarihi,
+            bitisTarihi);
+    }
+    private async Task Filtrele()
+    {
+        if (baslangicTarihi > bitisTarihi)
+        {
+            return;
+        }
+
+        loglar = await LogService.GetByDateRangeAsync(
+            baslangicTarihi,
+            bitisTarihi);
+    }
+
+    private async Task TumunuGoster()
+    {
+        loglar = await LogService.GetAllAsync();
+    }
 }

@@ -9,6 +9,8 @@ namespace Erpyonetimi.Data.Interfaces
     {
         Task<List<Parca>> GetAllAsync();
         Task<Parca?> GetByIdAsync(int id);
+
+        Task<Parca?> GetByIdWithIliskilerAsync(int id);
         Task<Parca?> GetByKodAsync(string parcaKodu);
         Task AddAsync(Parca parca);
         Task UpdateAsync(Parca parca);

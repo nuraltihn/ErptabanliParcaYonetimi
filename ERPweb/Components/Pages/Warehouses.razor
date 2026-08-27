@@ -19,12 +19,12 @@
     @bind="aramaMetni"
     @bind:event="oninput" />
 </div>
-<table class="table table-striped mt-3">
+<table class="table table-striped management-table">
     <thead>
         <tr>
             <th>Depo Adı</th>
             <th>Konum</th>
-            <th>İşlemler</th>
+            <th class="actions-column">İşlemler</th>
         </tr>
     </thead>
     <tbody>
@@ -35,16 +35,18 @@
     <td>@depo.Depaadi</td>
     <td>@depo.Konum</td>
 
-      <td>
-      <button class="btn btn-warning btn-sm"
+      <td class="actions-column">
+         <div class="action-buttons">
+      <button class="btn btn-warning "
       @onclick="() => Duzenle(depo)">
                         Düzenle
                     </button>
 
-                    <button class="btn btn-danger btn-sm ms-2"
+                    <button class="btn btn-danger"
                             @onclick="() => Sil(depo.Id)">
                         Sil
                     </button>
+                    </div>
                 </td>
             </tr>
         }
@@ -173,61 +175,61 @@
 
 @code
 {
-	private bool showModal = false;
-	private bool duzenlemeModu = false;
-	private string aramaMetni = "";
-	private bool silmeModal = false;
-	private Depolar? silinecekDepo;
-	private string hataMesaji = "";
+    private bool showModal = false;
+    private bool duzenlemeModu = false;
+    private string aramaMetni = "";
+    private bool silmeModal = false;
+    private Depolar? silinecekDepo;
+    private string hataMesaji = "";
 
-	private List<Depolar> depolar = new();
-	private Depolar yeniDepo = new();
+    private List<Depolar> depolar = new();
+    private Depolar yeniDepo = new();
 
-	protected override async Task OnInitializedAsync()
-	{
-		depolar = await DepoService.GetAllAsync();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        depolar = await DepoService.GetAllAsync();
+    }
 
-	private void YeniDepo()
-	{
-		yeniDepo = new Depolar();
-		duzenlemeModu = false;
-		hataMesaji = "";
-		showModal = true;
-	}
+    private void YeniDepo()
+    {
+        yeniDepo = new Depolar();
+        duzenlemeModu = false;
+        hataMesaji = "";
+        showModal = true;
+    }
 
-	private void ModalKapat()
-	{
-		showModal = false;
-		hataMesaji = "";
-	}
+    private void ModalKapat()
+    {
+        showModal = false;
+        hataMesaji = "";
+    }
 
-	private async Task Kaydet()
-	{
-		hataMesaji = "";
+    private async Task Kaydet()
+    {
+        hataMesaji = "";
 
-		if (string.IsNullOrWhiteSpace(yeniDepo.Depaadi))
-		{
-			hataMesaji = "Depo adı boş bırakılamaz.";
-			return;
-		}
+        if (string.IsNullOrWhiteSpace(yeniDepo.Depaadi))
+        {
+            hataMesaji = "Depo adı boş bırakılamaz.";
+            return;
+        }
 
-		if (string.IsNullOrWhiteSpace(yeniDepo.Konum))
-		{
-			hataMesaji = "Konum boş bırakılamaz.";
-			return;
-		}
-		if (duzenlemeModu)
-		{
-			await DepoService.UpdateDepoAsync (yeniDepo);
+        if (string.IsNullOrWhiteSpace(yeniDepo.Konum))
+        {
+            hataMesaji = "Konum boş bırakılamaz.";
+            return;
+        }
+        if (duzenlemeModu)
+        {
+            await DepoService.UpdateDepoAsync (yeniDepo);
 
-			Log log = new Log();
-			log.KullaniciId = UserSession.CurrentUser.Id;
-			log.Tarih = DateTime.Now;
-			log.Islem = "Depo Düzenleme";
-			log.Aciklama = yeniDepo.Depaadi + " adlı depo düzenlendi";
-			await LogService.AddAsync (log);
-		}
+            Log log = new Log();
+            log.KullaniciId = UserSession.CurrentUser.Id;
+            log.Tarih = DateTime.Now;
+            log.Islem = "Depo Düzenleme";
+            log.Aciklama = yeniDepo.Depaadi + " adlı depo düzenlendi";
+            await LogService.AddAsync (log);
+        }
         else
         {
             await DepoService.AddDepoAsync(yeniDepo);
@@ -241,63 +243,64 @@
             await LogService.AddAsync(log);
         }
 
-		depolar = await DepoService.GetAllAsync();
-		showModal = false;
-		duzenlemeModu = false;
-		yeniDepo = new Depolar();
-	}
+        depolar = await DepoService.GetAllAsync();
+        showModal = false;
+        duzenlemeModu = false;
+        yeniDepo = new Depolar();
+    }
 
-	private void Duzenle(Depolar depo)
-	{
-		yeniDepo = new Depolar
+    private void Duzenle(Depolar depo)
+    {
+        yeniDepo = new Depolar
         {
             Id = depo.Id,
             Depaadi = depo.Depaadi,
             Konum = depo.Konum
         };
-		duzenlemeModu = true;
-		showModal = true;
-	}
+        duzenlemeModu = true;
+        showModal = true;
+    }
 
-	private void Sil(int id)
-	{
-		hataMesaji = "";
-		silinecekDepo = depolar.FirstOrDefault(x => x.Id == id);
+    private void Sil(int id)
+    {
+        hataMesaji = "";
+        silinecekDepo = depolar.FirstOrDefault(x => x.Id == id);
 
-		if(silinecekDepo != null)
-		{
-			silmeModal = true;
-		}
-	}
-	private async Task SilmeyiIptalEt()
-	{
-		silmeModal = false;
-		silinecekDepo = null;
-		hataMesaji = "";
-	}
-	private async Task SilmeyiOnayla()
-	{
+        if(silinecekDepo != null)
+        {
+            silmeModal = true;
+        }
+    }
+    private async Task SilmeyiIptalEt()
+    {
+        silmeModal = false;
+        silinecekDepo = null;
+        hataMesaji = "";
+    }
+    private async Task SilmeyiOnayla()
+    {
         if (silinecekDepo == null)
             return;
-        try
+        var sonuc = await DepoService.DeleteDepoAsync(silinecekDepo);
+        if(!sonuc.Basarili)
         {
-            await DepoService.DeleteDepoAsync(silinecekDepo);
-            Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
-            log.Tarih = DateTime.Now;
-            log.Islem = "Depo Silme";
-            log.Aciklama = silinecekDepo.Depaadi
-            + "adlı depo silindi";
-            await LogService.AddAsync(log);
-            depolar = await DepoService.GetAllAsync ();
-            hataMesaji = "";
-            silmeModal = false;
-            silinecekDepo = null;
+            hataMesaji = sonuc.Mesaj;
+            return;
         }
-        catch (Exception ex)
-        {
-            hataMesaji = ex.Message;
-        }
+        Log log = new Log();
+        log.KullaniciId = UserSession.CurrentUser.Id;
+        log.Tarih = DateTime.Now;
+        log.Islem = "Depo Silme";
+        log.Aciklama = silinecekDepo.Depaadi + " adlı depo silindi";
+
+        await LogService.AddAsync(log);
+
+        depolar = await DepoService.GetAllAsync();
+
+        hataMesaji = "";
+        silmeModal = false;
+        silinecekDepo = null;
+
     }
 }
 

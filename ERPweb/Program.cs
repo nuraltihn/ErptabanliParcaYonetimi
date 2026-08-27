@@ -16,8 +16,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Veritabanı Bağlantısı
-builder.Services.AddDbContext<ErpDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContextFactory<ErpDbContext>(
+    options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Servis Kayıtları
 builder.Services.AddScoped<IUsersService, UsersService>();

@@ -30,6 +30,15 @@ namespace Erpyonetimi.Data.Repositories
         {
             return await _context.Kategoriler.FirstOrDefaultAsync(k => k.Id == id);
         }
+        public async Task<Kategori?> GetByIdWithParcalarAsync(int id)
+        {
+            return await _context.Kategoriler
+                .Include(k => k.Parcalar)
+                    .ThenInclude(p => p.StokHareketleri)
+                .Include(k => k.Parcalar)
+                    .ThenInclude(p => p.SiparisDetaylari)
+                .FirstOrDefaultAsync(k => k.Id == id);
+        }
         public async Task AddAsync(Kategori kategori)
         {
             await _context.Kategoriler.AddAsync(kategori);
@@ -45,38 +54,11 @@ namespace Erpyonetimi.Data.Repositories
                 eskiKategori.Aciklama = kategori.Aciklama;
                await _context.SaveChangesAsync();
             }
-            else
-            {
-                throw new Exception("Kategori bulunamadı.");
-            }
+            
         }
         public async Task DeleteAsync(Kategori kategori)
         {
-            var dbKategori = await _context.Kategoriler
-                .Include(k => k.Parcalar)
-                    .ThenInclude(p => p.StokHareketleri)
-                .Include(k => k.Parcalar)
-                    .ThenInclude(p => p.SiparisDetaylari)
-                .FirstOrDefaultAsync(k => k.Id == kategori.Id);
-
-            if (dbKategori == null)
-            {
-                throw new Exception("Kategori bulunamadı.");
-            }
-            if (dbKategori.Parcalar.Any(p => p.StokHareketleri.Any()))
-            {
-                throw new Exception(
-                    "Bu kategori silinemez. Kategoriye bağlı işlem görmüş parçalar bulunmaktadır.");
-            }
-            if (dbKategori.Parcalar.Any(p => p.SiparisDetaylari.Any()))
-            {
-                throw new Exception(
-                    "Bu kategori silinemez. Kategoriye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
-            }
-
-            
-            _context.Kategoriler.Remove(dbKategori);
-
+          _context.Kategoriler.Remove(kategori);
            await _context.SaveChangesAsync();
         }
     }

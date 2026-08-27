@@ -13,47 +13,38 @@ namespace Erpyonetimi.Data.Repositories
         private readonly ErpDbContext _context;
         public RafRepository(ErpDbContext context)
         {
-            _context=context;
+            _context = context;
         }
 
         public async Task AddAsync(Raflar raf)
         {
-          await  _context.Raflar.AddAsync(raf);
-          await  _context.SaveChangesAsync();
+            await _context.Raflar.AddAsync(raf);
+            await _context.SaveChangesAsync();
         }
-
         public async Task DeleteAsync(Raflar raf)
         {
-            var dbRaf= await _context.Raflar
-            .Include(r=> r.Parcalar)
-            .FirstOrDefaultAsync(r => r.Id == raf.Id);
-            if (dbRaf== null)
-            {
-                throw new Exception("Raf bulunamadı.");
-            }
-            if (dbRaf.Parcalar.Any())
-            {
-                throw new Exception(
-                 "Bu raf silinemez. Rafa bağlı parçalar bulunmaktadır.");
-            }
-
-            _context.Raflar.Remove(dbRaf);
-           await _context.SaveChangesAsync();
+            _context.Raflar.Remove(raf);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Raflar>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
-                return new List<Raflar>();  
-                return await _context.Raflar.Include(r => r.Depo).ToListAsync();
-           
+                return new List<Raflar>();
+            return await _context.Raflar.Include(r => r.Depo).ToListAsync();
+
         }
 
         public async Task<Raflar?> GetByIdAsync(int id)
         {
             return await _context.Raflar.FirstOrDefaultAsync(r => r.Id == id);
         }
-
+        public async Task<Raflar?> GetByIdWithParcalarAsync(int id)
+        {
+            return await _context.Raflar
+                .Include(r => r.Parcalar)
+                .FirstOrDefaultAsync(r => r.Id == id);
+        }
         public async Task<Raflar?> GetByKodAsync(string rafkodu)
         {
             return await _context.Raflar.FirstOrDefaultAsync(r => r.RafKodu == rafkodu);
@@ -67,7 +58,7 @@ namespace Erpyonetimi.Data.Repositories
             {
                 mevcut.DepoId = raf.DepoId;
                 mevcut.RafKodu = raf.RafKodu;
-               await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
         }
     }

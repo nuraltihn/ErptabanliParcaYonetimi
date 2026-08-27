@@ -12,6 +12,7 @@ namespace Erpyonetimi.Data.Repositories
     {
         private readonly ErpDbContext _context;
         public DepoRepository(ErpDbContext context)
+
         {
             _context = context;
         }
@@ -24,57 +25,16 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task DeleteAsync(Depolar depo)
         {
-            var dbDepo = await _context.Depolar
-                .Include(d => d.Raflar)
-                .ThenInclude(r => r.Parcalar)
-                .ThenInclude(p => p.StokHareketleri)
-                .Include(d => d.Raflar)
-                .ThenInclude(r => r.Parcalar)
-                .ThenInclude(p => p.SiparisDetaylari)
-                .FirstOrDefaultAsync(d => d.Id == depo.Id);
-
-            if (dbDepo == null)
-            {
-                throw new Exception("Depo bulunamadı.");
-            }
-
-            if (dbDepo.Raflar
-                .SelectMany(r => r.Parcalar)
-                .Any(p => p.SiparisDetaylari.Any()))
-            {
-                throw new Exception(
-                    "Bu depo silinemez. Depoya bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
-            }
-
-            if (dbDepo.Raflar
-                .SelectMany(r => r.Parcalar)
-                .Any(p => p.StokHareketleri.Any()))
-            {
-                throw new Exception(
-                    "Bu depo silinemez. Depoya bağlı işlem görmüş parçalar bulunmaktadır.");
-            }
-
-            if (dbDepo.Raflar
-                .SelectMany(r => r.Parcalar)
-                .Any())
-            {
-                throw new Exception(
-                    "Bu depo silinemez. Depoya bağlı parçalar bulunmaktadır.");
-            }
-
-            _context.Depolar.Remove(dbDepo);
+            _context.Depolar.Remove(depo);
            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Depolar>> GetAllAsync()
         { if(!DatabaseHelper.IsConnected)
+
                 return new List<Depolar>();
-
-
-            return await _context.Depolar.ToListAsync();
-           
+            return await _context.Depolar.ToListAsync();  
         }
-
         public async Task< Depolar?> GetByDepoadiAsync(string depoadi)
         {
             return await _context.Depolar.FirstOrDefaultAsync(x=>x.Depaadi==depoadi);
@@ -84,7 +44,17 @@ namespace Erpyonetimi.Data.Repositories
         {
             return await _context.Depolar.FirstOrDefaultAsync(d => d.Id == id);
         }
-
+        public async Task<Depolar?> GetByIdWithIliskilerAsync(int id)
+        {
+            return await _context.Depolar
+                .Include(d => d.Raflar)
+                .ThenInclude(r => r.Parcalar)
+                .ThenInclude(p => p.StokHareketleri)
+                .Include(d => d.Raflar)
+                .ThenInclude(r => r.Parcalar)
+                .ThenInclude(p => p.SiparisDetaylari)
+                .FirstOrDefaultAsync(d => d.Id == id);
+        }
         public async Task UpdateAsync(Depolar depo)
         {
             var guncelleme =await _context.Depolar.FirstOrDefaultAsync(x=>x.Id == depo.Id);

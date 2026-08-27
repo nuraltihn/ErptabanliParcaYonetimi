@@ -57,29 +57,8 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task DeleteAsync(Tedarikci tedarikci)
         {
-            var dbTedarikci = await _context.Tedarikciler
-                .Include(t => t.Parcalar)
-                .ThenInclude(p=> p.StokHareketleri)
-                .Include(t=>t.Parcalar)
-                .ThenInclude(p =>p.SiparisDetaylari)
-               .FirstOrDefaultAsync(t => t.Id == tedarikci.Id);
-
-            if(dbTedarikci == null)
-            {
-                throw new Exception("Tedarikci bulunamadı.");
-            }
-
-            if(dbTedarikci.Parcalar.Any(p => p.StokHareketleri.Any()))
-            {
-                throw new Exception ("Bu tedarikçi silinemez. Tedarikçiye bağlı işlem görmüş parçalar bulunmaktadır.");
-            }
-
-            if (dbTedarikci.Parcalar.Any(p => p.SiparisDetaylari.Any()))
-            {
-                throw new Exception(
-                    "Bu tedarikçi silinemez. Tedarikçiye bağlı siparişlerde kullanılan parçalar bulunmaktadır.");
-            }
-            _context.Tedarikciler.Remove(dbTedarikci);
+         
+          _context.Tedarikciler.Remove(tedarikci);
 
            await  _context.SaveChangesAsync();
         }
@@ -88,7 +67,15 @@ namespace Erpyonetimi.Data.Repositories
         {
             return await _context.Tedarikciler.FirstOrDefaultAsync(x => x.Id == id);
         }
-
+        public async Task<Tedarikci?> GetByIdWithIliskilerAsync(int id)
+        {
+            return await _context.Tedarikciler
+                     .Include(t => t.Parcalar)
+                     .ThenInclude(p => p.StokHareketleri)
+                     .Include(t => t.Parcalar)
+                     .ThenInclude(p => p.SiparisDetaylari)
+                     .FirstOrDefaultAsync(t => t.Id == id);
+        }
         public async Task<Tedarikci?> GetByKodAsync(string kod)
         {
             return await _context.Tedarikciler.FirstOrDefaultAsync(x =>

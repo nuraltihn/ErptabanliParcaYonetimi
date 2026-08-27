@@ -21,7 +21,7 @@
 </div>
 <hr />
 
-<table class="table table-striped">
+<table class="table table-striped management-table">
 
     <thead>
         <tr>
@@ -31,7 +31,7 @@
             <th>Telefon</th>
             <th>Email</th>
             <th>Vergi No</th>
-            <th>İşlemler</th>
+            <th class="actions-column">İşlemler</th>
         </tr>
     </thead>
 
@@ -48,18 +48,18 @@
                 <td>@tedarikci.Email</td>
                 <td>@tedarikci.VergiNo</td>
 
-                <td>
-                    <button class="btn btn-warning btn-sm"
-                            @onclick="() => Duzenle(tedarikci)">
-                        Düzenle
-                    </button>
-                    <button class="btn btn-danger btn-sm ms-2"
-                            @onclick="() => Sil(tedarikci.Id)">
-                        Sil
-                    </button>
-
+                <td class="actions-column">
+                    <div class="action-buttons">
+                        <button class="btn btn-warning"
+                                @onclick="() => Duzenle(tedarikci)">
+                            Düzenle
+                        </button>
+                        <button class="btn btn-danger"
+                                @onclick="() => Sil(tedarikci.Id)">
+                            Sil
+                        </button>
+                    </div>
                 </td>
-
             </tr>
         }
 

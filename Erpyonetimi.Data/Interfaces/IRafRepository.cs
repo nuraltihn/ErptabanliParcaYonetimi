@@ -10,6 +10,9 @@ namespace Erpyonetimi.Data.Interfaces
         Task<List<Raflar>> GetAllAsync();
         Task<Raflar?> GetByIdAsync(int id);
         Task<Raflar?> GetByKodAsync(string rafkodu);
+
+        Task<Raflar?> GetByIdWithParcalarAsync(int id);
+
         Task AddAsync(Raflar raf);
         Task UpdateAsync(Raflar raf);
         Task DeleteAsync(Raflar raf);

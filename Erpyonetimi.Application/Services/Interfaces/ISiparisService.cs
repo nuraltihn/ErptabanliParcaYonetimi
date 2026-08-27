@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Erpyonetimi.Domain.Entities;
+using Erpyonetimi.Application.Common;
 using System.Threading.Tasks;
 namespace Erpyonetimi.Application.Services.Interfaces
 {
@@ -13,6 +14,6 @@ namespace Erpyonetimi.Application.Services.Interfaces
 
         Task AddSiparisAsync(Siparis siparis);
         Task UpdateSiparisAsync (Siparis siparis);
-        Task  RemoveSiparisAsync (Siparis siparis);
+        Task <ServiceResult> RemoveSiparisAsync (Siparis siparis);
     }
 }

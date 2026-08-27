@@ -21,7 +21,7 @@
 	@bind:event="oninput" />
 </div>
 
-<table class="table table-striped mt-3">
+<table class="table table-striped management-table">
 	<thead>
 		<tr>
 			<th>Müşteri Kodu</th>
@@ -30,7 +30,7 @@
 			<th>Telefon</th>
 			<th>Email</th>
 			<th>Vergi No</th>
-			<th>İşlemler</th>
+			<th class="actions-column">İşlemler</th>
 
 		</tr>
 	</thead>
@@ -44,14 +44,20 @@
 				<td>@musteri.Tel</td>
 				<td>@musteri.Email</td>
 				<td>@musteri.VergiNo</td>
-				<td><button class="btn btn-warning btn-sm"
-					@onclick="() => Duzenle(musteri)">
-					Düzenle
-				</button>
-				<button class="btn btn-danger btn-sm ms-2"
-				@onclick="() => Sil(musteri.Id)">
-			Sil</button>
-			</td>
+
+                <td class="actions-column">
+                    <div class="action-buttons">
+                        <button class="btn btn-warning"
+                                @onclick="() => Duzenle(musteri)">
+                            Düzenle
+                        </button>
+
+                        <button class="btn btn-danger"
+                                @onclick="() => Sil(musteri.Id)">
+                            Sil
+                        </button>
+                    </div>
+                </td>
 				
 
 			</tr>
@@ -59,132 +65,123 @@
 		
 	</tbody>
 </table>
-
 @if (showModal)
 {
-	<div class="modal d-block" tabindex="-1"
-		 style="background-color:rgba(0,0,0,0.5);">
+    <div class="modal d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
 
-		<div class="modal-dialog">
-			<div class="modal-content">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
 
-				<div class="modal-header">
-					<h5 class="modal-title">
-						@(duzenlemeModu ? "Müşteri Düzenle" : "Yeni Müşteri")
-					</h5>
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @(duzenlemeModu ? "Müşteri Düzenle" : "Yeni Müşteri")
+                    </h5>
 
-					<button type="button"
-							class="btn-close"
-							@onclick="ModalKapat">
-					</button>
-				</div>
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="ModalKapat">
+                    </button>
+                </div>
 
-				<div class="modal-body">
+                <div class="modal-body">
 
-    @if (!string.IsNullOrEmpty(hataMesaji))
-    {
-        <div class="alert alert-danger">
-            @hataMesaji
+                    @if (!string.IsNullOrEmpty(hataMesaji))
+                    {
+                        <div class="alert alert-danger">
+                            @hataMesaji
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label>Müşteri Kodu *</label>
+                        <input class="form-control"
+                               @bind="yeniMusteri.MusteriKodu" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Firma Adı *</label>
+                        <input class="form-control"
+                               @bind="yeniMusteri.FirmaAdi" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Yetkili Kişi *</label>
+                        <input class="form-control"
+                               @bind="yeniMusteri.YetkiliKisi" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Ad *</label>
+                        <input class="form-control"
+                               @bind="yeniMusteri.Ad" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Soyad *</label>
+                        <input class="form-control"
+                               @bind="yeniMusteri.Soyad" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Adres</label>
+                        <textarea class="form-control"
+                                      @bind="yeniMusteri.Adres">
+                        </textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Şehir *</label>
+                            <input class="form-control"
+                                   @bind="yeniMusteri.Sehir" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Telefon *</label>
+                            <input class="form-control"
+                                   @bind="yeniMusteri.Tel" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Email *</label>
+                            <input class="form-control"
+                                   @bind="yeniMusteri.Email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Vergi No *</label>
+                            <input class="form-control"
+                                   @bind="yeniMusteri.VergiNo" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Fax</label>
+                            <input class="form-control"
+                                   @bind="yeniMusteri.Fax" />
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button class="btn btn-secondary"
+                                @onclick="ModalKapat">
+                            İptal
+                        </button>
+
+                        <button class="btn btn-success"
+                                @onclick="Kaydet">
+                            Kaydet
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
         </div>
     }
 
-    <p>
-        <strong>@silinecekMusteri?.FirmaAdi</strong>
-        adlı müşteri silmek istediğinize emin misiniz?
-    </p>
-
-    <div class="alert alert-warning">
-        Bu işlem geri alınamaz.
-    </div>
-
-</div>
-
-					<div class="mb-3">
-					<label>Müşteri Kodu *</label>
-					<input class="form-control"
-					@bind="yeniMusteri.MusteriKodu" />
-					</div>
-
-					<div class="mb-3">
-				<label>Firma Adı *</label>
-					<input class="form-control"
-					@bind="yeniMusteri.FirmaAdi" />
-					</div>
-
-					<div class="mb-3">
-					<label>Yetkili Kişi *</label>
-					<input class="form-control"
-					 @bind="yeniMusteri.YetkiliKisi" />
-					</div>
-
-					<div class="mb-3">
-					<label>Ad *</label>
-					<input class="form-control"
-					@bind="yeniMusteri.Ad" />
-					</div>
-
-					<div class="mb-3">
-					<label>Soyad *</label>
-					<input class="form-control"
-					@bind="yeniMusteri.Soyad" />
-					</div>
-
-					<div class="mb-3">
-						<label>Adres</label>
-						<textarea class="form-control"
-						@bind="yeniMusteri.Adres">
-                        </textarea>
-						</div>
-
-						<div class="mb-3">
-						<label>Şehir *</label>
-						<input class="form-control"
-						 @bind="yeniMusteri.Sehir" />
-						</div>
-
-						<div class="mb-3">
-						<label>Telefon *</label>
-						<input class="form-control"
-					     @bind="yeniMusteri.Tel" />
-						</div>
-
-						<div class="mb-3">
-						<label>Email *</label>
-						<input class="form-control"
-					    @bind="yeniMusteri.Email" />
-						</div>
-
-						<div class="mb-3">
-						<label>Vergi No *</label>
-						<input class="form-control"
-						@bind="yeniMusteri.VergiNo" />
-						</div>
-
-						<div class="mb-3">
-						<label>Fax</label>
-						<input class="form-control"
-						@bind="yeniMusteri.Fax" />
-						</div>
-
-					</div>
-
-					<div class="modal-footer">
-
-						<button class="btn btn-secondary"
-								@onclick="ModalKapat">
-							İptal
-						</button>
-
-						<button class="btn btn-success"
-								@onclick="Kaydet">
-							Kaydet
-						</button>
-
-					</div>
-
-				</div>
-			</div>
-	}
     @if (silmeModal)
 {
     <div class="modal d-block"
@@ -205,6 +202,12 @@
                     <strong>@silinecekMusteri?.FirmaAdi</strong>
                     adlı müşteri silmek istediğinize emin misiniz?
                 </p>
+                        @if (!string.IsNullOrEmpty(hataMesaji))
+                        {
+                            <div class="alert alert-danger">
+                                @hataMesaji
+                            </div>
+                        }
                 <div class="alert alert-warning">
                     Bu işlem geri alınamaz.
                 </div>
@@ -277,6 +280,8 @@
         yeniMusteri = new Musteri();
         duzenlemeModu = false;
         hataMesaji = "";
+        silmeModal= false;
+        silinecekMusteri = null;
         showModal = true;
     }
 
@@ -346,14 +351,14 @@
 
         if (duzenlemeModu)
         {
-           await MusteriService.UpdateMusteriAsync (yeniMusteri);
+            await MusteriService.UpdateMusteriAsync (yeniMusteri);
 
             Log log = new Log();
             log.KullaniciId = UserSession.CurrentUser.Id;
             log.Tarih = DateTime.Now;
             log.Islem = "Müşteri Düzenleme";
             log.Aciklama = yeniMusteri.FirmaAdi + " adlı müşteri düzenlendi";
-           await  LogService.AddAsync (log);
+            await  LogService.AddAsync (log);
         }
         else
         {
@@ -377,6 +382,8 @@
 
     private async Task Sil(int id)
     {
+        hataMesaji = "";
+
         silinecekMusteri = await MusteriService.GetByIdAsync(id);
 
         if (silinecekMusteri != null)
@@ -390,26 +397,34 @@
         silmeModal = false;
         silinecekMusteri = null;
     }
-
     private async Task SilmeyiOnayla()
     {
-        if (silinecekMusteri != null)
+        if (silinecekMusteri == null)
+            return;
+
+        var sonuc = await MusteriService.DeleteMusteriAsync(silinecekMusteri);
+
+        if (!sonuc.Basarili)
         {
-            await MusteriService.DeleteMusteriAsync(silinecekMusteri);
-
-            Log log = new Log();
-            log.KullaniciId = UserSession.CurrentUser.Id;
-            log.Tarih = DateTime.Now;
-            log.Islem = "Müşteri Silme";
-            log.Aciklama = silinecekMusteri.FirmaAdi + " adlı müşteri silindi";
-            await LogService.AddAsync (log);
-
-            musteriler = await MusteriService.GetAllAsync();
+            hataMesaji = sonuc.Mesaj;
+            return;
         }
 
+        Log log = new Log();
+        log.KullaniciId = UserSession.CurrentUser.Id;
+        log.Tarih = DateTime.Now;
+        log.Islem = "Müşteri Silme";
+        log.Aciklama = silinecekMusteri.FirmaAdi + " adlı müşteri silindi";
+
+        await LogService.AddAsync(log);
+
+        musteriler = await MusteriService.GetAllAsync();
+
+        hataMesaji = "";
         silmeModal = false;
         silinecekMusteri = null;
     }
+
 
     private void Duzenle(Musteri musteri)
     {

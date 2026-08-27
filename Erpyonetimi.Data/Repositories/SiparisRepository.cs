@@ -21,31 +21,10 @@ namespace Erpyonetimi.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync (Siparis siparis)
+        public async Task DeleteAsync(Siparis siparis)
         {
-            var mevcut = await _context.Siparisler
-                .Include(s => s.SiparisDetaylari)
-                .FirstOrDefaultAsync(s => s.Id == siparis.Id);
-
-            if (mevcut == null)
-            {
-                throw new Exception("Sipariş bulunamadı.");
-            }
-
-            if (mevcut.SiparisDetaylari.Any())
-            {
-                throw new Exception(
-                    "Bu sipariş silinemez. Siparişe bağlı parçalar bulunmaktadır.");
-            }
-
-            if (mevcut.Durum == "Tamamlandı")
-            {
-                throw new Exception(
-                    "Tamamlanmış siparişler silinemez.");
-            }
-
-            _context.Siparisler.Remove(mevcut);
-            await _context.SaveChangesAsync();
+            _context.Siparisler.Remove(siparis);
+            await _context.SaveChangesAsync();  
         }
 
         public async Task<List<Siparis>> GetAllAsync()
@@ -64,6 +43,14 @@ namespace Erpyonetimi.Data.Repositories
         {
             return await _context.Siparisler
                 .FirstOrDefaultAsync(x=>x.Id == id);
+        }
+        public async Task<Siparis?> GetByIdWithIliskilerAsync(int id)
+        {
+            return await _context.Siparisler
+                .Include(s => s.SiparisDetaylari)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+
         }
 
         public async Task<Siparis?> GetByNoAsync(string siparisNo)
