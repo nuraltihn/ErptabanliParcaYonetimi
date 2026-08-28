@@ -29,7 +29,7 @@
             <TextBlock Text="Rapor:" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
             <ComboBox Grid.Column="1" Margin="5" Height="30" ItemsSource="{Binding Raporlar}"
                       SelectedItem="{Binding SecilenRapor}" />
-            <Button Content="Excel" Grid.Column="2" Width="100" Height="30" Margin="5" Command="{Binding ExcelAktarCommand}"  Style="{StaticResource Crudbutton}" />
+            <Button Content="Excel'e Aktar" Grid.Column="2" Width="100" Height="30" Margin="5" Command="{Binding ExcelAktarCommand}"  Style="{StaticResource Crudbutton}" />
           
         </Grid>
 
