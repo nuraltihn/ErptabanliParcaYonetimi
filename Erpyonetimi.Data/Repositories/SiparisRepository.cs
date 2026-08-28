@@ -17,12 +17,16 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(Siparis siparis)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             await _context.Siparisler.AddAsync(siparis);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Siparis siparis)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.Siparisler.Remove(siparis);
             await _context.SaveChangesAsync();  
         }
@@ -41,26 +45,32 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<Siparis?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Siparisler
                 .FirstOrDefaultAsync(x=>x.Id == id);
         }
         public async Task<Siparis?> GetByIdWithIliskilerAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Siparisler
                 .Include(s => s.SiparisDetaylari)
                 .FirstOrDefaultAsync(s => s.Id == id);
-
-
         }
 
         public async Task<Siparis?> GetByNoAsync(string siparisNo)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Siparisler
                 .FirstOrDefaultAsync(x=>x.SiparisNo == siparisNo);
         }
 
         public async Task UpdateAsync(Siparis siparis)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var mevcut = await _context.Siparisler.FindAsync(siparis.Id);
             if (mevcut !=null)
             {

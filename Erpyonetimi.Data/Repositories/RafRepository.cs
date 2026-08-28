@@ -18,11 +18,16 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task AddAsync(Raflar raf)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
+
             await _context.Raflar.AddAsync(raf);
             await _context.SaveChangesAsync();
         }
         public async Task DeleteAsync(Raflar raf)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.Raflar.Remove(raf);
             await _context.SaveChangesAsync();
         }
@@ -37,21 +42,29 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<Raflar?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Raflar.FirstOrDefaultAsync(r => r.Id == id);
         }
         public async Task<Raflar?> GetByIdWithParcalarAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Raflar
                 .Include(r => r.Parcalar)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
         public async Task<Raflar?> GetByKodAsync(string rafkodu)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Raflar.FirstOrDefaultAsync(r => r.RafKodu == rafkodu);
         }
 
         public async Task UpdateAsync(Raflar raf)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var mevcut = await _context.Raflar
                 .FirstOrDefaultAsync(x => x.Id == raf.Id);
             if (mevcut != null)

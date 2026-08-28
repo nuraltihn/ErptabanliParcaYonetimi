@@ -17,12 +17,17 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(StokHareket stokHareket)
         {
-          await  _context.StokHareketleri.AddAsync(stokHareket);
+            if (!DatabaseHelper.IsConnected)
+                return;
+
+            await  _context.StokHareketleri.AddAsync(stokHareket);
            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(StokHareket stokHareket)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.StokHareketleri.Remove(stokHareket);
             await _context.SaveChangesAsync();
         }
@@ -41,11 +46,16 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<StokHareket?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.StokHareketleri.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(StokHareket stokHareket)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
+
             var mevcut = await _context.StokHareketleri
                 .FirstOrDefaultAsync(x => x.Id == stokHareket.Id);
 

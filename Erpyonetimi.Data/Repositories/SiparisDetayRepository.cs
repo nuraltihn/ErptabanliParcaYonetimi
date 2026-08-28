@@ -17,12 +17,16 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(SiparisDetaylari detay)
         {
-          await  _context.SiparisDetaylari.AddAsync(detay);
+            if (!DatabaseHelper.IsConnected)
+                return;
+            await  _context.SiparisDetaylari.AddAsync(detay);
            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(SiparisDetaylari detay)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var mevcut = await _context.SiparisDetaylari.FirstOrDefaultAsync(x => x.Id == detay.Id);
             if (mevcut != null)
             {
@@ -46,6 +50,8 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task< SiparisDetaylari?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.SiparisDetaylari
                 .Include(x => x.Parca)
                 .Include(x => x.Siparis)
@@ -54,6 +60,8 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task UpdateAsync(SiparisDetaylari detay)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var mevcut = await _context.SiparisDetaylari.FindAsync(detay.Id);
             if (mevcut != null)
             {

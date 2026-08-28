@@ -17,11 +17,15 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(Musteri musteri)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             await _context.Musteriler.AddAsync(musteri);
            await  _context.SaveChangesAsync();
         }
         public async Task DeleteAsync(Musteri musteri)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.Musteriler.Remove(musteri);
             await _context.SaveChangesAsync();
         }
@@ -39,10 +43,14 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task< Musteri?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Musteriler.FirstOrDefaultAsync(m=>m.Id == id);
         }
         public async Task<Musteri?> GetByIdWithIliskilerAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Musteriler
                 .Include(m => m.Siparisler)
                 .FirstOrDefaultAsync (m => m.Id == id); 
@@ -50,11 +58,15 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<Musteri?> GetByKodAsync(string musteriKodu)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Musteriler.FirstOrDefaultAsync(m=>m.MusteriKodu == musteriKodu);
         }
 
         public async Task UpdateAsync(Musteri musteri)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var mevcut = await _context.Musteriler.FirstOrDefaultAsync(x => x.Id == musteri.Id);
             if (mevcut == null)
                 return;

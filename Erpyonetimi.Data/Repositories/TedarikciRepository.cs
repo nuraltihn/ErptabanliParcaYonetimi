@@ -20,15 +20,14 @@ namespace Erpyonetimi.Data.Repositories
         {
             _context = context;
         }
-
         public async Task<List<Tedarikci>> GetAllAsync()
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Tedarikci>();
-                return await _context.Tedarikciler
+
+            return await _context.Tedarikciler
                 .AsNoTracking()
                 .ToListAsync();
-           
         }
 
         public async Task AddAsync(Tedarikci tedarikci)

@@ -10,8 +10,8 @@ namespace Erpyonetimi.Data.Helpers
     public class DatabaseHelper
     {
         public static bool IsConnected { get;  set; }
-
-      public static void CheckConnection()
+        public static bool IsChecked { get; set; }
+        public static void CheckConnection()
         {
             try
             {
@@ -19,16 +19,17 @@ namespace Erpyonetimi.Data.Helpers
                string sqlConn=
                   "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True";
 
-                //using var conn = new SqlConnection(sqlConn);
-                //conn.Open();
-                //IsConnected = true;
-
-
-
+               using var conn = new SqlConnection(sqlConn);
+               conn.Open();
+               IsConnected = true;
             }
             catch
             {
-                //IsConnected = false;
+               IsConnected = false;
+            }
+            finally
+            {
+                IsChecked = true;
             }
         }
        

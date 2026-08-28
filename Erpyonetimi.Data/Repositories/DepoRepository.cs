@@ -19,12 +19,16 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task AddAsync(Depolar depo)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             await _context.Depolar.AddAsync(depo);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Depolar depo)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.Depolar.Remove(depo);
            await _context.SaveChangesAsync();
         }
@@ -35,17 +39,23 @@ namespace Erpyonetimi.Data.Repositories
                 return new List<Depolar>();
             return await _context.Depolar.ToListAsync();  
         }
-        public async Task< Depolar?> GetByDepoadiAsync(string depoadi)
+        public async Task<Depolar?> GetByDepoadiAsync(string depoadi)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Depolar.FirstOrDefaultAsync(x=>x.Depaadi==depoadi);
         }
 
         public async Task<Depolar?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Depolar.FirstOrDefaultAsync(d => d.Id == id);
         }
         public async Task<Depolar?> GetByIdWithIliskilerAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Depolar
                 .Include(d => d.Raflar)
                 .ThenInclude(r => r.Parcalar)
@@ -57,6 +67,8 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task UpdateAsync(Depolar depo)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var guncelleme =await _context.Depolar.FirstOrDefaultAsync(x=>x.Id == depo.Id);
             if (guncelleme != null) 
             {

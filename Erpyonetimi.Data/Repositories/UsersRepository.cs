@@ -19,6 +19,9 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<Users?> LoginAsync(string kulAd, string sifre)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
+
             return await _context.Users
                 .Include(u => u.Rol)
                 .FirstOrDefaultAsync(u => 
@@ -27,13 +30,18 @@ namespace Erpyonetimi.Data.Repositories
  
         public async Task AddAsync(Users user)
         {
+            if (!DatabaseHelper.IsConnected)
+                return ;
 
-           await _context.Users.AddAsync(user);
+            await _context.Users.AddAsync(user);
            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Users user)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
+
             var mevcut = await _context.Users.FindAsync(user.Id);
             if (mevcut != null)
             {
@@ -50,6 +58,9 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task DeleteAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
+
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user != null)
@@ -64,6 +75,7 @@ namespace Erpyonetimi.Data.Repositories
         {
             if (!DatabaseHelper.IsConnected)
                 return new List<Users>();
+
                 return await _context.Users
                 .Include(x => x.Rol)
                  .AsNoTracking()
@@ -72,12 +84,18 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task<Users?> GetByKulAdAsync (string kulAd)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
+
             return await _context.Users
                   .FirstOrDefaultAsync(x => x.KulAd == kulAd);
         }
 
         public async Task<Users?> GetByAdSoyadAsync(string adSoyad)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
+
             return await _context.Users.FirstOrDefaultAsync(x => x.AdSoyad == adSoyad);
         }
     }

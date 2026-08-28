@@ -28,10 +28,16 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task<Kategori?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
+
             return await _context.Kategoriler.FirstOrDefaultAsync(k => k.Id == id);
         }
         public async Task<Kategori?> GetByIdWithParcalarAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
+
             return await _context.Kategoriler
                 .Include(k => k.Parcalar)
                     .ThenInclude(p => p.StokHareketleri)
@@ -41,12 +47,16 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(Kategori kategori)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             await _context.Kategoriler.AddAsync(kategori);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Kategori kategori)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             var eskiKategori = await _context.Kategoriler.FirstOrDefaultAsync(k => k.Id == kategori.Id);
             if (eskiKategori != null)
             {
@@ -58,7 +68,9 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task DeleteAsync(Kategori kategori)
         {
-          _context.Kategoriler.Remove(kategori);
+            if (!DatabaseHelper.IsConnected)
+                return;
+            _context.Kategoriler.Remove(kategori);
            await _context.SaveChangesAsync();
         }
     }

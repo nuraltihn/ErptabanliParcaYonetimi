@@ -1,6 +1,7 @@
-using Erpyonetimi.Domain.Entities;
-using Erpyonetimi.Data.Interfaces;
 using Erpyonetimi.Context;
+using Erpyonetimi.Data.Helpers;
+using Erpyonetimi.Data.Interfaces;
+using Erpyonetimi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Erpyonetimi.Data.Repositories
@@ -15,6 +16,8 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task AddAsync(Log log)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             if (log.KullaniciId.HasValue)
@@ -34,6 +37,9 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<List<Log>> GetAllAsync()
         {
+            if (!DatabaseHelper.IsConnected)
+                return new List<Log>();
+
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.Loglar
@@ -47,6 +53,9 @@ namespace Erpyonetimi.Data.Repositories
             DateTime baslangicTarihi,
             DateTime bitisTarihi)
         {
+            if (!DatabaseHelper.IsConnected)
+                return new List<Log>();
+
             await using var context = await _contextFactory.CreateDbContextAsync();
 
             return await context.Loglar

@@ -17,12 +17,17 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task AddAsync(Parca parca)
         {
-           await _context.Parcalar.AddAsync(parca);
+            if (!DatabaseHelper.IsConnected)
+                return;
+
+            await _context.Parcalar.AddAsync(parca);
            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Parca parca)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
             _context.Parcalar.Remove(parca);
            await _context.SaveChangesAsync();
         }
@@ -40,10 +45,14 @@ namespace Erpyonetimi.Data.Repositories
 
         public async Task<Parca?> GetByIdAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Parcalar.FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<Parca?> GetByIdWithIliskilerAsync(int id)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Parcalar
                 .Include(p => p.StokHareketleri)
                 .Include(p => p.SiparisDetaylari)
@@ -51,11 +60,16 @@ namespace Erpyonetimi.Data.Repositories
         }
         public async Task<Parca?> GetByKodAsync(string parcaKodu)
         {
+            if (!DatabaseHelper.IsConnected)
+                return null;
             return await _context.Parcalar.FirstOrDefaultAsync(x => x.ParcaKodu == parcaKodu);
         }
 
         public async Task UpdateAsync(Parca parca)
         {
+            if (!DatabaseHelper.IsConnected)
+                return;
+
             var eskiParca = await _context.Parcalar
                 .FirstOrDefaultAsync(x => x.Id == parca.Id);
 
