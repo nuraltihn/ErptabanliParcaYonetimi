@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Windows;
 
 
@@ -28,11 +29,18 @@ namespace Erpyonetimi
         //public static IServiceProvider ServiceProvider { get; private set; }
 
         private IHost _host;
+
+        private readonly IConfiguration _configuration;
         public App()
         {
 
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json",false,true).Build();
+
             _host = Host.CreateDefaultBuilder().ConfigureAppConfiguration((context, config) =>
             {
+                config.AddConfiguration(_configuration);
             }).
             ConfigureServices((context, services) =>
             {
@@ -64,8 +72,11 @@ namespace Erpyonetimi
             services.AddTransient<LogView>();
             services.AddTransient<RaporView>();
 
-            string sqlConn =
-    "Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+
+    //        string sqlConn =
+    //"Server=192.168.5.164;Database=erp;User Id=stajkullanici;Password=ikbal2323!;TrustServerCertificate=True;";
 
             //services.AddDbContext<ErpDbContext>(options =>
             //{
@@ -73,7 +84,7 @@ namespace Erpyonetimi
             //});
             services.AddDbContextFactory<ErpDbContext>(options =>
             {
-                options.UseSqlServer(sqlConn);
+                options.UseSqlServer(connectionString);
             });
             services.AddTransient<ErpDbContext>(sp =>
             {

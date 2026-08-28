@@ -15,5 +15,7 @@ namespace Erpyonetimi.Data.Interfaces
         Task AddAsync(Tedarikci tedarikci);
         Task UpdateAsync(Tedarikci tedarikci);
         Task DeleteAsync(Tedarikci tedarikci);
+
+        
     }
 }
